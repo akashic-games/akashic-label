@@ -1,0 +1,33 @@
+{
+  "name": "akashic-label-example",
+  "version": "1.2.0",
+  "description": "",
+  "scripts": {
+    "prepublish": "gulp install:typings && gulp build",
+    "build": "gulp build && cd game && akashic update asset script -q",
+    "lint": "gulp lint",
+    "start": "akashic-sandbox game",
+    "test": "gulp test && npm run lint"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "@akashic/akashic-engine": "~1.10.1",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-jasmine": "~2.0.0",
+    "gulp-shell": "^0.5.1",
+    "gulp-tslint": "^3.4.0",
+    "gulp-istanbul": "~0.6.0",
+    "jasmine": "~2.1.1",
+    "jasmine-reporters": "~2.0.4",
+    "jasmine-terminal-reporter": "~0.9.1",
+    "typings": "^1.0.4",
+    "typescript": "1.7.5"
+  },
+  "dependencies": {
+    "@akashic-extension/akashic-label": "0.3.2",
+    "@akashic/akashic-cli": "^1.0.8",
+    "@akashic/akashic-sandbox": "^0.10.1"
+  }
+}

@@ -1,0 +1,12 @@
+lib
+node_modules
+.DS_Store*
+npm-debug.log
+*.iml
+coverage
+junitresults.xml
+tmp
+.idea
+.vscode
+\#*\#
+game/script
