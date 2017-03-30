@@ -85,6 +85,9 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 * ルビのレイアウト設定。
 	 */
 	rubyOptions?: rt.RubyOptions;
+
+	alignTop?: boolean; // 暫定名。あとで直します
+
 }
 
 export = LabelParameterObject;
