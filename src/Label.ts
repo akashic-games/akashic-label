@@ -53,8 +53,6 @@ class Label extends g.CacheableE {
 	 */
 	textAlign: g.TextAlign;
 
-	alignTop: boolean; // 暫定名。あとで直します
-
 	/**
 	 * フォントサイズ。
 	 * 0 以上の数値でなければならない。
@@ -97,6 +95,14 @@ class Label extends g.CacheableE {
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
 	fixLineGap: boolean;
+
+	/**
+	 * フォントの上端にある余白を描画するかどうか。
+	 * 真の場合、文字の描画内容が崩れない範囲で余白を詰めて描画される。
+	 * 初期値は偽である。
+	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
+	 */
+	fixMarginTop: boolean;
 
 	/**
 	 * ルビを解釈するパーサ。
@@ -149,7 +155,7 @@ class Label extends g.CacheableE {
 		this.lineGap = param.lineGap || 0;
 		this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
 		this.textColor = param.textColor;
-		this.alignTop = "alignTop" in param ? param.alignTop : false;
+		this.fixMarginTop = "alignTop" in param ? param.fixMarginTop : false;
 
 		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
@@ -422,7 +428,7 @@ class Label extends g.CacheableE {
 			var ri = drawInfoArray[i];
 			if (ri instanceof fr.RubyFragmentDrawInfo) {
 				var f = ri.fragment;
-				if (f.rubyFontSize > maxRubyFontSize) { // rubyの高さ？にはインスタンス設定のrubyFontSizeとフラグメントが持つheightの大きなほうを使う
+				if (f.rubyFontSize > maxRubyFontSize) {
 					maxRubyFontSize = f.rubyFontSize;
 				}
 				if (f.rubyGap > maxRubyGap) {
@@ -432,27 +438,25 @@ class Label extends g.CacheableE {
 				var rubyGlyphScale =
 					(f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize) / (f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size);
 
-				// このフラグメントの最大グリフheightを得る
 				var currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
 				);
-				// このフラグメントの最小offsetYも得る（行の高さを最後に決めるときは最小のoffsetYだけマージンを捨てられることになる）
 				var currentMinRubyOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.offsetY : 0)
 				);
 
-				// この行のルビでもっとも高いheightを探す
 				if (maxRubyGlyphHeightWithOffsetY < currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale) {
-					maxRubyGlyphHeightWithOffsetY = currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale; // フラグメント間でスケール同一保証がないのでスケール後の値で比較する
+					maxRubyGlyphHeightWithOffsetY = currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale;
 				}
 
 				var rubyFont = (f.rubyFont ? f.rubyFont : this.rubyOptions.rubyFont);
 				var currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
-				// currentMaxRubyGlyphHeightWithOffsetYを使う。maxRubyGlyphHeightWithOffsetYはこのフラグメント以外のheight情報が含まれる
-				var currentFragmentEssentialDrawHeight = ( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
+				var currentFragmentEssentialDrawHeight =
+					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
 				if (maxEssentialDrawHeight < currentFragmentEssentialDrawHeight) {
 					maxEssentialDrawHeight = currentFragmentEssentialDrawHeight;
-					essentialOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale; // 本当に欲しいのはoffsetYなので。
+					// offsetYを含めた文字の描画高さがもっとも低くなるときのoffsetYを求める
+					essentialOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
 				}
 
 				hasRubyFragmentDrawInfo = true;
@@ -463,20 +467,10 @@ class Label extends g.CacheableE {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
 
-		/*
-		var minRubyMinusOffsetY: number;
-		if (this.alignTop) {
-			minRubyMinusOffsetY = essentialOffsetY;
-		} else {
-			minRubyMinusOffsetY = 0;
-		}
-		*/
-		var minRubyMinusOffsetY = this.alignTop ? essentialOffsetY : 0; // alignTop指定しない場合は余白を考慮したoffsetY配置を行わない
-
 		return {
 			maxRubyFontSize: maxRubyFontSize,
 			maxRubyGlyphHeightWithOffsetY: maxRubyGlyphHeightWithOffsetY,
-			minRubyMinusOffsetY: minRubyMinusOffsetY,
+			minRubyMinusOffsetY: this.fixMarginTop ? essentialOffsetY : 0,
 			maxRubyGap: maxRubyGap,
 			hasRubyFragmentDrawInfo: hasRubyFragmentDrawInfo
 		};
@@ -616,7 +610,7 @@ class Label extends g.CacheableE {
 			maxGlyphHeightWithOffsetY + rhi.maxRubyGlyphHeightWithOffsetY + rhi.maxRubyGap :
 			maxGlyphHeightWithOffsetY;
 		state.currentLineInfo.minMinusOffsetY = minMinusOffsetY;
-		if (this.alignTop) {
+		if (this.fixMarginTop) {
 			minOffsetY = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
 			state.currentLineInfo.height -= minOffsetY;
 			state.currentLineInfo.minMinusOffsetY += minOffsetY;
@@ -652,24 +646,12 @@ class Label extends g.CacheableE {
 		);
 	}
 
-	//廃棄予定
-	private _calcMinimumBaselineHeight_(font: g.Font): number {
-		var text = "M";
-		if (font instanceof g.BitmapFont) return font.size; // 本当に良いのか若干怪しいがあとでM文字からちゃんと取る
-		var glyphM = font.glyphForCharacter(text.charCodeAt(0)); // _createStringGlyphでも良かった
-		var baselineHeight = font.size - glyphM.offsetY;
-		// console.log("baselineHeight", baselineHeight); // 心配なので出しておく
-		return baselineHeight;
-	}
-
 	private _calcStandardOffsetY(font: g.Font): number {
+		// 標準的な高さを持つグリフとして `M` を利用するが明確な根拠は無い
 		var text = "M";
-		if (font instanceof g.BitmapFont) return 0; // 本当に良いのか若干怪しいがあとでM文字からちゃんと取る
-		var glyphM = font.glyphForCharacter(text.charCodeAt(0)); // _createStringGlyphでも良かった
+		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
 		return glyphM.offsetY;
-
 	}
-
 }
 
 export = Label;

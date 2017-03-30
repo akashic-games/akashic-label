@@ -75,6 +75,13 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	fixLineGap?: boolean;
 
 	/**
+	 * フォントの上端にある余白を描画するかどうか。
+	 * 真の場合、文字の描画内容が崩れない範囲で余白を詰めて描画される。
+	 * 初期値は偽である。
+	 */
+	fixMarginTop?: boolean;
+
+	/**
 	 * ルビを解釈するパーサ。
 	 * 初期値は DefaultRubyParser.ts で定義している parse() 関数である。
 	 * 任意の文法でルビを記述する場合、この値に適切な関数を指定する必要がある。
@@ -85,9 +92,6 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 * ルビのレイアウト設定。
 	 */
 	rubyOptions?: rt.RubyOptions;
-
-	alignTop?: boolean; // 暫定名。あとで直します
-
 }
 
 export = LabelParameterObject;
