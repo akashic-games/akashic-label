@@ -155,8 +155,7 @@ class Label extends g.CacheableE {
 		this.lineGap = param.lineGap || 0;
 		this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
 		this.textColor = param.textColor;
-		this.fixMarginTop = "alignTop" in param ? param.fixMarginTop : false;
-
+		this.fixMarginTop = "fixMarginTop" in param ? param.fixMarginTop : false;
 		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
@@ -455,7 +454,7 @@ class Label extends g.CacheableE {
 					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
 				if (maxEssentialDrawHeight < currentFragmentEssentialDrawHeight) {
 					maxEssentialDrawHeight = currentFragmentEssentialDrawHeight;
-					// offsetYを含めた文字の描画高さがもっとも低くなるときのoffsetYを求める
+					// その行で描画されるルビのうち、もっとも実描画高さが高い文字が持つoffsetYを求める
 					essentialOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
 				}
 
@@ -467,10 +466,12 @@ class Label extends g.CacheableE {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
 
+		var minRubyMinusOffsetY = this.fixMarginTop ? essentialOffsetY : 0;
+
 		return {
 			maxRubyFontSize: maxRubyFontSize,
 			maxRubyGlyphHeightWithOffsetY: maxRubyGlyphHeightWithOffsetY,
-			minRubyMinusOffsetY: this.fixMarginTop ? essentialOffsetY : 0,
+			minRubyMinusOffsetY: minRubyMinusOffsetY,
 			maxRubyGap: maxRubyGap,
 			hasRubyFragmentDrawInfo: hasRubyFragmentDrawInfo
 		};
