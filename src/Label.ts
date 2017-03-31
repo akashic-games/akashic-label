@@ -450,10 +450,10 @@ class Label extends g.CacheableE {
 
 				var rubyFont = (f.rubyFont ? f.rubyFont : this.rubyOptions.rubyFont);
 				var currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
-				var currentFragmentEssentialDrawHeight =
+				var currentFragmentRealDrawHeight =
 					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
-				if (maxRealDrawHeight < currentFragmentEssentialDrawHeight) {
-					maxRealDrawHeight = currentFragmentEssentialDrawHeight;
+				if (maxRealDrawHeight < currentFragmentRealDrawHeight) {
+					maxRealDrawHeight = currentFragmentRealDrawHeight;
 					// その行で描画されるルビのうち、もっとも実描画高さが高い文字が持つoffsetYを求める
 					realOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
 				}
