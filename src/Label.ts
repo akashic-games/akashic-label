@@ -421,8 +421,8 @@ class Label extends g.CacheableE {
 		var maxRubyGlyphHeightWithOffsetY = 0;
 		var maxRubyGap = this.rubyOptions.rubyGap;
 		var hasRubyFragmentDrawInfo = false;
-		var maxEssentialDrawHeight = 0;
-		var essentialOffsetY: number;
+		var maxRealDrawHeight = 0;
+		var realOffsetY: number;
 		for (var i = 0; i < drawInfoArray.length; i++) {
 			var ri = drawInfoArray[i];
 			if (ri instanceof fr.RubyFragmentDrawInfo) {
@@ -452,10 +452,10 @@ class Label extends g.CacheableE {
 				var currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
 				var currentFragmentEssentialDrawHeight =
 					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
-				if (maxEssentialDrawHeight < currentFragmentEssentialDrawHeight) {
-					maxEssentialDrawHeight = currentFragmentEssentialDrawHeight;
+				if (maxRealDrawHeight < currentFragmentEssentialDrawHeight) {
+					maxRealDrawHeight = currentFragmentEssentialDrawHeight;
 					// その行で描画されるルビのうち、もっとも実描画高さが高い文字が持つoffsetYを求める
-					essentialOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
+					realOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
 				}
 
 				hasRubyFragmentDrawInfo = true;
@@ -466,7 +466,7 @@ class Label extends g.CacheableE {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
 
-		var minRubyMinusOffsetY = this.fixMarginTop ? essentialOffsetY : 0;
+		var minRubyMinusOffsetY = this.fixMarginTop ? realOffsetY : 0;
 
 		return {
 			maxRubyFontSize: maxRubyFontSize,
