@@ -79,7 +79,15 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 * 真の場合、文字の描画内容が崩れない範囲で余白を詰めて描画される。
 	 * 初期値は偽である。
 	 */
-	fixMarginTop?: boolean;
+	trimMarginTop?: boolean;
+
+	/**
+	 * `width` プロパティを `this.text` の描画に必要な幅で自動的に更新するかを表す。
+	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
+	 * (`textAlign` は `width` を元に描画位置を調整するため、 `true` の場合左寄せで右寄せでも描画結果が変わらなくなる)
+	 * 初期値は偽である。
+	 */
+	widthAutoAdjust?: boolean;
 
 	/**
 	 * ルビを解釈するパーサ。

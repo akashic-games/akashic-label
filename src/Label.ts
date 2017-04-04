@@ -102,7 +102,15 @@ class Label extends g.CacheableE {
 	 * 初期値は偽である。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
-	fixMarginTop: boolean;
+	trimMarginTop: boolean;
+
+	/**
+	 * `width` プロパティを `this.text` の描画に必要な幅で自動的に更新するかを表す。
+	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
+	 * (`textAlign` は `width` を元に描画位置を調整するため、 `true` の場合左寄せで右寄せでも描画結果が変わらなくなる)
+	 * 初期値は偽である。
+	 */
+	widthAutoAdjust: boolean;
 
 	/**
 	 * ルビを解釈するパーサ。
@@ -133,9 +141,19 @@ class Label extends g.CacheableE {
 	_beforeWidth: number;
 	_beforeRubyEnabled: boolean;
 	_beforeFixLineGap: boolean;
+	_beforeTrimMarginTop: boolean;
+	_beforeWidthAutoAdjust: boolean;
 	_beforeRubyOptions: rp.RubyOptions;
 
 	private _lines: fr.LineInfo[];
+
+	/**
+	 * 自動改行を行う幅。
+	 * widthAutoAdjust が有効の場合、`this.width` は値が不定になるため、
+	 * 代わりに自動改行の幅を定める。
+	 * `this.width` を変更した場合、この値も同じ値に更新される。
+	 */
+	private _lineBreakWidth: number;
 
 	/**
 	 * 各種パラメータを指定して `Label` のインスタンスを生成する。
@@ -150,12 +168,13 @@ class Label extends g.CacheableE {
 		this.bitmapFont = param.bitmapFont;
 		this.font = param.font ? param.font : param.bitmapFont;
 		this.fontSize = param.fontSize;
-		this.width = param.width;
+		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;
 		this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
 		this.textColor = param.textColor;
-		this.fixMarginTop = "fixMarginTop" in param ? param.fixMarginTop : false;
+		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
+		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
 		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
@@ -179,6 +198,8 @@ class Label extends g.CacheableE {
 		this._beforeWidth = undefined;
 		this._beforeRubyEnabled = undefined;
 		this._beforeFixLineGap = undefined;
+		this._beforeTrimMarginTop = undefined;
+		this._beforeWidthAutoAdjust = undefined;
 		this._beforeRubyOptions = {};
 
 		this._invalidateSelf();
@@ -213,7 +234,7 @@ class Label extends g.CacheableE {
 		}
 		if (this.textColor) {
 			renderer.setCompositeOperation(g.CompositeOperation.SourceAtop);
-			renderer.fillRect(0, 0, this.width, this.height, this.textColor);
+			renderer.fillRect(0, 0, this._lineBreakWidth, this.height, this.textColor);
 		}
 		renderer.restore();
 	}
@@ -232,9 +253,9 @@ class Label extends g.CacheableE {
 			case g.TextAlign.Left:
 				return 0;
 			case g.TextAlign.Right:
-				return (this.width - width);
+				return (this._lineBreakWidth - width);
 			case g.TextAlign.Center:
-				return ((this.width - width) / 2);
+				return ((this._lineBreakWidth - width) / 2);
 			default:
 				return 0;
 		}
@@ -265,6 +286,9 @@ class Label extends g.CacheableE {
 			this.rubyOptions.rubyFont = this.rubyOptions.rubyBitmapFont;
 		}
 
+		// this.width がユーザから変更された場合、this._lineBreakWidth は this.width に追従する。
+		if (this._beforeWidth !== this.width) this._lineBreakWidth = this.width;
+
 		if (this._beforeText !== this.text
 		 || this._beforeFontSize !== this.fontSize
 		 || this._beforeFont !== this.font
@@ -273,9 +297,18 @@ class Label extends g.CacheableE {
 		 || this._beforeTextAlign !== this.textAlign
 		 || this._beforeRubyEnabled !== this.rubyEnabled
 		 || this._beforeFixLineGap !== this.fixLineGap
+		 || this._beforeTrimMarginTop !== this.trimMarginTop
+		 || this._beforeWidthAutoAdjust !== this.widthAutoAdjust
 		 || this._isDifferentRubyOptions(this._beforeRubyOptions, this.rubyOptions)
 		 ) {
 			this._updateLines();
+		}
+
+		if (this.widthAutoAdjust) {
+			var arr = this._lines.map((line: fr.LineInfo) => line.width);
+			arr.push(0);
+			// this.widthAutoAdjust が真の場合、 this.width は描画幅に応じてトリミングされる。
+			this.width = Math.ceil(Math.max.apply(Math, arr));
 		}
 
 		var height = this.lineGap * (this._lines.length - 1);
@@ -292,6 +325,8 @@ class Label extends g.CacheableE {
 		this._beforeWidth = this.width;
 		this._beforeRubyEnabled = this.rubyEnabled;
 		this._beforeFixLineGap = this.fixLineGap;
+		this._beforeTrimMarginTop = this.trimMarginTop;
+		this._beforeWidthAutoAdjust = this.widthAutoAdjust;
 		this._beforeRubyOptions.rubyFontSize = this.rubyOptions.rubyFontSize;
 		this._beforeRubyOptions.rubyFont = this.rubyOptions.rubyFont;
 		this._beforeRubyOptions.rubyGap = this.rubyOptions.rubyGap;
@@ -466,7 +501,7 @@ class Label extends g.CacheableE {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
 
-		var minRubyMinusOffsetY = this.fixMarginTop ? realOffsetY : 0;
+		var minRubyMinusOffsetY = this.trimMarginTop ? realOffsetY : 0;
 
 		return {
 			maxRubyFontSize: maxRubyFontSize,
@@ -611,7 +646,7 @@ class Label extends g.CacheableE {
 			maxGlyphHeightWithOffsetY + rhi.maxRubyGlyphHeightWithOffsetY + rhi.maxRubyGap :
 			maxGlyphHeightWithOffsetY;
 		state.currentLineInfo.minMinusOffsetY = minMinusOffsetY;
-		if (this.fixMarginTop) {
+		if (this.trimMarginTop) {
 			minOffsetY = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
 			state.currentLineInfo.height -= minOffsetY;
 			state.currentLineInfo.minMinusOffsetY += minOffsetY;
@@ -635,7 +670,7 @@ class Label extends g.CacheableE {
 
 	private _needLineBreak(state: LineDividingState, width: number): boolean {
 		return (this.lineBreak && width > 0 &&
-		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this.width &&
+		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this._lineBreakWidth &&
 		              state.currentLineInfo.width + state.currentStringDrawInfo.width > 0); // 行頭文字の場合は改行しない
 	}
 
@@ -648,8 +683,8 @@ class Label extends g.CacheableE {
 	}
 
 	private _calcStandardOffsetY(font: g.Font): number {
-		// 標準的な高さを持つグリフとして `M` を利用するが明確な根拠は無い
-		var text = "M";
+		// 標準的な高さを持つグリフとして `X` を利用するが明確な根拠は無い
+		var text = "X";
 		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
 		return glyphM.offsetY;
 	}
