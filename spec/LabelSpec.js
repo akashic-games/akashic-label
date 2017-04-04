@@ -563,7 +563,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign :  g.TextAlign.Left,
+				textAlign:  g.TextAlign.Left,
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -626,7 +626,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign :  g.TextAlign.Left,
+				textAlign:  g.TextAlign.Left,
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -664,7 +664,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign :  g.TextAlign.Left,
+				textAlign:  g.TextAlign.Left,
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -716,7 +716,7 @@ describe("test Label", function() {
 		};
 		state2 = JSON.parse(JSON.stringify(state));
 
-		label._calcStandardOffsetY = function(font) { return -100 };
+		label._calcStandardOffsetY = function(font) { return -100; };
 		label._feedLine(state);
 		// sglyph["97"].height(2) - label.fontsize(10) / label.font.size(50) * _calcStandardOffsetY(-100)
 		expect(state.resultLines[0].height).toBe(22);
