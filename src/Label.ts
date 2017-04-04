@@ -106,9 +106,11 @@ class Label extends g.CacheableE {
 
 	/**
 	 * `width` プロパティを `this.text` の描画に必要な幅で自動的に更新するかを表す。
+	 * `width` プロパティの更新は `this.invalidate()` を呼び出した後のタイミングで行われる。
 	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
 	 * (`textAlign` は `width` を元に描画位置を調整するため、 `true` の場合左寄せで右寄せでも描画結果が変わらなくなる)
 	 * 初期値は偽である。
+	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
 	widthAutoAdjust: boolean;
 

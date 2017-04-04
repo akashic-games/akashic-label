@@ -714,43 +714,8 @@ describe("test Label", function() {
 				]
 			}
 		};
-		// state と全く同じ
-		var state2 = {
-			resultLines: [],
-			currentStringDrawInfo: {
-				text: "",
-				width: 0,
-				glyphs: []
-			},
-			currentLineInfo: {
-				sourceText: "",
-				width: 0,
-				height: 0,
-				minMinusOffsetY: 0,
-				surface: undefined,
-				fragmentDrawInfoArray: [
-					{
-						text: "a",
-						width: 1,
-						glyphs: [
-							{
-								code: 97, // a code
-								x: 0,
-								y: 0,
-								width: 1,
-								height: 2,
-								surface: undefined,
-								offsetX: 3,
-								offsetY: -4,
-								advanceWidth: 5,
-								isSurfaceValid: false,
-								_atlas: undefined
-							}
-						]
-					}
-				]
-			}
-		};
+		state2 = JSON.parse(JSON.stringify(state));
+
 		label._calcStandardOffsetY = function(font) { return -100 };
 		label._feedLine(state);
 		// sglyph["97"].height(2) - label.fontsize(10) / label.font.size(50) * _calcStandardOffsetY(-100)
