@@ -41,6 +41,8 @@ describe("test Label", function() {
 		expect(mlabel.lineGap).toBe(0);
 		expect(mlabel.lineBreak).toBe(true);
 		expect(mlabel.textColor).toBeUndefined();
+		expect(mlabel.widthAutoAdjust).toBe(false);
+		expect(mlabel._lineBreakWidth).toBe(300);
 	});
 
 	it("初期化 - fontSize < 0", function() {
@@ -619,4 +621,143 @@ describe("test Label", function() {
 
 	});
 
+	it("widthAutoAdjust - options", function(){
+		var createLabel = function(text){
+			var mlabel = new Label({
+				scene: runtime.scene,
+				text: text,
+				textAlign :  g.TextAlign.Left,
+				font: bmpfont,
+				fontSize: 10,
+				width: 105,
+				lineBreak: true,
+				widthAutoAdjust: true
+			});
+			return mlabel;
+		};
+		var label = createLabel("thefoxisjumpingoverthelazydog");
+		expect(label.width).toBe(100); // 105以下かつfontSize(10)の倍数の値
+		expect(label._lineBreakWidth).toBe(105);
+		expect(label._lines.length).toBe(3);
+
+		label.text = "thefox";
+		label.invalidate();
+		expect(label.width).toBe(60); // text幅に応じて調整される
+		expect(label._lineBreakWidth).toBe(105); // 変化しない
+		expect(label._lines.length).toBe(1);
+
+		label.text = "thefoxisjumpingoverthelazydog";
+		label.invalidate();
+		expect(label.width).toBe(100); // textを戻した場合描画内容も再現する
+		expect(label._lineBreakWidth).toBe(105);
+		expect(label._lines.length).toBe(3);
+
+		label.width = 205;
+		label.invalidate();
+		expect(label.width).toBe(200); // 205以下かつfontSize(10)の倍数の値
+		expect(label._lineBreakWidth).toBe(205); // this.widthの更新に追従する
+		expect(label._lines.length).toBe(2);
+	});
+
+	it("trimMarginTop - options", function(){
+		var createLabel = function(text){
+			var mlabel = new Label({
+				scene: runtime.scene,
+				text: text,
+				textAlign :  g.TextAlign.Left,
+				font: bmpfont,
+				fontSize: 10,
+				width: 105,
+				lineBreak: false,
+				lineGap: 2,
+				fixLineGap: false,
+				widthAutoAdjust: true,
+				trimMarginTop: true
+			});
+			return mlabel;
+		};
+		var label = createLabel("label");
+		var RubyHeightInfo;
+		var state = {
+			resultLines: [],
+			currentStringDrawInfo: {
+				text: "",
+				width: 0,
+				glyphs: []
+			},
+			currentLineInfo: {
+				sourceText: "",
+				width: 0,
+				height: 0,
+				minMinusOffsetY: 0,
+				surface: undefined,
+				fragmentDrawInfoArray: [
+					{
+						text: "a",
+						width: 1,
+						glyphs: [
+							{
+								code: 97, // a code
+								x: 0,
+								y: 0,
+								width: 1,
+								height: 2,
+								surface: undefined,
+								offsetX: 3,
+								offsetY: -4,
+								advanceWidth: 5,
+								isSurfaceValid: false,
+								_atlas: undefined
+							}
+						]
+					}
+				]
+			}
+		};
+		// state と全く同じ
+		var state2 = {
+			resultLines: [],
+			currentStringDrawInfo: {
+				text: "",
+				width: 0,
+				glyphs: []
+			},
+			currentLineInfo: {
+				sourceText: "",
+				width: 0,
+				height: 0,
+				minMinusOffsetY: 0,
+				surface: undefined,
+				fragmentDrawInfoArray: [
+					{
+						text: "a",
+						width: 1,
+						glyphs: [
+							{
+								code: 97, // a code
+								x: 0,
+								y: 0,
+								width: 1,
+								height: 2,
+								surface: undefined,
+								offsetX: 3,
+								offsetY: -4,
+								advanceWidth: 5,
+								isSurfaceValid: false,
+								_atlas: undefined
+							}
+						]
+					}
+				]
+			}
+		};
+		label._calcStandardOffsetY = function(font) { return -100 };
+		label._feedLine(state);
+		// sglyph["97"].height(2) - label.fontsize(10) / label.font.size(50) * _calcStandardOffsetY(-100)
+		expect(state.resultLines[0].height).toBe(22);
+
+		label.trimMarginTop = false;
+		label._feedLine(state2);
+		expect(state2.resultLines[0].height).toBe(2); // glyph["97"].height(2)
+	});
 });
