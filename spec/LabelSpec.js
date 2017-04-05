@@ -626,7 +626,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign:  g.TextAlign.Left,
+				textAlign: g.TextAlign.Left,
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -664,7 +664,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign:  g.TextAlign.Left,
+				textAlign: g.TextAlign.Left,
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,

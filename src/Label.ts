@@ -105,10 +105,10 @@ class Label extends g.CacheableE {
 	trimMarginTop: boolean;
 
 	/**
-	 * `width` プロパティを `this.text` の描画に必要な幅で自動的に更新するかを表す。
+	 * `width` プロパティを `this.text` の描画に必要な幅の値に自動的に更新するかを表す。
 	 * `width` プロパティの更新は `this.invalidate()` を呼び出した後のタイミングで行われる。
 	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
-	 * (`textAlign` は `width` を元に描画位置を調整するため、 `true` の場合左寄せで右寄せでも描画結果が変わらなくなる)
+	 * (`textAlign` は `_lineBreakWidth` を元に描画位置を調整するため、 `true` の場合左寄せで右寄せでも描画結果が変わらなくなる)
 	 * 初期値は偽である。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
@@ -307,10 +307,8 @@ class Label extends g.CacheableE {
 		}
 
 		if (this.widthAutoAdjust) {
-			var arr = this._lines.map((line: fr.LineInfo) => line.width);
-			arr.push(0);
 			// this.widthAutoAdjust が真の場合、 this.width は描画幅に応じてトリミングされる。
-			this.width = Math.ceil(Math.max.apply(Math, arr));
+			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
 		}
 
 		var height = this.lineGap * (this._lines.length - 1);
@@ -612,7 +610,7 @@ class Label extends g.CacheableE {
 	private _feedLine(state: LineDividingState): void {
 		var glyphScale = this.fontSize / this.font.size;
 
-		var minOffsetY: number;
+		var minOffsetY = Infinity;
 		var minMinusOffsetY = 0;
 		var maxGlyphHeightWithOffsetY = 0;
 		state.currentLineInfo.fragmentDrawInfoArray.forEach(
@@ -623,10 +621,8 @@ class Label extends g.CacheableE {
 							minMinusOffsetY = glyph.offsetY;
 						}
 						// offsetYの一番小さな値を探す
-						if (!minOffsetY) minOffsetY = glyph.offsetY;
-						if (minOffsetY > glyph.offsetY) {
-							minOffsetY = glyph.offsetY;
-						}
+						if (minOffsetY > glyph.offsetY) minOffsetY = glyph.offsetY;
+
 						const heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
 						if (maxGlyphHeightWithOffsetY < heightWithOffsetY) {
 							maxGlyphHeightWithOffsetY = heightWithOffsetY;
@@ -649,9 +645,9 @@ class Label extends g.CacheableE {
 			maxGlyphHeightWithOffsetY;
 		state.currentLineInfo.minMinusOffsetY = minMinusOffsetY;
 		if (this.trimMarginTop) {
-			minOffsetY = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
-			state.currentLineInfo.height -= minOffsetY;
-			state.currentLineInfo.minMinusOffsetY += minOffsetY;
+			var minOffsetYInRange = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
+			state.currentLineInfo.height -= minOffsetYInRange;
+			state.currentLineInfo.minMinusOffsetY += minOffsetYInRange;
 		}
 		state.resultLines.push(state.currentLineInfo);
 		state.currentLineInfo = {
