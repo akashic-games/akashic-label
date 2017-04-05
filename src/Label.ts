@@ -685,8 +685,8 @@ class Label extends g.CacheableE {
 	}
 
 	private _calcStandardOffsetY(font: g.Font): number {
-		// 標準的な高さを持つグリフとして `X` を利用するが明確な根拠は無い
-		var text = "X";
+		// 標準的な高さを持つグリフとして `M` を利用するが明確な根拠は無い
+		var text = "M";
 		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
 		return glyphM.offsetY;
 	}
