@@ -97,6 +97,24 @@ class Label extends g.CacheableE {
 	fixLineGap: boolean;
 
 	/**
+	 * フォントの上端にある余白を描画するかどうか。
+	 * 真の場合、文字の描画内容が崩れない範囲で余白を詰めて描画される。
+	 * 初期値は偽である。
+	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
+	 */
+	trimMarginTop: boolean;
+
+	/**
+	 * `width` プロパティを `this.text` の描画に必要な幅の値に自動的に更新するかを表す。
+	 * `width` プロパティの更新は `this.invalidate()` を呼び出した後のタイミングで行われる。
+	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
+	 * `textAlign` が `TextAlign.Left` 以外かつ、 この値が `true` の場合、描画内容は不定である。
+	 * 初期値は偽である。
+	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
+	 */
+	widthAutoAdjust: boolean;
+
+	/**
 	 * ルビを解釈するパーサ。
 	 * 初期値は DefaultRubyParser.ts で定義している parse() 関数である。
 	 * 任意の文法でルビを記述する場合、この値に適切な関数を指定する必要がある。
@@ -125,9 +143,19 @@ class Label extends g.CacheableE {
 	_beforeWidth: number;
 	_beforeRubyEnabled: boolean;
 	_beforeFixLineGap: boolean;
+	_beforeTrimMarginTop: boolean;
+	_beforeWidthAutoAdjust: boolean;
 	_beforeRubyOptions: rp.RubyOptions;
 
 	private _lines: fr.LineInfo[];
+
+	/**
+	 * 自動改行を行う幅。
+	 * widthAutoAdjust が有効の場合、`this.width` は値が不定になるため、
+	 * 代わりに自動改行の幅を定める。
+	 * `this.width` を変更した場合、この値も同じ値に更新される。
+	 */
+	private _lineBreakWidth: number;
 
 	/**
 	 * 各種パラメータを指定して `Label` のインスタンスを生成する。
@@ -142,12 +170,13 @@ class Label extends g.CacheableE {
 		this.bitmapFont = param.bitmapFont;
 		this.font = param.font ? param.font : param.bitmapFont;
 		this.fontSize = param.fontSize;
-		this.width = param.width;
+		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;
 		this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
 		this.textColor = param.textColor;
-
+		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
+		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
 		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
@@ -171,6 +200,8 @@ class Label extends g.CacheableE {
 		this._beforeWidth = undefined;
 		this._beforeRubyEnabled = undefined;
 		this._beforeFixLineGap = undefined;
+		this._beforeTrimMarginTop = undefined;
+		this._beforeWidthAutoAdjust = undefined;
 		this._beforeRubyOptions = {};
 
 		this._invalidateSelf();
@@ -205,7 +236,7 @@ class Label extends g.CacheableE {
 		}
 		if (this.textColor) {
 			renderer.setCompositeOperation(g.CompositeOperation.SourceAtop);
-			renderer.fillRect(0, 0, this.width, this.height, this.textColor);
+			renderer.fillRect(0, 0, this._lineBreakWidth, this.height, this.textColor);
 		}
 		renderer.restore();
 	}
@@ -224,9 +255,9 @@ class Label extends g.CacheableE {
 			case g.TextAlign.Left:
 				return 0;
 			case g.TextAlign.Right:
-				return (this.width - width);
+				return (this._lineBreakWidth - width);
 			case g.TextAlign.Center:
-				return ((this.width - width) / 2);
+				return ((this._lineBreakWidth - width) / 2);
 			default:
 				return 0;
 		}
@@ -257,6 +288,9 @@ class Label extends g.CacheableE {
 			this.rubyOptions.rubyFont = this.rubyOptions.rubyBitmapFont;
 		}
 
+		// this.width がユーザから変更された場合、this._lineBreakWidth は this.width に追従する。
+		if (this._beforeWidth !== this.width) this._lineBreakWidth = this.width;
+
 		if (this._beforeText !== this.text
 		 || this._beforeFontSize !== this.fontSize
 		 || this._beforeFont !== this.font
@@ -265,9 +299,16 @@ class Label extends g.CacheableE {
 		 || this._beforeTextAlign !== this.textAlign
 		 || this._beforeRubyEnabled !== this.rubyEnabled
 		 || this._beforeFixLineGap !== this.fixLineGap
+		 || this._beforeTrimMarginTop !== this.trimMarginTop
+		 || this._beforeWidthAutoAdjust !== this.widthAutoAdjust
 		 || this._isDifferentRubyOptions(this._beforeRubyOptions, this.rubyOptions)
 		 ) {
 			this._updateLines();
+		}
+
+		if (this.widthAutoAdjust) {
+			// this.widthAutoAdjust が真の場合、 this.width は描画幅に応じてトリミングされる。
+			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
 		}
 
 		var height = this.lineGap * (this._lines.length - 1);
@@ -284,6 +325,8 @@ class Label extends g.CacheableE {
 		this._beforeWidth = this.width;
 		this._beforeRubyEnabled = this.rubyEnabled;
 		this._beforeFixLineGap = this.fixLineGap;
+		this._beforeTrimMarginTop = this.trimMarginTop;
+		this._beforeWidthAutoAdjust = this.widthAutoAdjust;
 		this._beforeRubyOptions.rubyFontSize = this.rubyOptions.rubyFontSize;
 		this._beforeRubyOptions.rubyFont = this.rubyOptions.rubyFont;
 		this._beforeRubyOptions.rubyGap = this.rubyOptions.rubyGap;
@@ -413,6 +456,8 @@ class Label extends g.CacheableE {
 		var maxRubyGlyphHeightWithOffsetY = 0;
 		var maxRubyGap = this.rubyOptions.rubyGap;
 		var hasRubyFragmentDrawInfo = false;
+		var maxRealDrawHeight = 0;
+		var realOffsetY: number;
 		for (var i = 0; i < drawInfoArray.length; i++) {
 			var ri = drawInfoArray[i];
 			if (ri instanceof fr.RubyFragmentDrawInfo) {
@@ -426,14 +471,26 @@ class Label extends g.CacheableE {
 
 				var rubyGlyphScale =
 					(f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize) / (f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size);
-				var maxRubyGlyphHeightWithOffsetYInDrawInfo = Math.max.apply(Math, ri.rubyGlyphs.map(
+
+				var currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
 				);
-				var minRubyMinusOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
-					(glyph: g.Glyph) => (glyph.offsetY < 0) ? glyph.offsetY : 0)
+				var currentMinRubyOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
+					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.offsetY : 0)
 				);
-				if (maxRubyGlyphHeightWithOffsetY < maxRubyGlyphHeightWithOffsetYInDrawInfo * rubyGlyphScale) {
-					maxRubyGlyphHeightWithOffsetY = maxRubyGlyphHeightWithOffsetYInDrawInfo * rubyGlyphScale;
+
+				if (maxRubyGlyphHeightWithOffsetY < currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale) {
+					maxRubyGlyphHeightWithOffsetY = currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale;
+				}
+
+				var rubyFont = (f.rubyFont ? f.rubyFont : this.rubyOptions.rubyFont);
+				var currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
+				var currentFragmentRealDrawHeight =
+					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
+				if (maxRealDrawHeight < currentFragmentRealDrawHeight) {
+					maxRealDrawHeight = currentFragmentRealDrawHeight;
+					// その行で描画されるルビのうち、もっとも実描画高さが高い文字が持つoffsetYを求める
+					realOffsetY = Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) * rubyGlyphScale;
 				}
 
 				hasRubyFragmentDrawInfo = true;
@@ -443,10 +500,13 @@ class Label extends g.CacheableE {
 		if (maxRubyGlyphHeightWithOffsetY === 0) {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
+
+		var minRubyMinusOffsetY = this.trimMarginTop ? realOffsetY : 0;
+
 		return {
 			maxRubyFontSize: maxRubyFontSize,
 			maxRubyGlyphHeightWithOffsetY: maxRubyGlyphHeightWithOffsetY,
-			minRubyMinusOffsetY: minRubyMinusOffsetY * rubyGlyphScale,
+			minRubyMinusOffsetY: minRubyMinusOffsetY,
 			maxRubyGap: maxRubyGap,
 			hasRubyFragmentDrawInfo: hasRubyFragmentDrawInfo
 		};
@@ -550,6 +610,7 @@ class Label extends g.CacheableE {
 	private _feedLine(state: LineDividingState): void {
 		var glyphScale = this.fontSize / this.font.size;
 
+		var minOffsetY = Infinity;
 		var minMinusOffsetY = 0;
 		var maxGlyphHeightWithOffsetY = 0;
 		state.currentLineInfo.fragmentDrawInfoArray.forEach(
@@ -559,6 +620,9 @@ class Label extends g.CacheableE {
 						if (minMinusOffsetY > glyph.offsetY) {
 							minMinusOffsetY = glyph.offsetY;
 						}
+						// offsetYの一番小さな値を探す
+						if (minOffsetY > glyph.offsetY) minOffsetY = glyph.offsetY;
+
 						const heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
 						if (maxGlyphHeightWithOffsetY < heightWithOffsetY) {
 							maxGlyphHeightWithOffsetY = heightWithOffsetY;
@@ -580,6 +644,11 @@ class Label extends g.CacheableE {
 			maxGlyphHeightWithOffsetY + rhi.maxRubyGlyphHeightWithOffsetY + rhi.maxRubyGap :
 			maxGlyphHeightWithOffsetY;
 		state.currentLineInfo.minMinusOffsetY = minMinusOffsetY;
+		if (this.trimMarginTop) {
+			var minOffsetYInRange = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
+			state.currentLineInfo.height -= minOffsetYInRange;
+			state.currentLineInfo.minMinusOffsetY += minOffsetYInRange;
+		}
 		state.resultLines.push(state.currentLineInfo);
 		state.currentLineInfo = {
 			sourceText: "",
@@ -599,7 +668,7 @@ class Label extends g.CacheableE {
 
 	private _needLineBreak(state: LineDividingState, width: number): boolean {
 		return (this.lineBreak && width > 0 &&
-		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this.width &&
+		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this._lineBreakWidth &&
 		              state.currentLineInfo.width + state.currentStringDrawInfo.width > 0); // 行頭文字の場合は改行しない
 	}
 
@@ -609,6 +678,13 @@ class Label extends g.CacheableE {
 				   || ro0.rubyGap !== ro1.rubyGap
 				   || ro0.rubyAlign !== ro1.rubyAlign
 		);
+	}
+
+	private _calcStandardOffsetY(font: g.Font): number {
+		// 標準的な高さを持つグリフとして `M` を利用するが明確な根拠は無い
+		var text = "M";
+		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
+		return glyphM.offsetY;
 	}
 }
 
