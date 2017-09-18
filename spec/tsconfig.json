@@ -1,14 +1,16 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "noLib": true,
+    "declaration": false,
+    "noLib": false,
+	"lib": ["es5"],
     "noImplicitAny": true,
+    "outDir": "lib",
     "module": "commonjs",
-    "declaration": false
+	"types": ["node"]
   },
   "files": [
     "../node_modules/typescript/lib/lib.es6.d.ts",
-    "../typings/index.d.ts",
     "../node_modules/@akashic/akashic-engine/lib/main.d.ts",
     "helpers/customMatchers.ts",
     "helpers/mock.ts",

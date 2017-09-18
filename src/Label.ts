@@ -6,7 +6,7 @@ import dr = require("./DefaultRubyParser");
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
 	maxRubyGlyphHeightWithOffsetY: number;
-	minRubyMinusOffsetY: number,
+	minRubyMinusOffsetY: number;
 	maxRubyGap: number;
 	hasRubyFragmentDrawInfo: boolean;
 }
@@ -397,7 +397,7 @@ class Label extends g.CacheableE {
 
 	// 文字列の等幅描画
 	private _drawStringGlyphs(renderer: g.Renderer, font: g.Font, glyphs: g.Glyph[], fontSize: number,
-		offsetX: number, offsetY: number, margin: number = 0) {
+	                          offsetX: number, offsetY: number, margin: number = 0): void {
 		renderer.save();
 		renderer.translate(offsetX, offsetY);
 		for (var i = 0; i < glyphs.length; i++) {
@@ -416,7 +416,8 @@ class Label extends g.CacheableE {
 	}
 
 	// ルビベースとルビテキストの描画
-	private _drawRubyFragmentDrawInfo(renderer: g.Renderer, rubyDrawInfo: fr.RubyFragmentDrawInfo, rbOffsetY: number, rtOffsetY: number) {
+	private _drawRubyFragmentDrawInfo(renderer: g.Renderer, rubyDrawInfo: fr.RubyFragmentDrawInfo,
+	                                  rbOffsetY: number, rtOffsetY: number): void {
 		var f = rubyDrawInfo.fragment;
 		var rubyFontSize = "rubyFontSize" in f ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
 		var rubyAlign = "rubyAlign" in f ? f.rubyAlign : this.rubyOptions.rubyAlign;
@@ -557,7 +558,7 @@ class Label extends g.CacheableE {
 				}
 				if (this._needLineBreak(state, ri.width)) {
 					this._feedLine(state);
-				};
+				}
 				state.currentLineInfo.fragmentDrawInfoArray.push(ri);
 				state.currentLineInfo.width += ri.width;
 				state.currentLineInfo.sourceText += fragment.text;
@@ -568,8 +569,7 @@ class Label extends g.CacheableE {
 	}
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
-		return Array.prototype.map.call(text,
-			(e: string, index: number, text: string) => {
+		return Array.prototype.map.call(text, (e: string, index: number, text: string) => {
 				return font.glyphForCharacter(text.charCodeAt(index));
 		});
 	}

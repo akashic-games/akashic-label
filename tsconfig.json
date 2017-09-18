@@ -1,21 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES5",
+    "target": "es5",
     "declaration": true,
-    "noLib": true,
+    "noLib": false,
+	"lib": ["es5"],
     "noImplicitAny": true,
     "outDir": "lib",
-    "module": "commonjs"
+    "module": "commonjs",
+	"types": ["node"]
   },
   "files": [
-    "./node_modules/typescript/lib/lib.es6.d.ts",
-    "node_modules/@akashic/akashic-engine/lib/main.d.ts",
-    "./typings/index.d.ts",
-    "src/index.ts",
-    "src/LabelParameterObject.ts",
-    "src/Label.ts",
-    "src/RubyParser.ts",
-    "src/DefaultRubyParser.ts",
-    "src/FragmentDrawInfo.ts"
+    "node_modules/@akashic/akashic-engine/lib/main.d.ts"
+  ],
+  "include": [
+	  "src/**/*.ts"
   ]
 }
