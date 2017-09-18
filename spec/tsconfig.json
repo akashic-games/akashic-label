@@ -1,13 +1,12 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "declaration": false,
     "noLib": false,
-	"lib": ["es5"],
+    "declaration": false,
+    "lib": ["es5"],
     "noImplicitAny": true,
-    "outDir": "lib",
     "module": "commonjs",
-	"types": ["node"]
+    "types": ["node"]
   },
   "files": [
     "../node_modules/typescript/lib/lib.es6.d.ts",

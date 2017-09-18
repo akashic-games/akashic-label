@@ -1,5 +1,0 @@
-{
-  "globalDependencies": {
-	"node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#7ca8add069411b3bde47fad7208706801cde8656"
-  }
-}
