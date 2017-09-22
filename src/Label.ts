@@ -570,7 +570,7 @@ class Label extends g.CacheableE {
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
 		return Array.prototype.map.call(text, (e: string, index: number, text: string) => {
-				return font.glyphForCharacter(text.charCodeAt(index));
+			return font.glyphForCharacter(text.charCodeAt(index));
 		});
 	}
 
