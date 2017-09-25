@@ -34,7 +34,7 @@ export function parse(text: string): rp.Fragment[] {
 			if (headStr.length > 0) {
 				result.push(headStr.replace(/\\{/g, "{").replace(/\\}/g, "}"));
 			}
-			 var parseResult = JSON.parse(rubyStr.replace(/\\/g, "\\\\"));
+			var parseResult = JSON.parse(rubyStr.replace(/\\/g, "\\\\"));
 			if (parseResult.hasOwnProperty("rt") && parseResult.hasOwnProperty("rb")) {
 				parseResult.rt = parseResult.rt.replace(/\\{/g, "{").replace(/\\}/g, "}");
 				parseResult.rb = parseResult.rb.replace(/\\{/g, "{").replace(/\\}/g, "}");

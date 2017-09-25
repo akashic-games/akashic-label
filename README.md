@@ -31,7 +31,7 @@ var al = require("@akashic-extension/akashic-label")
 
 **akashic-label** はTypeScriptで書かれたライブラリであるため、ビルドにはNode.jsが必要です。
 
-`npm run build` によりgulpを使ってビルドできます。
+`npm run build` によりビルドできます。
 
 ```sh
 npm install

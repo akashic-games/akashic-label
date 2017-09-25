@@ -371,13 +371,16 @@ export class ResourceFactory extends g.ResourceFactory {
 	_necessaryRetryCount: number;
 	_delayedAssets: DelayedAsset[];
 
-	constructor(game: g.Game) {
+	constructor() {
 		super();
-		this.game = game;
 		this.scriptContents = {};
 		this.createsDelayedAsset = false;
 		this._necessaryRetryCount = 0;
 		this._delayedAssets = [];
+	}
+
+	init(game: g.Game) {
+		this.game = game;
 	}
 
 	// func が呼び出されている間だけ this._necessaryRetryCount を変更する。
@@ -435,7 +438,9 @@ export class Game extends g.Game {
 	raisedEvents: g.Event[];
 
 	constructor(gameConfiguration: g.GameConfiguration, assetBase?: string, selfId?: string) {
-		super(gameConfiguration, new ResourceFactory(this), assetBase, selfId);
+		const resourceFactory = new ResourceFactory();
+		super(gameConfiguration, resourceFactory, assetBase, selfId);
+		resourceFactory.init(this);
 		this.leftGame = false;
 		this.terminatedGame = false;
 		this.raisedEvents = [];
