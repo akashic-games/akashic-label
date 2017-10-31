@@ -37,8 +37,6 @@
   },
   "files": [
     "lib",
-    "doc",
-    "sample",
     "package.json",
     "README.md",
     "akashic-label.md"
