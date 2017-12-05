@@ -7,7 +7,7 @@ export = function() {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 3;
-	scene.loaded.handle(function() {
+	scene.loaded.add(function() {
 
 		var labels: Label[] = [];
 
@@ -15,13 +15,13 @@ export = function() {
 		var glyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont(
-			scene.assets["mplus"],
-			glyph.map,
-			glyph.width,
-			glyph.height,
-			glyph.missingGlyph
-		);
+		var mplusfont = new g.BitmapFont({
+			src: scene.assets["mplus"],
+			map: glyph.map,
+			defaultGlyphWidth: glyph.width,
+			defaultGlyphHeight: glyph.height,
+			missingGlyph: glyph.missingGlyph
+		});
 
 		var dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
@@ -30,7 +30,12 @@ export = function() {
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		}
-		var dfont = new g.DynamicFont(g.FontFamily.Monospace, 40, scene.game, dhint);
+		var dfont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: 40,
+			hint: dhint
+		});
 
 		// ラベル基本機能
 		var tlabel0 = new Label({
@@ -71,13 +76,13 @@ export = function() {
 		label02.x = game.width / 4;
 		label02.y = y0;
 		label02.touchable = true;
-		label02.update.handle(label02, function(){
+		label02.update.add(function(){
 			if (game.age % rate === 0) {
 				this.textColor = colors[counter02 % colors.length];
 				counter02++;
 				this.invalidate();
 			}
-		})
+		}, label02);
 		scene.append(label02);
 
 		// フォントサイズの変更
@@ -92,13 +97,13 @@ export = function() {
 		label03.x = game.width / 4 * 2;
 		label03.y = y0;
 		label03.touchable = true;
-		label03.update.handle(label03, function(){
+		label03.update.add(function(){
 			if (game.age % rate === 0) {
 				this.fontSize = (counter03 % 6) * 3 + 5;
 				counter03++;
 				this.invalidate();
 			}
-		})
+		}, label03);
 		scene.append(label03);
 
 		// テキスト位置の調整
@@ -155,13 +160,13 @@ export = function() {
 		});
 		label21.y = y2;
 		scene.append(label21);
-		label21.update.handle(label21, function(){
+		label21.update.add(function(){
 			if (game.age % rate === 0) {
 				this.textAlign = aligns21[counter21 % 3];
 				counter21++;
 				this.invalidate();
 			}
-		});
+		}, label21);
 
 		// lineGapを使った行間調整
 		var counter22 = 0;
@@ -175,13 +180,13 @@ export = function() {
 		});
 		label22.y = y2 + 50;
 		label22.touchable = true;
-		label22.update.handle(label22, function(){
+		label22.update.add(function(){
 			if (game.age % rate === 0) {
 				this.lineGap = Math.round(counter22 % 10) - 5;
 				counter22++;
 				this.invalidate();
 			}
-		})
+		}, label22);
 		scene.append(label22);
 
 		// width基準による自動改行
@@ -196,13 +201,13 @@ export = function() {
 		label23.x = 150;
 		label23.y = y2 + 50;;
 		scene.append(label23);
-		label23.update.handle(label23, function(){
+		label23.update.add(function(){
 			if (game.age % rate === 0) {
 				this.width = counter23 % 10 * 10 + 100;
 				counter23;
 				this.invalidate();
 			}
-		})
+		}, label23);
 
 		// 自動改行オフ
 		var label24 = new Label({
@@ -213,14 +218,14 @@ export = function() {
 			width: game.width,
 			lineBreak: false
 		});
-		label24.y = y2+150;
+		label24.y = y2 + 150;
 		label24.touchable = true;
-		label24.update.handle(label24, function(){
+		label24.update.add(function(){
 			if (game.age % rate === 0) {
 				this.lineBreak = !this.lineBreak;
 				this.invalidate();
 			}
-		})
+		}, label24);
 		scene.append(label24);
 
 		var nlabel = new Label({
@@ -233,10 +238,10 @@ export = function() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.handle(nlabel, function(){
+		nlabel.pointDown.add(function(){
 			var scene2 = require("mainScene2")();
 			game.replaceScene(scene2);
-		});
+		}, nlabel);
 		scene.append(nlabel);
 
 		var dlabel = new Label({
@@ -250,15 +255,19 @@ export = function() {
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.handle(dlabel, function(){
+		dlabel.pointDown.add(function(){
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
-					label.rubyOptions.rubyFont = new g.DynamicFont(g.FontFamily.Monospace, 40, scene.game);
+					label.rubyOptions.rubyFont = new g.DynamicFont({
+						game: scene.game,
+						fontFamily: g.FontFamily.Monospace,
+						size: 40
+					});
 					label.invalidate();
 				}
 			});
-		});
+		}, dlabel);
 
 		scene.append(dlabel);
 	});

@@ -1,7 +1,6 @@
 import rt = require("./RubyParser");
 /**
  * `Label` のコンストラクタに渡すことができるパラメータ。
- * 各メンバの詳細は `Label` の同名メンバの説明を参照すること。
  */
 interface LabelParameterObject extends g.CacheableEParameterObject {
 	/**
@@ -11,23 +10,15 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 
 	/**
 	 * 描画に利用されるフォント。
-	 * @deprecated このプロパティは非推奨であり、後方互換性のために存在する。代わりに`font`プロパティを用いるべきである。
 	 */
-	bitmapFont?: g.BitmapFont;
-
-	/**
-	 * 描画に利用されるフォント。
-	 * この値または`bitmapFont`が指定されなければならない。
-	 */
-	font?: g.Font;
+	font: g.Font;
 
 	/**
 	 * フォントサイズ。
 	 * 0 以上の数値でなければならない。
-	 * これは `LabelParameterObject#font` または `LabelParameterObject#bitmapFont` で
-	 * 与えられたフォントを `fontSize` フォントサイズ相当で描画するよう指示する値である。
-	 * 歴史的経緯によりフォントサイズと説明されているが、実際には拡大縮小率を求めるため
-	 * に用いられている。
+	 * これは `LabelParameterObject#font` に与えられたフォントを
+	 * `fontSize` フォントサイズ相当で描画するよう指示する値である。
+	 * 歴史的経緯によりフォントサイズと説明されているが、実際には拡大縮小率を求めるために用いられている。
 	 */
 	fontSize: number;
 
