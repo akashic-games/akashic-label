@@ -6,8 +6,8 @@ akashic-label は、Akashic Engine でルビ文字や複数行のテキスト描
 [sample/ ディレクトリ](./sample/) に本モジュールを使ったサンプルコンテンツが置いてあります。
 具体的な利用例についてはそちらを参照してください。
 
-**注意**: 現在の Akashic Engine(akashic-engine@1.10.1) には、このライブラリと同名の `Label` クラスが存在します ( `g.Label` ) 。
-akashic-label は、Akashic Engine の `g.Label`, `g.MultiLineLabel` の高機能版です。
+**注意**: 現在の Akashic Engine(akashic-engine@1.10.1 以降) には、このライブラリと同名の `Label` クラスが存在します ( `g.Label` ) 。
+akashic-label は、Akashic Engine の `g.Label`, `g.MultiLineLabel` (v2.0.0 で廃止) の高機能版です。
 このドキュメントで断りなく「ラベル」「 `Label` 」と書いてある場合、 akashic-label の `Label` を指します。
 
 ## 準備
@@ -41,7 +41,7 @@ akashic-label は Akashic Engine の `g.Label` と同じインターフェイス
 var label = new al.Label({
     scene: scene,
     text: "Hello!",
-    bitmapFont: bmpfont,
+    font: bmpfont,
     fontSize: 30,
     width: 180
 });
@@ -59,7 +59,7 @@ var text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
 var label = new al.Label({
     scene: scene,
     text: text,
-    bitmapFont: bmpfont,
+    font: bmpfont,
     fontSize: 30,
     width: 200,
     lineBreak: false
@@ -78,7 +78,7 @@ var text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}';
 ### ルビ設定
 
 ルビのスタイルを指定するには、ラベルの `rubyOptions` プロパティを使用します。
-設定項目は `rubyFontSize` 、 `rubyBitmapFont` 、 `rubyGap` 、 `RubyAlign` があります。
+設定項目は `rubyFontSize` 、 `rubyFont` 、 `rubyGap` 、 `RubyAlign` があります。
 それぞれ「ルビのフォントサイズ」「ルビのフォント」「ルビと本文の間隔」「ルビのアライン」を表します。
 
 ```javascript
@@ -86,18 +86,18 @@ var text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
 var label = new al.Label({
     scene: scene,
     text: text,
-    bitmapFont: bmpfont,
+    font: bmpfont,
     fontSize: 30,
     width: 200,
     lineBreak: false,
     rubyOptions: {
         rubyFontSize: 10,
-        rubyBitmapFont: rubyBitmapFont,
+        rubyFont: rubyFont,
         rubyGap: 2,
         rubyAlign: al.RubyAlign.Center
     }
 });
-// サンプルコードにおける `rubyBitmapFont` は、 `g.Bitmapfont` の値とします。
+// サンプルコードにおける `rubyFont` は、 `g.Bitmapfont` の値とします。
 ```
 
 各設定については akashic-label の [APIリファレンス](https://akashic-games.github.io/reference/akashic-label/index.html) 内の `RubyOptions` のページ、または [sample/ ディレクトリ](./sample/) 内のサンプルコードを参照してください。
@@ -136,7 +136,7 @@ akashic-label は自動改行と任意改行をサポートしています。
 var label = new al.Label({
     scene: scene,
     text: "1行目\r2行目",
-    bitmapFont: bmpfont,
+    font: bmpfont,
     fontSize: 30,
     width: 180,
     lineBreak: false

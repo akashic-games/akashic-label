@@ -19,14 +19,20 @@ describe("test Label", function() {
 		var height = 350;
 		var map = {"37564": {"x": 0, "y": 1}};
 		var missingGlyph = {"x": 2, "y": 3};
-		bmpfont = new g.BitmapFont(new mock.ResourceFactory().createImageAsset("testId", "testAssetPath", width, height), map, 50, 50, missingGlyph);
+		bmpfont = new g.BitmapFont({
+			src: new mock.ResourceFactory().createImageAsset("testId", "testAssetPath", width, height),
+			map: map,
+			defaultGlyphWidth: 50,
+			defaultGlyphHeight: 50,
+			missingGlyph: missingGlyph
+		});
 	});
 
 	afterEach(function() {
 	});
 
 	it("初期化", function() {
-        var mlabel = new Label({
+		var mlabel = new Label({
 			scene: runtime.scene,
 			text: "foo",
 			font: bmpfont,
@@ -209,9 +215,9 @@ describe("test Label", function() {
 			rubyFont: bmpfont,
 			rubyGap: 20,
 			rubyAlign: rt.RubyAlign.Center
-		}
+		};
 		mlabel.invalidate();
-			var mlabel2 = new Label({
+		var mlabel2 = new Label({
 			scene: runtime.scene,
 			text: "b",
 			textColor: "red",
@@ -236,9 +242,7 @@ describe("test Label", function() {
 		expect(mlabel.height).toEqual(mlabel2.height);
 		expect(mlabel.lineBreak).toEqual(mlabel2.lineBreak);
 		expect(mlabel.lineGap).toEqual(mlabel2.lineGap);
-		expect(mlabel.rubyOptions).not.toEqual(mlabel2.rubyOptions);
-		expect(mlabel.rubyOptions.rubyFont).toEqual(mlabel2.rubyOptions.rubyFont);
-
+		expect(mlabel.rubyOptions).toEqual(mlabel2.rubyOptions);
 	});
 
 	it("_divideToLines", function(){

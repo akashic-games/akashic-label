@@ -56,5 +56,8 @@
 		"node_modules/@akashic-extension/akashic-label/lib/FragmentDrawInfo.js",
 		"node_modules/@akashic-extension/akashic-label/lib/index.js",
 		"node_modules/@akashic-extension/akashic-label/package.json"
-	]
+	],
+	"environment": {
+		"sandbox-runtime": "2"
+	}
 }

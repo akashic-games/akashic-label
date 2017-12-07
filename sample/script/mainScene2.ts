@@ -7,27 +7,27 @@ module.exports = function() {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 6;
-	scene.loaded.handle(function() {
+	scene.loaded.add(function() {
 
 		// グリフデータの生成
 		var mplusGlyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont(
-			scene.assets["mplus"],
-			mplusGlyph.map,
-			mplusGlyph.width,
-			mplusGlyph.height,
-			mplusGlyph.missingGlyph
-		);
+		var mplusfont = new g.BitmapFont({
+			src: scene.assets["mplus"],
+			map: mplusGlyph.map,
+			defaultGlyphWidth: mplusGlyph.width,
+			defaultGlyphHeight: mplusGlyph.height,
+			missingGlyph: mplusGlyph.missingGlyph
+		});
 		var glyph = JSON.parse((<g.TextAsset>scene.assets["bmpfont-glyph"]).data);
-		var bmpfont = new g.BitmapFont(
-			scene.assets["bmpfont"],
-			glyph.map,
-			glyph.width,
-			glyph.height,
-			glyph.missingGlyph
-		);
+		var bmpfont = new g.BitmapFont({
+			src: scene.assets["bmpfont"],
+			map: glyph.map,
+			defaultGlyphWidth: glyph.width,
+			defaultGlyphHeight: glyph.height,
+			missingGlyph: glyph.missingGlyph
+		});
 
 		var dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
@@ -36,7 +36,12 @@ module.exports = function() {
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		}
-		var dfont = new g.DynamicFont(g.FontFamily.Monospace, 40, scene.game, dhint);
+		var dfont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: 40,
+			hint: dhint
+		});
 
 		// ラベルのルビ基本機能
 		var tlabel0 = new Label({
@@ -88,13 +93,13 @@ module.exports = function() {
 		label03.x = 0;
 		label03.y = y0 + 90;
 		label03.touchable = true;
-		label03.update.handle(label03, function() {
+		label03.update.add(function() {
 			if (game.age % rate === 0) {
 				this.rubyOptions.rubyGap = counter03 % 4 - 5;
 				counter03++;
 				this.invalidate();
 			}
-		});
+		}, label03);
 		scene.append(label03);
 
 		// ルビのフォントサイズ
@@ -111,13 +116,13 @@ module.exports = function() {
 		label04.y = y0 + 90;
 		label04.touchable = true;
 		scene.append(label04);
-		label04.update.handle(label04,function() {
+		label04.update.add(function() {
 			if (game.age % rate === 0) {
 				this.rubyOptions.rubyFontSize = counter04 % 5 + 15;
 				counter04++;
 				this.invalidate();
 			}
-		});
+		}, label04);
 
 		// ルビフォントの指定
 		var label05 = new Label({
@@ -132,7 +137,7 @@ module.exports = function() {
 		label05.y = y0 + 90;
 		label05.touchable = true;
 		scene.append(label05);
-		label05.update.handle(label05,function() {
+		label05.update.add(function() {
 			if (game.age % rate === 0) {
 				if (this.rubyOptions.rubyFont === bmpfont) {
 					this.rubyOptions.rubyFont = mplusfont;
@@ -141,7 +146,7 @@ module.exports = function() {
 				}
 				this.invalidate();
 			}
-		});
+		}, label05);
 
 		// ルビ位置の調整 SpaceAround
 		var y1 = 170;
@@ -178,10 +183,10 @@ module.exports = function() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.handle(nlabel, function() {
+		nlabel.pointDown.add(function() {
 			var scene3 = require("mainScene3")();
 			game.replaceScene(scene3);
-		});
+		}, nlabel);
 		scene.append(nlabel);
 		var dlabel = new Label({
 			scene: scene,
@@ -194,7 +199,7 @@ module.exports = function() {
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.handle(dlabel, function(){
+		dlabel.pointDown.add(function(){
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -202,7 +207,7 @@ module.exports = function() {
 					label.invalidate();
 				}
 			});
-		});
+		}, dlabel);
 		scene.append(dlabel);
 
 	});

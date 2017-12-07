@@ -7,31 +7,31 @@ module.exports = function() {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 2;
-	scene.loaded.handle(function() {
+	scene.loaded.add(function() {
 
 		// グリフデータの生成
 		var mplusGlyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont(
-			scene.assets["mplus"],
-			mplusGlyph.map,
-			mplusGlyph.width,
-			mplusGlyph.height,
-			mplusGlyph.missingGlyph
-		);
+		var mplusfont = new g.BitmapFont({
+			src: scene.assets["mplus"],
+			map: mplusGlyph.map,
+			defaultGlyphWidth: mplusGlyph.width,
+			defaultGlyphHeight: mplusGlyph.height,
+			missingGlyph: mplusGlyph.missingGlyph
+		});
 
 		// グリフデータの生成
 		var glyph = JSON.parse((<g.TextAsset>scene.assets["bmpfont-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var bmpfont = new g.BitmapFont(
-			scene.assets["bmpfont"],
-			glyph.map,
-			glyph.width,
-			glyph.height,
-			glyph.missingGlyph
-		);
+		var bmpfont = new g.BitmapFont({
+			src: scene.assets["bmpfont"],
+			map: glyph.map,
+			defaultGlyphWidth: glyph.width,
+			defaultGlyphHeight: glyph.height,
+			missingGlyph: glyph.missingGlyph
+		});
 
 		var dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
@@ -40,7 +40,12 @@ module.exports = function() {
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		}
-		var dfont = new g.DynamicFont(g.FontFamily.Monospace, 40, scene.game, dhint);
+		var dfont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: 40,
+			hint: dhint
+		});
 
 		// 複数行のルビ機能
 		var tlabel0 = new Label({
@@ -66,16 +71,16 @@ module.exports = function() {
 			fontSize: 20,
 			width: game.width,
 			fixLineGap: false,
-			rubyOptions: {rubyBitmapFont: bmpfont}
+			rubyOptions: {rubyFont: bmpfont}
 		});
 		label01.y = y0;
 		label01.touchable = true;
-		label01.update.handle(label01, function() {
+		label01.update.add(function() {
 			if (game.age % rate === 0) {
 				label01.fixLineGap = !label01.fixLineGap;
 				label01.invalidate();
 			}
-		});
+		}, label01);
 		scene.append(label01);
 
 		// ルビ応用
@@ -129,7 +134,7 @@ module.exports = function() {
 		counter = 0;
 		mlabel.textAlign = g.TextAlign.Left;
 		scene.append(mlabel);
-		mlabel.update.handle(mlabel, function() {
+		mlabel.update.add(function() {
 			// 初期化と待機
 			if (counter === textArray.length) {
 				this.text = "";
@@ -144,14 +149,14 @@ module.exports = function() {
 						counter += 1;
 						this.text += textArray[counter];
 
-					}else{
+					} else {
 						this.text += textArray[counter];
 					}
 					this.invalidate();
 				}
 				counter += 1;
 			}
-		});
+		}, mlabel);
 
 		var dlabel = new Label({
 			scene: scene,
@@ -164,7 +169,7 @@ module.exports = function() {
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.handle(dlabel, function(){
+		dlabel.pointDown.add(function(){
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -172,7 +177,7 @@ module.exports = function() {
 					label.invalidate();
 				}
 			});
-		});
+		}, dlabel);
 		scene.append(dlabel);
 
 	});

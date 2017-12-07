@@ -7,31 +7,31 @@ module.exports = function() {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 3;
-	scene.loaded.handle(function() {
+	scene.loaded.add(function() {
 
 		// グリフデータの生成
 		var mplusGlyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont(
-			scene.assets["mplus"],
-			mplusGlyph.map,
-			mplusGlyph.width,
-			mplusGlyph.height,
-			mplusGlyph.missingGlyph
-		);
+		var mplusfont = new g.BitmapFont({
+			src: scene.assets["mplus"],
+			map: mplusGlyph.map,
+			defaultGlyphWidth: mplusGlyph.width,
+			defaultGlyphHeight: mplusGlyph.height,
+			missingGlyph: mplusGlyph.missingGlyph
+		});
 
 		// グリフデータの生成
 		var glyph = JSON.parse((<g.TextAsset>scene.assets["bmpfont-glyph"]).data);
 
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var bmpfont = new g.BitmapFont(
-			scene.assets["bmpfont"],
-			glyph.map,
-			glyph.width,
-			glyph.height,
-			glyph.missingGlyph
-		);
+		var bmpfont = new g.BitmapFont({
+			src: scene.assets["bmpfont"],
+			map: glyph.map,
+			defaultGlyphWidth: glyph.width,
+			defaultGlyphHeight: glyph.height,
+			missingGlyph: glyph.missingGlyph
+		});
 
 		var dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
@@ -40,7 +40,12 @@ module.exports = function() {
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		}
-		var dfont = new g.DynamicFont(g.FontFamily.Monospace, 40, scene.game, dhint);
+		var dfont = new g.DynamicFont({
+			game: scene.game,
+			fontFamily: g.FontFamily.Monospace,
+			size: 40,
+			hint: dhint
+		});
 
 		// パーサ切替とエスケープ文字
 		var tlabel0 = new Label({
@@ -102,13 +107,13 @@ module.exports = function() {
 		label00.x = 0;
 		label00.y = y0;
 		scene.append(label00);
-		label00.update.handle(label00, function() {
+		label00.update.add(function() {
 			if (game.age % rate === 0) {
 				this.width = counter00 % 20 * 10 + 120;
 				counter00++;
 				this.invalidate();
 			}
-		});
+		}, label00);
 
 		// エスケープ文字の利用方法
 		var label01 = new Label({
@@ -132,10 +137,10 @@ module.exports = function() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.handle(nlabel, function() {
+		nlabel.pointDown.add(function() {
 			var scene3 = require("mainScene5")();
 			game.replaceScene(scene3);
-		});
+		}, nlabel);
 		scene.append(nlabel);
 
 		var dlabel = new Label({
@@ -149,7 +154,7 @@ module.exports = function() {
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.handle(dlabel, function(){
+		dlabel.pointDown.add(function(){
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -157,7 +162,7 @@ module.exports = function() {
 					label.invalidate();
 				}
 			});
-		});
+		}, dlabel);
 		scene.append(dlabel);
 
 	});

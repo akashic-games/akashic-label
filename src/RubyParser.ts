@@ -5,12 +5,6 @@ export interface RubyOptions {
 	rubyFontSize?: number;
 
 	/**
-	 * ルビのビットマップフォント。
-	 * @deprecated このプロパティは非推奨であり、後方互換性のために存在する。代わりに`rubyFont`プロパティを用いるべきである。
-	 */
-	rubyBitmapFont?: g.BitmapFont;
-
-	/**
 	 * ルビのフォント。
 	 */
 	rubyFont?: g.Font;

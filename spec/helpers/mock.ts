@@ -155,6 +155,20 @@ export class Renderer extends g.Renderer {
 			}
 		});
 	}
+
+	setTransform(matrix: number[]): void {
+		this.methodCallHistoryWithParams.push({
+			methodName: "setTransform",
+			params: { matrix }
+		});
+	}
+
+	setOpacity(opacity: number): void {
+		this.methodCallHistoryWithParams.push({
+			methodName: "setOpacity",
+			params: { opacity }
+		});
+	}
 }
 
 class Surface extends g.Surface {
@@ -167,6 +181,10 @@ class Surface extends g.Surface {
 		var r = new Renderer();
 		this.createdRenderer = r;
 		return r;
+	}
+
+	isPlaying(): boolean {
+		return false;
 	}
 }
 
@@ -282,8 +300,9 @@ export class DelayedImageAsset extends ImageAsset implements DelayedAsset {
 class AudioAsset extends g.AudioAsset {
 	_failureController: LoadFailureController;
 
-	constructor(necessaryRetryCount: number, id: string, assetPath: string, duration: number, system: g.AudioSystem) {
-		super(id, assetPath, duration, system);
+	constructor(necessaryRetryCount: number, id: string, assetPath: string, duration: number,
+	            system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint) {
+		super(id, assetPath, duration, system, loop, hint);
 		this._failureController = new LoadFailureController(necessaryRetryCount);
 	}
 
@@ -346,7 +365,7 @@ class ScriptAsset extends g.ScriptAsset {
 			// 特にスクリプトの内容指定がないケース:
 			// ScriptAssetは任意の値を返してよいが、シーンを記述したスクリプトは
 			// シーンを返す関数を返すことを期待するのでここでは関数を返しておく
-			return env.module.exports = function () { return new g.Scene(env.game); };
+			return env.module.exports = function () { return new g.Scene({ game: env.game }); };
 
 		} else {
 			var prefix = "(function(exports, require, module, __filename, __dirname) {";
@@ -415,8 +434,17 @@ export class ResourceFactory extends g.ResourceFactory {
 		}
 	}
 
-	createAudioAsset(id: string, assetPath: string, duration: number, system: g.AudioSystem): g.AudioAsset {
-		return new AudioAsset(this._necessaryRetryCount, id, assetPath, duration, system);
+	createVideoAsset(id: string, assetPath: string, width: number, height: number,
+	                 system: g.VideoSystem, loop: boolean, useRealSize: boolean): g.VideoAsset {
+		throw new Error("not implemented");
+	}
+
+	createAudioAsset(id: string, assetPath: string, duration: number, system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint): g.AudioAsset {
+		return new AudioAsset(this._necessaryRetryCount, id, assetPath, duration, system, loop, hint);
+	}
+
+	createAudioPlayer(system: g.AudioSystem): g.AudioPlayer {
+		throw new Error("not implemented");
 	}
 
 	createTextAsset(id: string, assetPath: string): g.TextAsset {
@@ -429,6 +457,12 @@ export class ResourceFactory extends g.ResourceFactory {
 
 	createSurface(width: number, height: number): g.Surface {
 		return new Surface(width, height);
+	}
+
+	createGlyphFactory(fontFamily: g.FontFamily | string | (g.FontFamily | string)[],
+	                   fontSize: number, baselineHeight?: number, fontColor?: string,
+	                   strokeWidth?: number, strokeColor?: string, strokeOnly?: boolean, fontWeight?: g.FontWeight): g.GlyphFactory {
+		throw new Error("not implemented");
 	}
 }
 
@@ -464,6 +498,18 @@ export class Game extends g.Game {
 
 	saveSnapshot(snapshot: any): void {
 		// do nothing.
+	}
+
+	addEventFilter(filter: g.EventFilter): void {
+		throw new Error("not implemented");
+	}
+
+	removeEventFilter(filter: g.EventFilter): void {
+		throw new Error("not implemented");
+	}
+
+	raiseTick(events?: g.Event[]): void {
+		throw new Error("not implemented");
 	}
 }
 
