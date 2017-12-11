@@ -22,7 +22,7 @@
     "tslint": "^5.4.3"
   },
   "dependencies": {
-    "@akashic-extension/akashic-label": "0.3.3",
+    "@akashic-extension/akashic-label": "0.3.6",
     "@akashic/akashic-cli": "^1.0.8",
     "@akashic/akashic-sandbox": "^0.10.1"
   }
