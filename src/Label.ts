@@ -511,20 +511,24 @@ class Label extends g.CacheableE {
 			if (typeof fragment === "string") {
 				var text = fragment.replace(/\r\n|\n/g, "\r");
 
-				var textArray: string[] = text.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g) || [];
-				console.log("textArray", textArray);
-
-				for (var j = 0; j < textArray.length; j++) {
-					if (textArray[j] === "\r") {
+				for (var j = 0; j < text.length; j++) {
+					if (text[j] === "\r") {
 						this._tryPushCurrentStringDrawInfo(state);
 						this._feedLine(state);
 					} else {
-						var code = g.Util.charCodeAt(textArray[j], 0);
-						var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
-						console.log("code:str", code, str);
+						var code = g.Util.charCodeAt(text[j], 0);
+						if (! code) continue;
 
-						// var glyph = this.font.glyphForCharacter(str.charCodeAt(0));
 						var glyph = this.font.glyphForCharacter(code);
+						if (! glyph) {
+							var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
+							this.game().logger.warn(
+								"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
+								"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
+							);
+							continue;
+						}
+
 						var glyphScale = this.fontSize / this.font.size;
 						var glyphWidth = glyph.advanceWidth * glyphScale;
 						if (glyphWidth <= 0) {
@@ -534,7 +538,7 @@ class Label extends g.CacheableE {
 							this._tryPushCurrentStringDrawInfo(state);
 							this._feedLine(state);
 						}
-						this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, str);
+						this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, text[j]);
 					}
 				}
 				this._tryPushCurrentStringDrawInfo(state);
