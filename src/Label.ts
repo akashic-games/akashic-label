@@ -516,7 +516,19 @@ class Label extends g.CacheableE {
 						this._tryPushCurrentStringDrawInfo(state);
 						this._feedLine(state);
 					} else {
-						var glyph = this.font.glyphForCharacter(text[j].charCodeAt(0));
+						var code = g.Util.charCodeAt(text[j], 0);
+						if (! code) continue;
+
+						var glyph = this.font.glyphForCharacter(code);
+						if (! glyph) {
+							var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
+							this.game().logger.warn(
+								"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
+								"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
+							);
+							continue;
+						}
+
 						var glyphScale = this.fontSize / this.font.size;
 						var glyphWidth = glyph.advanceWidth * glyphScale;
 						if (glyphWidth <= 0) {
@@ -548,9 +560,23 @@ class Label extends g.CacheableE {
 	}
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
-		return Array.prototype.map.call(text, (e: string, index: number, text: string) => {
-			return font.glyphForCharacter(text.charCodeAt(index));
-		});
+		var glyphs: g.Glyph[] = [];
+		for (var i = 0; i < text.length; i++) {
+			var code = g.Util.charCodeAt(text[i], 0);
+			if (! code) continue;
+
+			var glyph = this.font.glyphForCharacter(code);
+			if (! glyph) {
+				var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
+				this.game().logger.warn(
+					"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
+					"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
+				);
+				continue;
+			}
+			glyphs.push(glyph);
+		}
+		return glyphs;
 	}
 
 	private _createRubyFragmentDrawInfo(fragment: rp.RubyFragment): fr.RubyFragmentDrawInfo {
