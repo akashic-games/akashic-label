@@ -8,6 +8,6 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@akashic-extension/akashic-label": "0.3.3"
+    "@akashic-extension/akashic-label": "0.3.6"
   }
 }
