@@ -122,6 +122,18 @@ module.exports = function() {
 		label01.y = y0 + 170;
 		scene.append(label01);
 
+		// サロゲート文字
+		var label01 = new Label({
+			scene: scene,
+			text: 'サロゲート文字\r𩸽{"rb": "𩸽𩸽𩸽", "rt": "𩸽𩸽𩸽"}',
+			font: mplusfont,
+			fontSize: 15,
+			width: 200
+		});
+		label01.x = 10;
+		label01.y = y0 + 210;
+		scene.append(label01);
+
 		var nlabel = new Label({
 			scene: scene,
 			text: "［次＞＞］",
