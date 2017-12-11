@@ -561,7 +561,7 @@ class Label extends g.CacheableE {
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
 		var glyphs: g.Glyph[] = [];
-		for (var i = 0; i< text.length; i++) {
+		for (var i = 0; i < text.length; i++) {
 			var code = g.Util.charCodeAt(text[i], 0);
 			if (! code) continue;
 
