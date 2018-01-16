@@ -516,7 +516,7 @@ class Label extends g.CacheableE {
 						this._tryPushCurrentStringDrawInfo(state);
 						this._feedLine(state);
 					} else {
-						var code = g.Util.charCodeAt(text[j], 0);
+						var code = g.Util.charCodeAt(text, j);
 						if (! code) continue;
 
 						var glyph = this.font.glyphForCharacter(code);
@@ -562,7 +562,7 @@ class Label extends g.CacheableE {
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
 		var glyphs: g.Glyph[] = [];
 		for (var i = 0; i < text.length; i++) {
-			var code = g.Util.charCodeAt(text[i], 0);
+			var code = g.Util.charCodeAt(text, i);
 			if (! code) continue;
 
 			var glyph = this.font.glyphForCharacter(code);
