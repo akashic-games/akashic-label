@@ -691,32 +691,23 @@ class Label extends g.CacheableE {
 	private _addCharacterToCurrentStringDrawInfo(index: number, state: LineDividingState, useLineBreakRule: boolean): void {
 		var currentText = (state.currentFragment as string).replace(/\r\n|\n/g, "\r");
 		if (currentText[index] === "\r") {
-			console.log("find r");
 
 			if (this._needLineBreak(state, 0) && !state.currentLinePreventLineBreak &&
 				!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
-				console.log("_applyLineBreakRule r1", this._calcLineBreakPosition(state));
 				this._applyLineBreakRule(index, state);
-				// this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
 				return;
 			} else if (!state.currentLinePreventLineBreak && this._needFixLineBreakByRule(state)) { // この行で改行はないはずなのでcurrentLinePreventLineBreakを見る
-				console.log("_applyLineBreakRule r2", this._calcLineBreakPosition(state));				
 				let result = this._calcLineBreakPosition(state);
 				let diff = result.correctLineBreakPosition - result.indexPosition;
 				let diffWidth = diff + this._calcStandardOffsetY(this.font);
-				//if (this._needLineBreak(state, diffWidth)) {
-					console.log("_applyLineBreakRule r22", this._calcLineBreakPosition(state));
-					this._applyLineBreakRule(index, state);
-					// this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
-					return;
-				//}
+				this._applyLineBreakRule(index, state);
+				return;
 			}
 
 			this._tryPushCurrentStringDrawInfo(state);
 			this._feedLine(state);
 
 			state.currentLinePreventLineBreak = false;
-			console.log("currentLinePreventLineBreak: _addCharacterToCurrentStringDrawInfo", false);
 		} else {
 			var code = g.Util.charCodeAt(currentText, index);
 			if (! code) return;
@@ -737,15 +728,12 @@ class Label extends g.CacheableE {
 				return;
 			}
 			if (this._needLineBreak(state, glyphWidth) && !state.currentLinePreventLineBreak) {
-				console.log("_needLineBreak", state.currentLineInfo);
 				if (!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
-					console.log("_applyLineBreakRule");
 					this._applyLineBreakRule(index, state);
 					this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
 					return;
 				} else {
 					this._tryPushCurrentStringDrawInfo(state);
-					console.log("call feedLine in _addCharacterToCurrentStringDrawInfo, linebreakcheck");
 					this._feedLine(state);
 				}
 			}
@@ -796,7 +784,6 @@ class Label extends g.CacheableE {
 			state.currentLinePreventLineBreak = true;
 		} else {
 			// 巻き戻し改行
-			// currentLineInfo再構築中はcurrentFragmentを上書きするので保持
 			var servedCurrentFragment = state.currentFragment;
 
 			// currentLineInfoからcurrentStringDrawInfoまで含めたFragmentsを生成する
@@ -809,9 +796,9 @@ class Label extends g.CacheableE {
 				}
 			});
 			var newCurrentLineFragments: Fragment[] = Array.prototype.concat.apply([], tmpFragments);
-			newCurrentLineFragments.splice(pos.correctLineBreakPosition + 1, 0, "\r"); // 禁則処理が期待する位置に改行記号を追加する
+			newCurrentLineFragments.splice(pos.correctLineBreakPosition + 1, 0, "\r");
 			console.log("[test", newCurrentLineFragments);
-			state.currentLinePreventLineBreak = true; // 同一行内で短くなるので改行記号以前に自動改行が割り込むことはない
+			state.currentLinePreventLineBreak = true;
 
 			// currentLineInfoを再構築する
 			state.currentLineInfo = {
@@ -824,7 +811,6 @@ class Label extends g.CacheableE {
 			};
 			// currentStringDrawInfo は初期化済
 			for (var i = 0; i < newCurrentLineFragments.length; i++) {
-				console.log("fort");
 				state.currentFragment = newCurrentLineFragments[i];
 				this._addFragmentToState(state, false);
 			}

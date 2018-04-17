@@ -729,4 +729,136 @@ describe("test Label", function() {
 		label._feedLine(state2);
 		expect(state2.resultLines[0].height).toBe(2); // glyph["97"].height(2)
 	});
+
+	it("line break rules - 初期化", function() {
+		expect( function() {
+			new Label({
+				scene: runtime.scene,
+				text: "foobar",
+				font: bmpfont,
+				fontSize: 10,
+				width: 100,
+				lineBreak: false,
+				lineGap: 2,
+				textAlign: g.TextAlign.Left,
+				lineBreakRule: (fragments, index) => index
+			});
+			expect(mlabel.lineBreakRule).toEqual((fragments, index) => index);
+		}).not.toThrowError("AssertionError");
+	});
+
+	it("line break rules - before text", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: "abcdefghijk",
+			font: bmpfont,
+			fontSize: 10,
+			width: 100,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments.join("")[index] === "j") {
+					return index - 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe("abcdefghi");
+		expect(label._lines[1].sourceText).toBe("jk");
+	});
+
+	it("line break rules - after text", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: "abcdefghijk",
+			font: bmpfont,
+			fontSize: 10,
+			width: 90,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments.join("")[index] === "i") {
+					return index + 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe("abcdefghij");
+		expect(label._lines[1].sourceText).toBe("k");
+	});
+
+	it("line break rules - before ruby", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: 'abcdefg{"rb": "hij", "rt": "hij"}klmn',
+			font: bmpfont,
+			fontSize: 10,
+			width: 100,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments.join("")[index] === "k") {
+					return index - 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefg{"rb": "hij", "rt": "hij"}');
+		label.width = 90;
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefg');
+	});
+
+	it("line break rules - after ruby", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: 'abcdefghij{"rb": "klmn", "rt": "klm"}no',
+			font: bmpfont,
+			fontSize: 10,
+			width: 100,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments.join("")[index] === "j") {
+					return index + 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefghij');
+	});
+
+	it("line break rules - linebreak", function() {
+		var label = new Label({
+			scene: runtime.scene,
+			text: 'abcdefghij\rk',
+			font: bmpfont,
+			fontSize: 10,
+			width: 100,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments.join("")[index] === "j") {
+					return index - 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefghi');
+	});
 });
