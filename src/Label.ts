@@ -2,6 +2,7 @@ import LabelParameterObject = require("./LabelParameterObject");
 import rp = require("./RubyParser");
 import fr = require("./FragmentDrawInfo");
 import dr = require("./DefaultRubyParser");
+import { Fragment } from "./index";
 
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
@@ -11,6 +12,11 @@ interface RubyHeightInfo {
 	hasRubyFragmentDrawInfo: boolean;
 }
 
+interface CalcLineBreakResult {
+	correctLineBreakPosition: number;
+	indexPosition: number;
+}
+
 /**
  * 描画情報の計算時、作業中の行の状態を管理するインターフェイスの定義。
  */
@@ -18,6 +24,10 @@ interface LineDividingState {
 	resultLines: fr.LineInfo[];
 	currentStringDrawInfo: fr.StringDrawInfo;
 	currentLineInfo: fr.LineInfo;
+	/** 行幅による自動改行を一時的に抑制するかどうか */
+	currentLinePreventLineBreak: boolean;
+	/** 処理中のFragment */
+	currentFragment: Fragment;
 }
 
 /**
@@ -128,6 +138,8 @@ class Label extends g.CacheableE {
 	 */
 	rubyOptions: rp.RubyOptions;
 
+	lineBreakRule?: (text: rp.Fragment[], index: number) => number;
+
 	_beforeText: string;
 	_beforeFont: g.Font;
 	_beforeLineBreak: boolean;
@@ -169,6 +181,7 @@ class Label extends g.CacheableE {
 		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
+		this.lineBreakRule = "lineBreakRule" in param ? param.lineBreakRule : undefined;
 
 		if (!param.rubyOptions) {
 			param.rubyOptions = {};
@@ -313,7 +326,8 @@ class Label extends g.CacheableE {
 	}
 
 	private _updateLines(): void {
-		var fragments = this.rubyEnabled ? this.rubyParser(this.text) : [this.text];
+		var text = this.text.replace(/\r\n|\n/g, "\r");
+		var fragments = this.rubyEnabled ? this.rubyParser(text) : [text];
 		var undrawnLineInfos = this._divideToLines(fragments);
 		var lines: fr.LineInfo[] = [];
 		var hasNotChanged = this._beforeFontSize === this.fontSize
@@ -503,60 +517,40 @@ class Label extends g.CacheableE {
 				height: 0,
 				minMinusOffsetY: 0,
 				surface: undefined
-			}
+			},
+			currentLinePreventLineBreak: false,
+			currentFragment: undefined
 		};
+		console.log("currentLinePreventLineBreak: _divideToLines", false);
 
 		for (var i = 0; i < fragmentArray.length; i++) {
-			var fragment = fragmentArray[i];
-			if (typeof fragment === "string") {
-				var text = fragment.replace(/\r\n|\n/g, "\r");
-
-				for (var j = 0; j < text.length; j++) {
-					if (text[j] === "\r") {
-						this._tryPushCurrentStringDrawInfo(state);
-						this._feedLine(state);
-					} else {
-						var code = g.Util.charCodeAt(text, j);
-						if (! code) continue;
-
-						var glyph = this.font.glyphForCharacter(code);
-						if (! glyph) {
-							var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
-							this.game().logger.warn(
-								"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
-								"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
-							);
-							continue;
-						}
-
-						var glyphScale = this.fontSize / this.font.size;
-						var glyphWidth = glyph.advanceWidth * glyphScale;
-						if (glyphWidth <= 0) {
-							continue;
-						}
-						if (this._needLineBreak(state, glyphWidth)) {
-							this._tryPushCurrentStringDrawInfo(state);
-							this._feedLine(state);
-						}
-						this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, text[j]);
-					}
-				}
-				this._tryPushCurrentStringDrawInfo(state);
-			} else {
-				var ri = this._createRubyFragmentDrawInfo(fragment);
-				if (ri.width <= 0) {
-					continue;
-				}
-				if (this._needLineBreak(state, ri.width)) {
-					this._feedLine(state);
-				}
-				state.currentLineInfo.fragmentDrawInfoArray.push(ri);
-				state.currentLineInfo.width += ri.width;
-				state.currentLineInfo.sourceText += fragment.text;
-			}
+			console.log("currentFragment in _divideToLines", fragmentArray[i]);
+			state.currentFragment = fragmentArray[i];
+			this._addFragmentToState(state, true);
 		}
 		this._feedLine(state); // 行末ではないが、状態をflushするため改行処理を呼ぶ
 		return state.resultLines;
+	}
+
+	private _addFragmentToState(state: LineDividingState, useLineBreakRule: boolean): void {
+		if (typeof state.currentFragment === "string") {
+			// var text = state.currentFragment.replace(/\r\n|\n/g, "\r");
+			for (var i = 0; i < state.currentFragment.length; i++) {
+				this._addCharacterToCurrentStringDrawInfo(i, state, useLineBreakRule);
+			}
+			this._tryPushCurrentStringDrawInfo(state);
+		} else {
+			var ri = this._createRubyFragmentDrawInfo(state.currentFragment);
+			if (ri.width <= 0) {
+				return;
+			}
+			if (this._needLineBreak(state, ri.width)) {
+				this._feedLine(state);
+			}
+			state.currentLineInfo.fragmentDrawInfoArray.push(ri);
+			state.currentLineInfo.width += ri.width;
+			state.currentLineInfo.sourceText += state.currentFragment.text;
+		}
 	}
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
@@ -663,6 +657,8 @@ class Label extends g.CacheableE {
 			minMinusOffsetY: 0,
 			surface: undefined
 		};
+		state.currentLinePreventLineBreak = false;
+		console.log("currentLinePreventLineBreak: _feedLine2", false);
 	}
 
 	private _addToCurrentStringDrawInfo(state: LineDividingState, width: number, glyph: g.Glyph, character: string): void {
@@ -690,6 +686,150 @@ class Label extends g.CacheableE {
 		var text = "M";
 		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
 		return glyphM.offsetY;
+	}
+
+	private _addCharacterToCurrentStringDrawInfo(index: number, state: LineDividingState, useLineBreakRule: boolean): void {
+		var currentText = (state.currentFragment as string).replace(/\r\n|\n/g, "\r");
+		if (currentText[index] === "\r") {
+			console.log("find r");
+
+			if (this._needLineBreak(state, 0) && !state.currentLinePreventLineBreak &&
+				!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
+				console.log("_applyLineBreakRule r1", this._calcLineBreakPosition(state));
+				this._applyLineBreakRule(index, state);
+				// this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
+				return;
+			} else if (!state.currentLinePreventLineBreak && this._needFixLineBreakByRule(state)) { // この行で改行はないはずなのでcurrentLinePreventLineBreakを見る
+				console.log("_applyLineBreakRule r2", this._calcLineBreakPosition(state));				
+				let result = this._calcLineBreakPosition(state);
+				let diff = result.correctLineBreakPosition - result.indexPosition;
+				let diffWidth = diff + this._calcStandardOffsetY(this.font);
+				//if (this._needLineBreak(state, diffWidth)) {
+					console.log("_applyLineBreakRule r22", this._calcLineBreakPosition(state));
+					this._applyLineBreakRule(index, state);
+					// this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
+					return;
+				//}
+			}
+
+			this._tryPushCurrentStringDrawInfo(state);
+			this._feedLine(state);
+
+			state.currentLinePreventLineBreak = false;
+			console.log("currentLinePreventLineBreak: _addCharacterToCurrentStringDrawInfo", false);
+		} else {
+			var code = g.Util.charCodeAt(currentText, index);
+			if (! code) return;
+
+			var glyph = this.font.glyphForCharacter(code);
+			if (! glyph) {
+				var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
+				this.game().logger.warn(
+					"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
+					"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
+				);
+				return;
+			}
+
+			var glyphScale = this.fontSize / this.font.size;
+			var glyphWidth = glyph.advanceWidth * glyphScale;
+			if (glyphWidth <= 0) {
+				return;
+			}
+			if (this._needLineBreak(state, glyphWidth) && !state.currentLinePreventLineBreak) {
+				console.log("_needLineBreak", state.currentLineInfo);
+				if (!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
+					console.log("_applyLineBreakRule");
+					this._applyLineBreakRule(index, state);
+					this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
+					return;
+				} else {
+					this._tryPushCurrentStringDrawInfo(state);
+					console.log("call feedLine in _addCharacterToCurrentStringDrawInfo, linebreakcheck");
+					this._feedLine(state);
+				}
+			}
+			this._addToCurrentStringDrawInfo(state, glyphWidth, glyph, currentText[index]);
+		}
+	}
+
+	/** 禁則処理から正しい改行位置を導出する */
+	private _calcLineBreakPosition (state: LineDividingState): CalcLineBreakResult {
+		var tmpFragments = state.currentLineInfo.fragmentDrawInfoArray.map((fragment) => {
+			if (fragment instanceof fr.StringDrawInfo) {
+				return fragment.text.split("");
+			} else {
+				return (fragment as fr.RubyFragmentDrawInfo).fragment;
+			}
+		});
+		var currentLineFragments: Fragment[] = Array.prototype.concat.apply([], tmpFragments);
+		var currentLineFragmentsLength = currentLineFragments.length; // currentLineに登録された文字とルビの配列
+		var currentLineFragmentsWithCurrentFragment = currentLineFragments.concat(state.currentStringDrawInfo.text.split("")); // 今の行のtext
+		var indexPosition = currentLineFragmentsLength + state.currentStringDrawInfo.text.length - 1; // 予定している改行位置
+		var correctLineBreakPosition = this.lineBreakRule(currentLineFragmentsWithCurrentFragment, indexPosition); // 外部ルールが期待する改行位置
+		return {
+			correctLineBreakPosition,
+			indexPosition
+		};
+	}
+
+	/** 禁則処理に応じた修正が必要か判定する */
+	private _needFixLineBreakByRule(state: LineDividingState): boolean {
+		if (!this.lineBreakRule) return false;
+		var result = this._calcLineBreakPosition(state);
+		return result.correctLineBreakPosition !== result.indexPosition;
+	}
+
+	/** stateのcurrent系プロパティを禁則処理的に正しい構造に再構築する */
+	private _applyLineBreakRule(index: number, state: LineDividingState): void {
+		var pos = this._calcLineBreakPosition(state);
+		var diff = pos.correctLineBreakPosition - pos.indexPosition;
+
+		if (diff === 0) {
+			// do nothing
+		} else if (diff > 0) {
+			// 先送り改行
+			var tmpCurrentFragmentArray = (state.currentFragment as string).split("");
+			var insertPosition = index + diff;
+			tmpCurrentFragmentArray.splice(insertPosition, 0, "\r").join("");
+			state.currentFragment =  tmpCurrentFragmentArray.join("");
+			state.currentLinePreventLineBreak = true;
+		} else {
+			// 巻き戻し改行
+			// currentLineInfo再構築中はcurrentFragmentを上書きするので保持
+			var servedCurrentFragment = state.currentFragment;
+
+			// currentLineInfoからcurrentStringDrawInfoまで含めたFragmentsを生成する
+			this._tryPushCurrentStringDrawInfo(state);
+			var tmpFragments = state.currentLineInfo.fragmentDrawInfoArray.map((fragment) => {
+				if (fragment instanceof fr.StringDrawInfo) {
+					return fragment.text.split("");
+				} else {
+					return (fragment as fr.RubyFragmentDrawInfo).fragment;
+				}
+			});
+			var newCurrentLineFragments: Fragment[] = Array.prototype.concat.apply([], tmpFragments);
+			newCurrentLineFragments.splice(pos.correctLineBreakPosition + 1, 0, "\r"); // 禁則処理が期待する位置に改行記号を追加する
+			console.log("[test", newCurrentLineFragments);
+			state.currentLinePreventLineBreak = true; // 同一行内で短くなるので改行記号以前に自動改行が割り込むことはない
+
+			// currentLineInfoを再構築する
+			state.currentLineInfo = {
+				sourceText: "",
+				fragmentDrawInfoArray: [],
+				width: 0,
+				height: 0,
+				minMinusOffsetY: 0,
+				surface: undefined
+			};
+			// currentStringDrawInfo は初期化済
+			for (var i = 0; i < newCurrentLineFragments.length; i++) {
+				console.log("fort");
+				state.currentFragment = newCurrentLineFragments[i];
+				this._addFragmentToState(state, false);
+			}
+			state.currentFragment = servedCurrentFragment;
+		}
 	}
 }
 
