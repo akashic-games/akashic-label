@@ -544,29 +544,17 @@ class Label extends g.CacheableE {
 		}
 	}
 
-	private _addRubyToCurrentLineInfo(state: LineDividingState, ri: RubyFragmentDrawInfo, useLineBreakRule: boolean) {
+	private _addRubyToCurrentLineInfo(state: LineDividingState, ri: RubyFragmentDrawInfo, useLineBreakRule: boolean): void {
 		if (typeof state.currentFragment === "string") return; // 型合わせ
-		if (ri.width <= 0) {
-			return;
-		}
+		if (ri.width <= 0) return;
 
-
-		var needLineBreak = this._needLineBreak(state, ri.width) && !state.currentLinePreventLineBreak;
-		if (needLineBreak) {
-			if (!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
-				this._applyLineBreakRule(0, state);
-				state.currentLineInfo.fragmentDrawInfoArray.push(ri);
-				state.currentLineInfo.width += ri.width;
-				state.currentLineInfo.sourceText += state.currentFragment.text;
-				return;
-			} else {
-				this._feedLine(state);
-			}
+		if (this._needLineBreak(state, ri.width) && !state.currentLinePreventLineBreak) {
+			this._feedLine(state);
 		}
 		state.currentLineInfo.fragmentDrawInfoArray.push(ri);
 		state.currentLineInfo.width += ri.width;
 		state.currentLineInfo.sourceText += state.currentFragment.text;
-	};
+	}
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
 		var glyphs: g.Glyph[] = [];
@@ -711,9 +699,6 @@ class Label extends g.CacheableE {
 				this._applyLineBreakRule(index, state);
 				return;
 			} else if (!state.currentLinePreventLineBreak && this._needFixLineBreakByRule(state)) { // この行で改行はないはずなのでcurrentLinePreventLineBreakを見る
-				let result = this._calcLineBreakPosition(state);
-				let diff = result.correctLineBreakPosition - result.indexPosition;
-				let diffWidth = diff + this._calcStandardOffsetY(this.font);
 				this._applyLineBreakRule(index, state);
 				return;
 			}
@@ -786,7 +771,6 @@ class Label extends g.CacheableE {
 	private _applyLineBreakRule(index: number, state: LineDividingState): void {
 		var pos = this._calcLineBreakPosition(state);
 		var diff = pos.correctLineBreakPosition - pos.indexPosition;
-		console.log(state.currentFragment);
 		if (diff === 0) {
 			// do nothing
 		} else if (diff > 0) {
