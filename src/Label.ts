@@ -551,9 +551,17 @@ class Label extends g.CacheableE {
 		}
 
 
-		const needLineBreak = this._needLineBreak(state, ri.width) && !state.currentLinePreventLineBreak;
-		if (this._needLineBreak(state, ri.width) && !state.currentLinePreventLineBreak) {
-			this._feedLine(state);
+		var needLineBreak = this._needLineBreak(state, ri.width) && !state.currentLinePreventLineBreak;
+		if (needLineBreak) {
+			if (!!this.lineBreakRule && useLineBreakRule && this._needFixLineBreakByRule(state)) {
+				this._applyLineBreakRule(0, state);
+				state.currentLineInfo.fragmentDrawInfoArray.push(ri);
+				state.currentLineInfo.width += ri.width;
+				state.currentLineInfo.sourceText += state.currentFragment.text;
+				return;
+			} else {
+				this._feedLine(state);
+			}
 		}
 		state.currentLineInfo.fragmentDrawInfoArray.push(ri);
 		state.currentLineInfo.width += ri.width;
@@ -629,7 +637,7 @@ class Label extends g.CacheableE {
 						// offsetYの一番小さな値を探す
 						if (minOffsetY > glyph.offsetY) minOffsetY = glyph.offsetY;
 
-						const heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
+						var heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
 						if (maxGlyphHeightWithOffsetY < heightWithOffsetY) {
 							maxGlyphHeightWithOffsetY = heightWithOffsetY;
 						}
@@ -674,7 +682,7 @@ class Label extends g.CacheableE {
 	}
 
 	private _needLineBreak(state: LineDividingState, width: number): boolean {
-		const result = (this.lineBreak && width > 0 &&
+		var result = (this.lineBreak && width > 0 &&
 		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this._lineBreakWidth &&
 					  state.currentLineInfo.width + state.currentStringDrawInfo.width > 0); // 行頭文字の場合は改行しない
 		return result;
