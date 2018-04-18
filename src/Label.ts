@@ -2,8 +2,6 @@ import LabelParameterObject = require("./LabelParameterObject");
 import rp = require("./RubyParser");
 import fr = require("./FragmentDrawInfo");
 import dr = require("./DefaultRubyParser");
-import { Fragment } from "./index";
-import { RubyFragmentDrawInfo } from "./FragmentDrawInfo";
 
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
@@ -28,7 +26,7 @@ interface LineDividingState {
 	/** 行幅による自動改行を一時的に抑制するかどうか */
 	currentLinePreventLineBreak: boolean;
 	/** 処理中のFragment */
-	currentFragment: Fragment;
+	currentFragment: rp.Fragment;
 }
 
 /**
@@ -544,7 +542,7 @@ class Label extends g.CacheableE {
 		}
 	}
 
-	private _addRubyToCurrentLineInfo(state: LineDividingState, ri: RubyFragmentDrawInfo, useLineBreakRule: boolean): void {
+	private _addRubyToCurrentLineInfo(state: LineDividingState, ri: fr.RubyFragmentDrawInfo, useLineBreakRule: boolean): void {
 		if (typeof state.currentFragment === "string") return; // 型合わせ
 		if (ri.width <= 0) return;
 
@@ -749,7 +747,7 @@ class Label extends g.CacheableE {
 				return (fragment as fr.RubyFragmentDrawInfo).fragment;
 			}
 		});
-		var currentLineFragments: Fragment[] = Array.prototype.concat.apply([], tmpFragments);
+		var currentLineFragments: rp.Fragment[] = Array.prototype.concat.apply([], tmpFragments);
 		var currentLineFragmentsLength = currentLineFragments.length; // currentLineに登録された文字とルビの配列
 		var currentLineFragmentsWithCurrentFragment = currentLineFragments.concat(state.currentStringDrawInfo.text.split("")); // 今の行のtext
 		var indexPosition = currentLineFragmentsLength + state.currentStringDrawInfo.text.length - 1; // 予定している改行位置
@@ -796,7 +794,7 @@ class Label extends g.CacheableE {
 					return (fragment as fr.RubyFragmentDrawInfo).fragment;
 				}
 			});
-			var newCurrentLineFragments: Fragment[] = Array.prototype.concat.apply([], tmpFragments);
+			var newCurrentLineFragments: rp.Fragment[] = Array.prototype.concat.apply([], tmpFragments);
 			newCurrentLineFragments.splice(pos.correctLineBreakPosition + 1, 0, "\r");
 			state.currentLinePreventLineBreak = true;
 
