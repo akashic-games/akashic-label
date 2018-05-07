@@ -292,9 +292,9 @@ class Label extends g.CacheableE {
 			this._updateLines();
 		}
 
-		if (this.widthAutoAdjust) {
-			// this.widthAutoAdjust が真の場合、 this.width は描画幅に応じてトリミングされる。
-			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
+		if (this.widthAutoAdjust || !!this.lineBreakRule) {
+			// this.widthAutoAdjust が真の場合、または禁則処理によって描画幅が this.width より広くなった場合、 this.width は描画幅に応じてトリミングされる。
+			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
 		}
 
 		var height = this.lineGap * (this._lines.length - 1);
@@ -524,6 +524,7 @@ class Label extends g.CacheableE {
 		for (var i = 0; i < fragmentArray.length; i++) {
 			this._addFragmentToState(state, fragmentArray, i);
 		}
+		this._flushCurrentStringDrawInfo(state);
 		this._feedLine(state); // 行末ではないが、状態をflushするため改行処理を呼ぶ
 		return state.resultLines;
 	}
@@ -574,8 +575,8 @@ class Label extends g.CacheableE {
 			if (this._needBreakLine(state, ri.width)) {
 				this._breakLine(state, fragments, index);
 			}
-			state.currentLineInfo.fragmentDrawInfoArray.push(ri);
 			state.currentLineInfo.width += ri.width;
+			state.currentLineInfo.fragmentDrawInfoArray.push(ri);
 			state.currentLineInfo.sourceText += fragment.text;
 		}
 	}
@@ -716,7 +717,7 @@ class Label extends g.CacheableE {
 	/** stateのcurrent系プロパティを禁則処理的に正しい構造に再構築する */
 	private _breakLine(state: LineDividingState, fragments: rp.Fragment[], index: number): void {
 		if (!this.lineBreakRule) {
-			this._flushCurrentStringDrawInfo(state);			
+			this._flushCurrentStringDrawInfo(state);
 			this._feedLine(state);
 			return;
 		}
@@ -756,11 +757,9 @@ class Label extends g.CacheableE {
 						var droppedDrawInfoText = lastDrawInfo.text.substring(lastDrawInfo.text.length + diff);
 						lastDrawInfo.text = lastDrawInfo.text.substring(0, lastDrawInfo.text.length + diff);
 
-						droppedFragmentDrawInfoArray.push({
-							text: droppedDrawInfoText,
-							width: droppedDrawInfoWidth,
-							glyphs: droppedGlyphs
-						});
+						droppedFragmentDrawInfoArray.push(new fr.StringDrawInfo(
+							droppedDrawInfoText, droppedDrawInfoWidth, droppedGlyphs
+						));
 						diff = 0;
 					}
 				}
