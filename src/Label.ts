@@ -2,7 +2,6 @@ import LabelParameterObject = require("./LabelParameterObject");
 import rp = require("./RubyParser");
 import fr = require("./FragmentDrawInfo");
 import dr = require("./DefaultRubyParser");
-import { Fragment } from "./index";
 
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
