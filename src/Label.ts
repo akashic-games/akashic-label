@@ -2,7 +2,6 @@ import LabelParameterObject = require("./LabelParameterObject");
 import rp = require("./RubyParser");
 import fr = require("./FragmentDrawInfo");
 import dr = require("./DefaultRubyParser");
-import { type } from "os";
 import { Fragment } from "./index";
 
 interface RubyHeightInfo {
@@ -326,7 +325,8 @@ class Label extends g.CacheableE {
 	private _updateLines(): void {
 		var text = this.text.replace(/\r\n|\n/g, "\r"); // ユーザのパーサに適応した後にも揃えるが、渡す前に正規化しておく
 		var fragments = this.rubyEnabled ? this.rubyParser(text) : [text];
-		fragments = this._flatmap<rp.Fragment, rp.Fragment>(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+		fragments =
+			this._flatmap<rp.Fragment, rp.Fragment>(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
 
 		var undrawnLineInfos = this._divideToLines(fragments);
 		var lines: fr.LineInfo[] = [];
@@ -558,7 +558,7 @@ class Label extends g.CacheableE {
 			if (! glyph) return;
 
 			var glyphScale = this.fontSize / this.font.size;
-			var glyphWidth = glyph.advanceWidth * glyphScale;				
+			var glyphWidth = glyph.advanceWidth * glyphScale;
 
 			if (this._needBreakLine(state, glyphWidth)) {
 				this._breakLine(state, fragments, index);
@@ -571,7 +571,7 @@ class Label extends g.CacheableE {
 			if (ri.width <= 0) return;
 
 			this._flushCurrentStringDrawInfo(state);
-			
+
 			if (this._needBreakLine(state, ri.width)) {
 				this._breakLine(state, fragments, index);
 			}
@@ -725,7 +725,7 @@ class Label extends g.CacheableE {
 		var correctLineBreakPosition = this.lineBreakRule(fragments, index); // 外部ルールが期待する改行位置
 		var diff = correctLineBreakPosition - index;
 		if (diff === 0) {
-			this._flushCurrentStringDrawInfo(state);			
+			this._flushCurrentStringDrawInfo(state);
 			this._feedLine(state);
 		} else if (diff > 0) {
 			// 先送り改行
@@ -777,7 +777,7 @@ class Label extends g.CacheableE {
 
 			var sourceText = state.currentLineInfo.sourceText;
 			state.currentLineInfo.sourceText = sourceText.substr(0, sourceText.length - droppedSourceText.length);
-			
+
 			this._feedLine(state);
 
 			state.currentLineInfo.fragmentDrawInfoArray = droppedFragmentDrawInfoArray;
