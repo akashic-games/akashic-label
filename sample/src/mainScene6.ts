@@ -6,7 +6,7 @@ module.exports = function() {
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 3;
+	var rate = game.fps / 2;
 	scene.loaded.add(function() {
 
 		// グリフデータの生成
@@ -47,17 +47,35 @@ module.exports = function() {
 			hint: dhint
 		});
 
-		var counter = 0;		
-		var text = "「これ」と「それ」と「あれ」と「どれ」と「これ」と「それ」と「あれ」と「どれ」と「これ」と「それ」と「あれ」と「どれ」と「これ」と「それ」と「あれ」と「どれ」";
-		var sampleRule = function (text: Fragment[], index: number) {
-			text = (text as string[]);
-			var joinedText = text.join("");
-			const target = joinedText[index];
+		var tlabel0 = new Label({
+			scene: scene,
+			text: "行末の禁則処理",
+			font: mplusfont,
+			fontSize: 30,
+			width: game.width,
+			textAlign: g.TextAlign.Center
+		});
+		tlabel0.x = 0;
+		scene.append(tlabel0);
+
+		var counter = 0;
+
+		var text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
+		var sampleRule = function (fragments: Fragment[], index: number) {
+			// text = (text as string[]);
+			// var joinedText = text.join("");
+			const target = fragments[index];
 				if (target === "」") {
 					return index + 1;
 				} else if (target === "「") {
 					return index - 1;
 				} else {
+					var before = fragments[index-1];
+					if (!!before && before === "」") {
+						return index;
+					} else if (!!before && before === "「") {
+						return index - 1;
+					}
 					return index;
 				}
 		}
@@ -65,30 +83,32 @@ module.exports = function() {
 			scene: scene,
 			text: text,
 			font: mplusfont,
-			fontSize: 14,
+			fontSize: 15,
 			textAlign: g.TextAlign.Left,
 			width: game.width / 4,
 			lineBreak: true,
-			widthAutoAdjust: true,
 			lineBreakRule: sampleRule
 		});
 		lblabel.y = 40;
 		scene.append(lblabel);
 		lblabel.update.add(function() {
 			if (game.age % rate === 0) {
-				this.width = counter % 20 * 10 + 120;
-				counter++;
+				this.width += 5;
+				if (this.width > game.width) this.width = 100;
+				//this.width = counter % 20 * 5 + 120;
+				//counter++;
 				this.invalidate();
 			}
 		}, lblabel);
 
-		var text = '「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"どれ","rb":"どれ"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"どれ","rb":"どれ"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"どれ","rb":"どれ"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"どれ","rb":"どれ"}」と';
+
+		var text = '「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
+			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
+			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
+			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」';
 		var sampleRule = function (fragments: Fragment[], index: number) {
-			/*
-			text = text.map((e) => {
+			
+			var text = fragments.map((e) => {
 				if (e instanceof String) {
 					return e;
 				} else {
@@ -96,32 +116,38 @@ module.exports = function() {
 				}
 			});
 			var joinedText = text.join("");
-			*/
+			
 			const target = fragments[index];
-				if (target === "」") {
-					return index + 1;
-				} else if (target === "「") {
-					return index - 1;
-				} else {
+			if (target === "」") {
+				return index + 1;
+			} else if (target === "「") {
+				return index - 1;
+			} else {
+				var before = fragments[index-1];
+				if (!!before && before === "」") {
 					return index;
+				} else if (!!before && before === "「") {
+					return index - 1;
 				}
+				return index;
+			}
 		}
 		var lblabel2 = new Label({
 			scene: scene,
 			text: text,
 			font: mplusfont,
-			fontSize: 14,
+			fontSize: 15,
 			textAlign: g.TextAlign.Left,
 			width: game.width / 4,
 			lineBreak: true,
 			widthAutoAdjust: true,
 			lineBreakRule: sampleRule
 		});
-		lblabel2.y = 160;
+		lblabel2.y = 190;
 		scene.append(lblabel2);
 		lblabel2.update.add(function() {
 			if (game.age % rate === 0) {
-				this.width = counter % 20 * 10 + 120;
+				this.width = counter % 20 * 5 + 120;
 				counter++;
 				this.invalidate();
 			}
@@ -129,7 +155,7 @@ module.exports = function() {
 
 		var nlabel = new Label({
 			scene: scene,
-			text: "［次＞＞］",
+			text: "［最初＞＞］",
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width
@@ -155,11 +181,11 @@ module.exports = function() {
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
 		dlabel.pointDown.add(function(){
-			scene.children.forEach((child: g.E) => {
-				if (child instanceof Label) {
-					child.font = dfont;
-					child.rubyOptions.rubyFont = dfont;
-					child.invalidate();
+			scene.children.forEach((label) => {
+				if (label instanceof Label) {
+					label.font = dfont;
+					label.rubyOptions.rubyFont = dfont;
+					label.invalidate();
 				}
 			});
 		}, dlabel);

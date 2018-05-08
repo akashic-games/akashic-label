@@ -59,7 +59,6 @@ module.exports = function() {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-
 		// ルビと改行
 		var y0 = 40;
 
