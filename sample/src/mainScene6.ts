@@ -62,8 +62,6 @@ module.exports = function() {
 
 		var text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
 		var sampleRule = function (fragments: Fragment[], index: number) {
-			// text = (text as string[]);
-			// var joinedText = text.join("");
 			const target = fragments[index];
 				if (target === "」") {
 					return index + 1;
@@ -95,12 +93,9 @@ module.exports = function() {
 			if (game.age % rate === 0) {
 				this.width += 5;
 				if (this.width > game.width) this.width = 100;
-				//this.width = counter % 20 * 5 + 120;
-				//counter++;
 				this.invalidate();
 			}
 		}, lblabel);
-
 
 		var text = '「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +

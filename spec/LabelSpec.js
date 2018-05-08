@@ -54,7 +54,7 @@ describe("test Label", function() {
 			return index;
 		}
 	}
-	/*
+
 	it("初期化", function() {
 		var mlabel = new Label({
 			scene: runtime.scene,
@@ -268,7 +268,7 @@ describe("test Label", function() {
 		expect(mlabel.lineGap).toEqual(mlabel2.lineGap);
 		expect(mlabel.rubyOptions).toEqual(mlabel2.rubyOptions);
 	});
-	*/
+
 
 	it("_divideToLines", function(){
 		var createLabel = function(text){
