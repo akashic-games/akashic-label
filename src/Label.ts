@@ -290,8 +290,10 @@ class Label extends g.CacheableE {
 			this._updateLines();
 		}
 
-		if (this.widthAutoAdjust || !!this.lineBreakRule) {
+		if (this.widthAutoAdjust) {
 			// this.widthAutoAdjust が真の場合、または禁則処理によって描画幅が this.width より広くなった場合、 this.width は描画幅に応じてトリミングされる。
+			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
+		} else if (!!this.lineBreakRule) {
 			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
 		}
 
@@ -530,14 +532,16 @@ class Label extends g.CacheableE {
 
 	private _addFragmentToState(state: LineDividingState, fragments: rp.Fragment[], index: number): void {
 		var fragment = fragments[index];
+
+		if (state.reservedLineBreakPosition !== null) {
+			state.reservedLineBreakPosition -= 1;
+		}
 		if (state.reservedLineBreakPosition === 0) {
 			this._flushCurrentStringDrawInfo(state);
 			this._feedLine(state);
 			state.reservedLineBreakPosition = null;
 		}
-		if (state.reservedLineBreakPosition !== null) {
-			state.reservedLineBreakPosition -= 1;
-		}
+
 
 		if (typeof fragment === "string" && fragment === "\r") {
 			/*
