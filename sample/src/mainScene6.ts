@@ -65,8 +65,6 @@ module.exports = function() {
 			const target = fragments[index];
 				if (target === "」") {
 					return index + 1;
-				} else if (target === "「") {
-					return index - 1;
 				} else {
 					var before = fragments[index-1];
 					if (!!before && before === "」") {
@@ -115,8 +113,6 @@ module.exports = function() {
 			const target = fragments[index];
 			if (target === "」") {
 				return index + 1;
-			} else if (target === "「") {
-				return index - 1;
 			} else {
 				var before = fragments[index-1];
 				if (!!before && before === "」") {
