@@ -83,6 +83,7 @@ module.exports = function() {
 			textAlign: g.TextAlign.Left,
 			width: game.width / 4,
 			lineBreak: true,
+			widthAutoAdjust: true,
 			lineBreakRule: sampleRule
 		});
 		lblabel.y = 40;

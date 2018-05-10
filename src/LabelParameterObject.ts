@@ -95,12 +95,9 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 
 	/**
 	 * 禁則処理の挙動を指定する関数。
-	 * @param fragments その行に含まれる予定のフラグメント
-	 * @param index その行で予定されている改行位置
-	 * @returns 禁則処理を適用した改行位置
 	 *
 	 */
-	lineBreakRule?: (fragments: rt.Fragment[], index: number) => number;
+	lineBreakRule?: rt.LineBreakRule;
 }
 
 export = LabelParameterObject;

@@ -130,7 +130,10 @@ class Label extends g.CacheableE {
 	 */
 	rubyOptions: rp.RubyOptions;
 
-	lineBreakRule?: (text: rp.Fragment[], index: number) => number;
+	/**
+	 * 禁則処理の挙動を指定する関数。
+	 */
+	lineBreakRule: rp.LineBreakRule;
 
 	_beforeText: string;
 	_beforeFont: g.Font;
@@ -243,6 +246,17 @@ class Label extends g.CacheableE {
 		super.destroy();
 	}
 
+	/**
+	 * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のめそっどをオーバーライドする
+	 */
+	calclateCacheSize(): g.CommonSize {
+		const maxWidth = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
+		return {
+			width: maxWidth,
+			height: this.height
+		};
+	}
+
 	_offsetX(width: number): number {
 		switch (this.textAlign) {
 			case g.TextAlign.Left:
@@ -293,8 +307,6 @@ class Label extends g.CacheableE {
 		if (this.widthAutoAdjust) {
 			// this.widthAutoAdjust が真の場合、または禁則処理によって描画幅が this.width より広くなった場合、 this.width は描画幅に応じてトリミングされる。
 			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
-		} else if (!!this.lineBreakRule) {
-			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
 		}
 
 		var height = this.lineGap * (this._lines.length - 1);
@@ -319,15 +331,12 @@ class Label extends g.CacheableE {
 		this._beforeRubyOptions.rubyAlign = this.rubyOptions.rubyAlign;
 	}
 
-	private _flatmap<T, U> (arr: T[], func: (e: T) => (U | U[])): U[] {
-		return Array.prototype.concat.apply([], arr.map(func));
-	}
-
 	private _updateLines(): void {
-		var text = this.text.replace(/\r\n|\n/g, "\r"); // ユーザのパーサに適応した後にも揃えるが、渡す前に正規化しておく
-		var fragments = this.rubyEnabled ? this.rubyParser(text) : [text];
+		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
+		var fragments = this.rubyEnabled ? this.rubyParser( this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
+		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
-			this._flatmap<rp.Fragment, rp.Fragment>(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => (typeof f === "string") ? f.replace(/\r\n|\n/g, "\r").split("") : f);
 
 		var undrawnLineInfos = this._divideToLines(fragments);
 		var lines: fr.LineInfo[] = [];
@@ -534,14 +543,13 @@ class Label extends g.CacheableE {
 		var fragment = fragments[index];
 
 		if (state.reservedLineBreakPosition !== null) {
-			state.reservedLineBreakPosition -= 1;
+			state.reservedLineBreakPosition--;
 		}
 		if (state.reservedLineBreakPosition === 0) {
 			this._flushCurrentStringDrawInfo(state);
 			this._feedLine(state);
 			state.reservedLineBreakPosition = null;
 		}
-
 
 		if (typeof fragment === "string" && fragment === "\r") {
 			/*
@@ -696,10 +704,9 @@ class Label extends g.CacheableE {
 	}
 
 	private _needBreakLine(state: LineDividingState, width: number): boolean {
-		var result = (this.lineBreak && width > 0 && state.reservedLineBreakPosition === null &&
-		              state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this._lineBreakWidth &&
-					  state.currentLineInfo.width + state.currentStringDrawInfo.width > 0); // 行頭文字の場合は改行しない
-		return result;
+		return (this.lineBreak && width > 0 && state.reservedLineBreakPosition === null &&
+			state.currentLineInfo.width + state.currentStringDrawInfo.width + width > this._lineBreakWidth &&
+			state.currentLineInfo.width + state.currentStringDrawInfo.width > 0); // 行頭文字の場合は改行しない
 	}
 
 	private _isDifferentRubyOptions(ro0: rp.RubyOptions, ro1: rp.RubyOptions): boolean {

@@ -37,6 +37,9 @@ export interface RubyFragment extends RubyOptions {
 	text: string;
 }
 
+/**
+ * 文字とルビに分解されたtext。文字は必ず1文字ずつに分解される。
+ */
 export type Fragment = string | RubyFragment;
 
 export type RubyParser = (text: string) => Fragment[];
@@ -50,4 +53,17 @@ export enum RubyAlign {
 	 * rb幅に合わせてrtの字間を揃える。
 	 */
 	SpaceAround
+}
+
+/**
+ * 禁則処理の挙動を指定する関数。
+ * @param fragments その行に含まれる予定のフラグメント
+ * @param index その行で予定されている改行位置
+ * @returns 禁則処理を適用した改行位置処理を適用した改行位置
+ *
+ */
+export type LineBreakRule = (fragments: Fragment[], index: number) => number;
+
+export function flatmap<T, U> (arr: T[], func: (e: T) => (U | U[])): U[] {
+	return Array.prototype.concat.apply([], arr.map(func));
 }

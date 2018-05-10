@@ -169,6 +169,19 @@ export class Renderer extends g.Renderer {
 			params: { opacity }
 		});
 	}
+
+	_getImageData(sx: number, sy: number, sw: number, sh: number): g.ImageData {
+		this.methodCallHistoryWithParams.push({
+			methodName: "_getImageData"
+		});
+		return null;
+	}
+
+	_putImageData(imageData: ImageData, dx: number, dy: number, dirtyX?: number, dirtyY?: number, dirtyWidth?: number, dirtyHeight?: number): void {
+		this.methodCallHistoryWithParams.push({
+			methodName: "_putImageData"
+		});	
+	};
 }
 
 class Surface extends g.Surface {

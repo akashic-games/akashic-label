@@ -286,7 +286,7 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
-			fragments = label._flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
@@ -607,7 +607,7 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
-			fragments = label._flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
