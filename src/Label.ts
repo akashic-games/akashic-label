@@ -250,6 +250,9 @@ class Label extends g.CacheableE {
 	 * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のメソッドをオーバーライドする
 	 */
 	calculateCacheSize(): g.CommonSize {
+		// TODO: 最大値の候補に this.width を使用するのは textAlign が g.Center か g.Right の場合に描画に必要なキャッシュサイズを確保するためであり、
+		// 最大行幅に対して this.width が大きい場合、余分なキャッシュ領域を確保することになる。
+		// これは g.CacheableE にキャッシュ描画位置を調整する cacheOffsetX を導入することで解決される。
 		const maxWidth = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
 		return {
 			width: maxWidth,
@@ -333,7 +336,7 @@ class Label extends g.CacheableE {
 
 	private _updateLines(): void {
 		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
-		var fragments = this.rubyEnabled ? this.rubyParser( this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
+		var fragments = this.rubyEnabled ? this.rubyParser(this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
 		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
 			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => (typeof f === "string") ? f.replace(/\r\n|\n/g, "\r").split("") : f);
