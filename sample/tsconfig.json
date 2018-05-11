@@ -13,6 +13,7 @@
     "script/mainScene2.ts",
     "script/mainScene3.ts",
     "script/mainScene4.ts",
-    "script/mainScene5.ts"
+	"script/mainScene5.ts",
+	"script/mainScene6.ts"
   ]
 }

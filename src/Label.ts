@@ -172,7 +172,6 @@ class Label extends g.CacheableE {
 		if (!param.font && !param.bitmapFont) {
 			throw g.ExceptionFactory.createAssertionError("Label#constructor: 'font' or 'bitmapFont' must be given to LabelParameterObject");
 		}
-
 		super(param);
 		this.text = param.text;
 		this.bitmapFont = param.bitmapFont;
