@@ -26,7 +26,7 @@ interface LineDividingState {
  * 複数行のテキストを描画するエンティティ。
  * 文字列内の"\r\n"、"\n"、"\r"を区切りとして改行を行う。
  * また、自動改行が有効な場合はエンティティの幅に合わせて改行を行う。
- * 本クラスの利用にはg.Fontが必要となる。
+ * 本クラスの利用にはg.BitmapFontが必要となる。
  */
 class Label extends g.CacheableE {
 	/**
@@ -34,6 +34,13 @@ class Label extends g.CacheableE {
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
 	text: string;
+
+	/**
+	 * 描画に利用されるフォント。
+	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
+	 * @deprecated このプロパティは非推奨であり、後方互換性のために存在する。代わりに`font`プロパティを用いるべきである。
+	 */
+	bitmapFont: g.BitmapFont;
 
 	/**
 	 * 描画に利用されるフォント。
@@ -122,7 +129,7 @@ class Label extends g.CacheableE {
 	 * 個別のルビに `this.rubyOptions` の各プロパティと同名のプロパティが存在する場合、個別のルビの設定が優先される。
 	 *
 	 * rubyFontSize: ルビのフォントサイズ。初期値は `this.fontSize / 2` である。
-	 * rubyFont: ルビのビットマップフォント。初期値は `this.font` である。
+	 * rubyBitmapFont: ルビのビットマップフォント。初期値は `this.bitmapFont` である。
 	 * rubyGap: ルビと本文の行間。初期値は0である。
 	 * rubyAlign: ルビのレイアウト。初期値は `RubyAlign.SpaceAround` である。
 	 *
@@ -162,9 +169,14 @@ class Label extends g.CacheableE {
 	 * @param param このエンティティに対するパラメータ
 	 */
 	constructor(param: LabelParameterObject) {
+		if (!param.font && !param.bitmapFont) {
+			throw g.ExceptionFactory.createAssertionError("Label#constructor: 'font' or 'bitmapFont' must be given to LabelParameterObject");
+		}
+
 		super(param);
 		this.text = param.text;
-		this.font = param.font;
+		this.bitmapFont = param.bitmapFont;
+		this.font = param.font ? param.font : param.bitmapFont;
 		this.fontSize = param.fontSize;
 		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
@@ -183,6 +195,7 @@ class Label extends g.CacheableE {
 		}
 		this.rubyOptions = param.rubyOptions;
 		this.rubyOptions.rubyFontSize = "rubyFontSize" in param.rubyOptions ? param.rubyOptions.rubyFontSize : param.fontSize / 2;
+		this.rubyOptions.rubyBitmapFont = "rubyBitmapFont" in param.rubyOptions ? param.rubyOptions.rubyBitmapFont : this.bitmapFont;
 		this.rubyOptions.rubyFont = "rubyFont" in param.rubyOptions ? param.rubyOptions.rubyFont : this.font;
 		this.rubyOptions.rubyGap = "rubyGap" in param.rubyOptions ? param.rubyOptions.rubyGap : 0;
 		this.rubyOptions.rubyAlign = "rubyAlign" in param.rubyOptions ? param.rubyOptions.rubyAlign : rp.RubyAlign.SpaceAround;
@@ -239,7 +252,7 @@ class Label extends g.CacheableE {
 
 	/**
 	 * 利用している `g.Surface` を破棄した上で、このエンティティを破棄する。
-	 * 利用している `g.Font` の破棄は行わないため、 `g.Font` の破棄はコンテンツ製作者が明示的に行う必要がある。
+	 * 利用している `g.BitmapFont` の破棄は行わないため、 `g.BitmapFont` の破棄はコンテンツ製作者が明示的に行う必要がある。
 	 */
 	destroy(): void {
 		this._destroyLines();
@@ -288,6 +301,15 @@ class Label extends g.CacheableE {
 
 		if (this.lineGap < -1 * this.fontSize)
 			throw g.ExceptionFactory.createAssertionError("Label#_invalidateSelf: lineGap must be greater than -1 * fontSize.");
+
+		// bitmapFontが定義されている場合、bitmapfontを利用する。
+		if (this.bitmapFont !== undefined) {
+			this.font = this.bitmapFont;
+		}
+
+		if (this.rubyOptions.rubyBitmapFont !== undefined) {
+			this.rubyOptions.rubyFont = this.rubyOptions.rubyBitmapFont;
+		}
 
 		// this.width がユーザから変更された場合、this._lineBreakWidth は this.width に追従する。
 		if (this._beforeWidth !== this.width) this._lineBreakWidth = this.width;
