@@ -59,7 +59,6 @@ module.exports = function() {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-
 		// ルビと改行
 		var y0 = 40;
 
@@ -180,6 +179,44 @@ module.exports = function() {
 		}, dlabel);
 		scene.append(dlabel);
 
+
+		var nlabel = new Label({
+			scene: scene,
+			text: "［次＞＞］",
+			font: mplusfont,
+			fontSize: 20,
+			width: game.width
+		});
+		nlabel.x = 230;
+		nlabel.y = game.height - 20;
+		nlabel.touchable = true;
+		nlabel.pointDown.add(function() {
+			var scene3 = require("mainScene6")();
+			game.replaceScene(scene3);
+		}, nlabel);
+		scene.append(nlabel);
+
+		var dlabel = new Label({
+			scene: scene,
+			text: "［フォント切替］",
+			font: mplusfont,
+			fontSize: 20,
+			textAlign: g.TextAlign.Right,
+			width: 130
+		});
+		dlabel.x = 100;
+		dlabel.y = game.height - 20;
+		dlabel.touchable = true;
+		dlabel.pointDown.add(function(){
+			scene.children.forEach((child: g.E) => {
+				if (child instanceof Label) {
+					child.font = dfont;
+					child.rubyOptions.rubyFont = dfont;
+					child.invalidate();
+				}
+			});
+		}, dlabel);
+		scene.append(dlabel);
 	});
 	return scene;
 };

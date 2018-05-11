@@ -31,6 +31,30 @@ describe("test Label", function() {
 	afterEach(function() {
 	});
 
+	var sampleRule = function (fragments, index) {
+		var text = fragments.map((e) => {
+			if (e instanceof String) {
+				return e;
+			} else {
+				return "〇";
+			}
+		});
+		const target = fragments[index];
+		if (target === "」") {
+			return index + 1;
+		} else if (target === "「") {
+			return index - 1;
+		} else {
+			var before = fragments[index-1];
+			if (!!before && before === "」") {
+				return index;
+			} else if (!!before && before === "「") {
+				return index - 1;
+			}
+			return index;
+		}
+	}
+
 	it("初期化", function() {
 		var mlabel = new Label({
 			scene: runtime.scene,
@@ -245,6 +269,7 @@ describe("test Label", function() {
 		expect(mlabel.rubyOptions).toEqual(mlabel2.rubyOptions);
 	});
 
+
 	it("_divideToLines", function(){
 		var createLabel = function(text){
 			var mlabel = new Label({
@@ -261,6 +286,7 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
+			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
@@ -534,7 +560,6 @@ describe("test Label", function() {
 		];
 		expect(lineInfo8).toEqual(expectLineInfo8);
 
-
 		var text9 =  '123{"rb": "", "rt": ""}456';
 		var lineInfo9 = createLineInfo(text9);
 		var expectLineInfo9 = [
@@ -546,20 +571,14 @@ describe("test Label", function() {
 				minMinusOffsetY: 0,
 				fragmentDrawInfoArray: [
 					new fr.StringDrawInfo(
-						"123",
-						30,
-						label._createStringGlyph("123", bmpfont)
-					),
-					new fr.StringDrawInfo(
-						"456",
-						30,
-						label._createStringGlyph("456", bmpfont)
+						"123456",
+						60,
+						label._createStringGlyph("123456", bmpfont)
 					)
 				]
 			},
 		];
 		expect(lineInfo9).toEqual(expectLineInfo9);
-
 	});
 
 	it("_divideToLines - options", function(){
@@ -588,6 +607,7 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
+			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
@@ -728,5 +748,102 @@ describe("test Label", function() {
 		label.trimMarginTop = false;
 		label._feedLine(state2);
 		expect(state2.resultLines[0].height).toBe(2); // glyph["97"].height(2)
+	});
+
+	it("line break rules - 初期化", function() {
+		expect( function() {
+			new Label({
+				scene: runtime.scene,
+				text: "foobar",
+				font: bmpfont,
+				fontSize: 10,
+				width: 100,
+				lineBreak: false,
+				lineGap: 2,
+				textAlign: g.TextAlign.Left,
+				lineBreakRule: (fragments, index) => index
+			});
+			expect(mlabel.lineBreakRule).toEqual((fragments, index) => index);
+		}).not.toThrowError("AssertionError");
+	});
+
+	it("line break rules - before text", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: "0123456",
+			font: bmpfont,
+			fontSize: 10,
+			width: 30,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments[index] === "3") {
+					return index - 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe("01");
+		expect(label._lines[1].sourceText).toBe("234");
+	});
+
+	it("line break rules - after text", function() {		
+		var label = new Label({
+			scene: runtime.scene,
+			text: "0123456",
+			font: bmpfont,
+			fontSize: 10,
+			width: 30,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments[index] === "3") {
+					return index + 1;
+				} else {
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe("0123");
+		expect(label._lines[1].sourceText).toBe("456");
+	});
+
+
+	it("line break rules - ruby", function() {
+		var label = new Label({
+			scene: runtime.scene,
+			text: 'abcdefg[{"rb": "hij", "rt": "hij"}]klmn',
+			font: bmpfont,
+			fontSize: 10,
+			width: 80,
+			lineBreak: true,
+			lineGap: 2,
+			textAlign: g.TextAlign.Left,
+			lineBreakRule: (fragments, index) => {
+				if (fragments[index] === "]") {
+					return index + 1; // 先送り改行
+				} else {
+					var before = fragments[index - 1];
+					if (!!before && before === "]") {
+						return index;
+					} else if (!!before && before === "[") { // 巻き戻し改行
+						return index - 1;
+					}
+					return index;
+				}
+			}
+		});
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefg');
+		expect(label._lines[1].sourceText).toBe('[{"rb": "hij", "rt": "hij"}]klm');
+		label.width = 110;
+		label.invalidate();
+		expect(label._lines[0].sourceText).toBe('abcdefg[{"rb": "hij", "rt": "hij"}]');
+		expect(label._lines[1].sourceText).toBe('klmn');
 	});
 });

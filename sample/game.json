@@ -28,6 +28,11 @@
 			"path": "script/mainScene5.js",
 			"global": true
 		},
+		"mainScene6": {
+			"type": "script",
+			"path": "script/mainScene6.js",
+			"global": true
+		},
 		"bmpfont": {
 			"type": "image",
 			"width": 512,

@@ -1,4 +1,5 @@
 import rt = require("./RubyParser");
+
 /**
  * `Label` のコンストラクタに渡すことができるパラメータ。
  */
@@ -91,6 +92,12 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 * ルビのレイアウト設定。
 	 */
 	rubyOptions?: rt.RubyOptions;
+
+	/**
+	 * 禁則処理の挙動を指定する関数。
+	 *
+	 */
+	lineBreakRule?: rt.LineBreakRule;
 }
 
 export = LabelParameterObject;
