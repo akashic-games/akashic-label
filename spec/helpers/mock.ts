@@ -282,8 +282,9 @@ export class DelayedImageAsset extends ImageAsset implements DelayedAsset {
 class AudioAsset extends g.AudioAsset {
 	_failureController: LoadFailureController;
 
-	constructor(necessaryRetryCount: number, id: string, assetPath: string, duration: number, system: g.AudioSystem) {
-		super(id, assetPath, duration, system);
+	constructor(necessaryRetryCount: number, id: string, assetPath: string, duration: number,
+		system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint) {
+		super(id, assetPath, duration, system, loop, hint);
 		this._failureController = new LoadFailureController(necessaryRetryCount);
 	}
 
@@ -415,8 +416,8 @@ export class ResourceFactory extends g.ResourceFactory {
 		}
 	}
 
-	createAudioAsset(id: string, assetPath: string, duration: number, system: g.AudioSystem): g.AudioAsset {
-		return new AudioAsset(this._necessaryRetryCount, id, assetPath, duration, system);
+	createAudioAsset(id: string, assetPath: string, duration: number, system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint): g.AudioAsset {
+		return new AudioAsset(this._necessaryRetryCount, id, assetPath, duration, system, loop, hint);
 	}
 
 	createTextAsset(id: string, assetPath: string): g.TextAsset {
