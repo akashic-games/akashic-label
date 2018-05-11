@@ -247,9 +247,9 @@ class Label extends g.CacheableE {
 	}
 
 	/**
-	 * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のめそっどをオーバーライドする
+	 * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のメソッドをオーバーライドする
 	 */
-	calclateCacheSize(): g.CommonSize {
+	calculateCacheSize(): g.CommonSize {
 		const maxWidth = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
 		return {
 			width: maxWidth,
@@ -305,7 +305,7 @@ class Label extends g.CacheableE {
 		}
 
 		if (this.widthAutoAdjust) {
-			// this.widthAutoAdjust が真の場合、または禁則処理によって描画幅が this.width より広くなった場合、 this.width は描画幅に応じてトリミングされる。
+			// this.widthAutoAdjust が真の場合、 this.width は描画幅に応じてトリミングされる。
 			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
 		}
 
