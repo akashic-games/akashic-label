@@ -165,3 +165,42 @@ akashic-label は、ルビの指定を解釈するパーサ関数が独立して
 パーサ関数を変更するには、ラベルのコンストラクタ、またはインスタンスの `rubyParser` プロパティに `function(text: string): Fragment[]` 型の関数を指定します。
 
 また、ラベルのコンストラクタ、またはインスタンスの `rubyEnabled` プロパティに偽を設定することで、ルビを指定する記述をルビとして解釈しないよう変更することができます。
+
+### 禁則処理
+
+akashic-labelは禁則処理をサポートしています。禁則処理を利用して、行末・行頭に配置される文字を制御することができます。
+
+禁則処理を適用するには、ラベルのコンストラクタ、またはインスタンスの `lineBreakRule` プロパティに `function(fragments: Fragment[], index: number) => number` 型の関数を指定します。
+この関数は以下のように指定します。
+
+```
+var sampleRule = function (fragments: Fragment[], index: number) {
+    const target = fragments[index];
+        if (target === "」") {
+            return index + 1;
+        } else {
+            var before = fragments[index-1];
+            if (!!before && before === "」") {
+                return index;
+            } else if (!!before && before === "「") {
+                return index - 1;
+            }
+            return index;
+        }
+}
+var label = new Label({
+    scene: scene,
+    text: text,
+    font: font,
+    fontSize: 15,
+    textAlign: g.TextAlign.Left,
+    width: game.width,
+    lineBreak: true,
+    lineBreakRule: sampleRule
+});
+```
+
+この `lineBreakRule` 関数は、 `index` に「今改行しようとしている文字のインデックス」が渡されます。サンプル関数では、この文字を `target` に格納しています。
+この文字は改行された新しい行の１文字目に配置されます。よって、 `」` が行頭に配置される場合、サンプル関数は `index + 1` を返し、改行位置を1文字分後ろにずらすことで、行頭に `」` が配置されることを回避しています。
+
+同様に、 行末に配置されようとしている文字を `before` に格納し、 `「` だった場合、サンプル関数は `index -1` を返し、改行位置を1文字分前にずらすことで、行末に `「` が配置されることを回避しています。

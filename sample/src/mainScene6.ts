@@ -100,16 +100,6 @@ module.exports = function() {
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」';
 		var sampleRule = function (fragments: Fragment[], index: number) {
-			
-			var text = fragments.map((e) => {
-				if (e instanceof String) {
-					return e;
-				} else {
-					return "〇";
-				}
-			});
-			var joinedText = text.join("");
-			
 			const target = fragments[index];
 			if (target === "」") {
 				return index + 1;
