@@ -4,7 +4,7 @@
 
 # akashic-label
 
-**akashic-label** は、[Akashic Engine](https://github.com/akashic-games/akashic-engine) 用のテキスト描画ライブラリです。
+**akashic-label** は、[Akashic Engine](https://akashic-games.github.io/) 用のテキスト描画ライブラリです。
 Akashic Engine 標準の `g.Label` と同様の機能に加え、次の機能を提供します。
 
 * ルビつき文字列の描画
