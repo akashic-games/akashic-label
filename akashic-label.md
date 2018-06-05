@@ -168,25 +168,34 @@ akashic-label は、ルビの指定を解釈するパーサ関数が独立して
 
 ### 禁則処理
 
-akashic-labelは禁則処理をサポートしています。禁則処理を利用して、行末・行頭に配置される文字を制御することができます。
+akashic-labelは自動改行の振る舞いはカスタマイズすることができます。この機能を利用して、行末・行頭に配置される文字を制御し、禁則処理を実現することができます。
 
-禁則処理を適用するには、ラベルのコンストラクタ、またはインスタンスの `lineBreakRule` プロパティに `function(fragments: Fragment[], index: number) => number` 型の関数を指定します。
+禁則処理を適用するには、ラベルのコンストラクタ引数、またはインスタンスの `lineBreakRule` プロパティに `(fragments: Fragment[], index: number) => number` 型の関数を指定します。
+`lineBreakRule` の第一引数 `fragments` は1文字・1ルビごとに分解された `Fragement[]` 型の配列です。 `fragments` に含まれる文字列は、そのとき描画している行の1文字目から行末に配置される予定の `Fragments` までです。
+第二引数 `index` は 自動改行が算出した改行位置です。 `fragments[index]` は自動改行機能によって改行された新しい行の最初の1文字の位置を表します。
+この関数の戻り値は整数でなければならず、 `index` に代わる改行位置として扱われます。
+
 この関数は以下のように指定します。
 
 ```
-var sampleRule = function (fragments: Fragment[], index: number) {
-    const target = fragments[index];
-        if (target === "」") {
-            return index + 1;
-        } else {
-            var before = fragments[index-1];
-            if (!!before && before === "」") {
-                return index;
-            } else if (!!before && before === "「") {
-                return index - 1;
-            }
-            return index;
-        }
+var sampleRule = function (fragments, index) {
+	const ignoreHead = ["」", "』", "】"];
+	const ignoreTail = ["「", "『", "【"]
+	const headChar = fragments[index];
+	const isHeadCharIgnore = ignoreHead.indexOf(headChar) !== -1;
+	if (typeof headChar !== "string") return index;
+	if (isHeadCharIgnore) {
+		return index + 1;
+	} else {
+		const before = fragments[index-1];
+		const isBeforeIgnore = ignoreHead.indexOf(before) !== -1;
+		if (!!before && isBeforeIgnore) {
+			return index;
+		} else if (!!before && ignoreTail.indexOf(before) !== -1) {
+			return index - 1;
+		}
+		return index;
+	}
 }
 var label = new Label({
     scene: scene,
@@ -200,7 +209,7 @@ var label = new Label({
 });
 ```
 
-この `lineBreakRule` 関数は、 `index` に「今改行しようとしている文字のインデックス」が渡されます。サンプル関数では、この文字を `target` に格納しています。
-この文字は改行された新しい行の１文字目に配置されます。よって、 `」` が行頭に配置される場合、サンプル関数は `index + 1` を返し、改行位置を1文字分後ろにずらすことで、行頭に `」` が配置されることを回避しています。
+この `lineBreakRule` 関数は、 `index` に「今改行しようとしている文字のインデックス」が渡されます。サンプル関数では、この文字を `headChar` に格納しています。
+この文字は改行された新しい行の１文字目に配置されます。よって、 `"」"` が行頭に配置される場合、サンプル関数は `index + 1` を返し、改行位置を1文字分後ろにずらすことで、行頭に `"」"` が配置されることを回避しています。
 
-同様に、 行末に配置されようとしている文字を `before` に格納し、 `「` だった場合、サンプル関数は `index -1` を返し、改行位置を1文字分前にずらすことで、行末に `「` が配置されることを回避しています。
+同様に、 行末に配置されようとしている文字を `before` に格納し、 `"「"` だった場合、サンプル関数は `index -1` を返し、改行位置を1文字分前にずらすことで、行末に `"」"` が配置されることを回避しています。

@@ -62,18 +62,23 @@ module.exports = function() {
 
 		var text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
 		var sampleRule = function (fragments: Fragment[], index: number) {
-			const target = fragments[index];
-				if (target === "」") {
-					return index + 1;
-				} else {
-					var before = fragments[index-1];
-					if (!!before && before === "」") {
-						return index;
-					} else if (!!before && before === "「") {
-						return index - 1;
-					}
+			const ignoreHead = ["」", "』", "】"];
+			const ignoreTail = ["「", "『", "【"]
+			const headChar = fragments[index];
+			const isHeadCharIgnore = ignoreHead.indexOf(headChar as string) !== -1;
+			if (typeof headChar !== "string") return index;
+			if (isHeadCharIgnore) {
+				return index + 1;
+			} else {
+				const before = fragments[index-1];
+				const isBeforeIgnore = ignoreHead.indexOf(before as string) !== -1;
+				if (!!before && isBeforeIgnore) {
 					return index;
+				} else if (!!before && ignoreTail.indexOf(before as string) !== -1) {
+					return index - 1;
 				}
+				return index;
+			}
 		}
 		var lblabel = new Label({
 			scene: scene,
@@ -99,7 +104,7 @@ module.exports = function() {
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
 			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」';
-		var sampleRule = function (fragments: Fragment[], index: number) {
+		var sampleRule = function(fragments: Fragment[], index: number) {
 			const target = fragments[index];
 			if (target === "」") {
 				return index + 1;
