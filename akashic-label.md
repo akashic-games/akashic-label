@@ -179,23 +179,23 @@ akashic-labelは自動改行の振る舞いはカスタマイズすることが�
 
 ```
 var sampleRule = function (fragments, index) {
-	const ignoreHead = ["」", "』", "】"];
-	const ignoreTail = ["「", "『", "【"]
-	const headChar = fragments[index];
-	const isHeadCharIgnore = ignoreHead.indexOf(headChar) !== -1;
-	if (typeof headChar !== "string") return index;
-	if (isHeadCharIgnore) {
-		return index + 1;
-	} else {
-		const before = fragments[index-1];
-		const isBeforeIgnore = ignoreHead.indexOf(before) !== -1;
-		if (!!before && isBeforeIgnore) {
-			return index;
-		} else if (!!before && ignoreTail.indexOf(before) !== -1) {
-			return index - 1;
-		}
-		return index;
-	}
+    const ignoreHead = ["」", "』", "】"];
+    const ignoreTail = ["「", "『", "【"]
+    const headChar = fragments[index];
+    const isHeadCharIgnore = ignoreHead.indexOf(headChar) !== -1;
+    if (typeof headChar !== "string") return index;
+    if (isHeadCharIgnore) {
+        return index + 1;
+    } else {
+        const before = fragments[index-1];
+        const isBeforeIgnore = ignoreHead.indexOf(before) !== -1;
+        if (!!before && isBeforeIgnore) {
+            return index;
+        } else if (!!before && ignoreTail.indexOf(before) !== -1) {
+            return index - 1;
+        }
+        return index;
+    }
 }
 var label = new Label({
     scene: scene,
