@@ -168,31 +168,36 @@ akashic-label は、ルビの指定を解釈するパーサ関数が独立して
 
 ### 禁則処理
 
-akashic-labelは自動改行の振る舞いはカスタマイズすることができます。この機能を利用して、行末・行頭に配置される文字を制御し、禁則処理を実現することができます。
+akashic-label は自動改行の振る舞いをカスタマイズすることができます。この機能を利用して、行末・行頭に配置される文字を制御し、禁則処理を実現することができます。
 
-禁則処理を適用するには、ラベルのコンストラクタ引数、またはインスタンスの `lineBreakRule` プロパティに `(fragments: Fragment[], index: number) => number` 型の関数を指定します。
-`lineBreakRule` の第一引数 `fragments` は1文字・1ルビごとに分解された `Fragement[]` 型の配列です。
-`fragments` に含まれる文字列は、そのとき描画している行の1文字目から行末に配置される予定の `Fragments` までです。
-第二引数 `index` は 自動改行が算出した改行位置です。 `fragments[index]` は自動改行機能によって改行された新しい行の最初の1文字の位置を表します。
+禁則処理を行うには、ラベルのコンストラクタ引数、またはインスタンスの `lineBreakRule` プロパティに `(fragments: Fragment[], index: number) => number` 型の関数を指定します。
+この関数は本文の描画時に呼び出され、 akashic-label が算出した改行位置を上書きすることができます。
+
+`lineBreakRule` の第一引数 `fragments` には、1文字ずつ・1ルビブロックごとに分解された `(string | RubyFragment)[]` 型が与えられます。
+例として、 `"これは{"rb": "ルビ", "rt": "るび"}です"` というテキストを描画する場合、 `fragments` には `["こ", "れ", "は", {rb: "ルビ", rt: "るび"}, "で", "す"]` が与えられます。
+
+第二引数 `index` は 自動改行が算出した改行位置です。 `fragments[index]` は自動改行機能によって改行された新しい行の最初の文字を表します。
+例として、`"一行目二行目"` というテキストが1行に3文字ずつ描画される場合、 `index` には `3` が与えられ、 `fragments[index]` は `"二"` になります。
+
 この関数の戻り値は整数でなければならず、 `index` に代わる改行位置として扱われます。
 
 この関数は以下のように指定します。
 
 ```
 var sampleRule = function (fragments, index) {
-    const ignoreHead = ["」", "』", "】"];
-    const ignoreTail = ["「", "『", "【"]
+    const ngHead = ["」", "』", "】"];
+    const ngTail = ["「", "『", "【"]
     const headChar = fragments[index];
-    const isHeadCharIgnore = ignoreHead.indexOf(headChar) !== -1;
+    const isHeadCharProhibited = ngHead.indexOf(headChar) !== -1;
     if (typeof headChar !== "string") return index;
-    if (isHeadCharIgnore) {
+    if (isHeadCharProhibited) {
         return index + 1;
     } else {
-        const before = fragments[index-1];
-        const isBeforeIgnore = ignoreHead.indexOf(before) !== -1;
-        if (!!before && isBeforeIgnore) {
+        const prev = fragments[index-1];
+        const isBeforeProhibited = ngHead.indexOf(prev) !== -1;
+        if (!!prev && isBeforeProhibited) {
             return index;
-        } else if (!!before && ignoreTail.indexOf(before) !== -1) {
+        } else if (!!prev && ngTail.indexOf(prev) !== -1) {
             return index - 1;
         }
         return index;
