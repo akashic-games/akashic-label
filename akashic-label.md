@@ -176,7 +176,7 @@ akashic-label は自動改行の振る舞いをカスタマイズすることが
 `lineBreakRule` の第一引数 `fragments` には、1文字ずつ・1ルビブロックごとに分解された文字とルビブロックの混合した配列が与えられます。
 例として、 `"これは{"rb": "ルビ", "rt": "るび"}です"` というテキストの改行位置を算出する場合、 `fragments` には `["こ", "れ", "は", {rb: "ルビ", rt: "るび"}, "で", "す"]` が与えられます。
 
-`lineBreakRule` の第二引数 `index` は akashic-label が算出した改行位置です。 `fragments[index]` は akashic-label の自動改行機能によって改行された新しい行の最初の文字を表します。
+`lineBreakRule` の第二引数 `index` は akashic-label が算出した改行位置です。 `fragments[index]` は `index` の位置で改行したとき、次の行の先頭に来る文字です。
 例として、`"一行目二行目"` というテキストが1行に3文字ずつ描画される場合、 `index` には `3` が与えられ、 `fragments[index]` は `"二"` になります。
 
 `lineBreakRule` の戻り値は整数でなければならず、 `index` に代わる改行位置として扱われます。
@@ -194,6 +194,7 @@ var sampleRule = function (fragments, index) {
         return index + 1;
     } else {
         const prev = fragments[index-1];
+        if (typeof prev !== "string") return index;
         const isPrevNg = ngHead.indexOf(prev) !== -1;
         if (!!prev && isPrevNg) {
             return index;
