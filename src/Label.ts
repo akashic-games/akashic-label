@@ -339,7 +339,11 @@ class Label extends g.CacheableE {
 		var fragments = this.rubyEnabled ? this.rubyParser(this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
 		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
-			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => (typeof f === "string") ? f.replace(/\r\n|\n/g, "\r").split("") : f);
+			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => {
+				if (typeof f !== "string") return f;
+				// サロゲートペア文字を正しく分割する
+				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
+			});
 
 		var undrawnLineInfos = this._divideToLines(fragments);
 		var lines: fr.LineInfo[] = [];
