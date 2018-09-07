@@ -281,7 +281,14 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
-			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+			fragments =
+				rt.flatmap(fragments, function (f) {
+					if (typeof f !== "string")
+						return f;
+						// サロゲートペア文字を正しく分割する
+						return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
+				});
+
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
@@ -604,7 +611,14 @@ describe("test Label", function() {
 		var createLineInfo = function(text){
 			var label = createLabel(text);
 			var fragments = parse(label.text);
-			fragments = rt.flatmap(fragments, (e) => (typeof e === "string") ? e.replace(/\r\n|\n/g, "\r").split("") : e);
+			fragments =
+				rt.flatmap(fragments, function (f) {
+					if (typeof f !== "string")
+						return f;
+						// サロゲートペア文字を正しく分割する
+						return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
+				});
+
 			return label._divideToLines(fragments);
 		};
 		var label = createLabel("");
