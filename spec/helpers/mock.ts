@@ -170,6 +170,14 @@ export class Renderer extends g.Renderer {
 		});
 	}
 
+	setShaderProgram(shaderProgram: g.ShaderProgram): void {
+		// do nothing
+	}
+
+	isSupportedShaderProgram(): boolean {
+		return false;
+	}
+
 	_getImageData(sx: number, sy: number, sw: number, sh: number): g.ImageData {
 		this.methodCallHistoryWithParams.push({
 			methodName: "_getImageData"
@@ -511,6 +519,10 @@ export class Game extends g.Game {
 
 	saveSnapshot(snapshot: any): void {
 		// do nothing.
+	}
+
+	getCurrentTime(): number {
+		return 0;
 	}
 
 	addEventFilter(filter: g.EventFilter): void {
