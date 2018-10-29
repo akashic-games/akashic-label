@@ -98,6 +98,13 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 *
 	 */
 	lineBreakRule?: rt.LineBreakRule;
+
+	/**
+	 * textを一文字単位に分割するパーサ。
+	 * 初期値は サロゲートペアの分割に対応した関数である。
+	 * grapheme clusterなどを考慮した高度な分割を行いたい場合、この値に適切な関数を指定する必要がある。
+	 */
+	textSplitter?: (text: string) => string[];
 }
 
 export = LabelParameterObject;

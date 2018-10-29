@@ -2,7 +2,6 @@ import LabelParameterObject = require("./LabelParameterObject");
 import rp = require("./RubyParser");
 import fr = require("./FragmentDrawInfo");
 import dr = require("./DefaultRubyParser");
-import util = require("./Util");
 
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
@@ -159,6 +158,11 @@ class Label extends g.CacheableE {
 	private _lineBreakWidth: number;
 
 	/**
+	 * 文字列を描画される一文字単位に分割する関数
+	 */
+	private _textSplitter: (text: string) => string[];
+
+	/**
 	 * 各種パラメータを指定して `Label` のインスタンスを生成する。
 	 * @param param このエンティティに対するパラメータ
 	 */
@@ -178,6 +182,8 @@ class Label extends g.CacheableE {
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
 		this.lineBreakRule = "lineBreakRule" in param ? param.lineBreakRule : undefined;
+
+		this._textSplitter = "textSplitter" in param ? param.textSplitter : defaultTextSplitter;
 
 		if (!param.rubyOptions) {
 			param.rubyOptions = {};
@@ -343,7 +349,7 @@ class Label extends g.CacheableE {
 			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => {
 				if (typeof f !== "string") return f;
 				// サロゲートペア文字を正しく分割する
-				return util.splitToGraphemes(f.replace(/\r\n|\n/g, "\r"));
+				return this._textSplitter(f.replace(/\r\n|\n/g, "\r"));
 			});
 
 		var undrawnLineInfos = this._divideToLines(fragments);
@@ -571,7 +577,7 @@ class Label extends g.CacheableE {
 			this._feedLine(state);
 
 		} else if (typeof fragment === "string") {
-			var str = util.splitToGraphemes(fragment)[0];
+			var str = this._textSplitter(fragment)[0];
 			if (! str) return;
 			var glyph = this._createGlyph(str, this.font);
 			if (! glyph) return;
@@ -603,7 +609,7 @@ class Label extends g.CacheableE {
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
 		var glyphs: g.Glyph[] = [];
 		for (var i = 0; i < text.length; i++) {
-			var str = util.splitToGraphemes(text)[i];
+			var str = this._textSplitter(text)[i];
 			if (! str) continue;
 			var glyph = this._createGlyph(str, font);
 			if (! glyph) continue;
@@ -802,6 +808,10 @@ class Label extends g.CacheableE {
 			state.currentLineInfo.sourceText = droppedSourceText;
 		}
 	}
+}
+
+function defaultTextSplitter(text: string) {
+	return text.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
 }
 
 export = Label;
