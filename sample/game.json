@@ -55,14 +55,18 @@
 		}
 	},
 	"globalScripts": [
-		"node_modules/@akashic-extension/akashic-label/lib/Label.js",
 		"node_modules/@akashic-extension/akashic-label/lib/DefaultRubyParser.js",
-		"node_modules/@akashic-extension/akashic-label/lib/RubyParser.js",
 		"node_modules/@akashic-extension/akashic-label/lib/FragmentDrawInfo.js",
+		"node_modules/@akashic-extension/akashic-label/lib/Label.js",
+		"node_modules/@akashic-extension/akashic-label/lib/RubyParser.js",
 		"node_modules/@akashic-extension/akashic-label/lib/index.js",
-		"node_modules/@akashic-extension/akashic-label/package.json"
+		"node_modules/grapheme-splitter/index.js"
 	],
 	"environment": {
 		"sandbox-runtime": "2"
+	},
+	"moduleMainScripts": {
+		"@akashic-extension/akashic-label": "node_modules/@akashic-extension/akashic-label/lib/index.js",
+		"grapheme-splitter": "node_modules/grapheme-splitter/index.js"
 	}
 }

@@ -1,4 +1,7 @@
 import {Label} from "@akashic-extension/akashic-label";
+import graphemeSplitter = require("grapheme-splitter");
+var splitter = new graphemeSplitter();
+
 var game = g.game;
 
 export = function() {
@@ -198,7 +201,7 @@ export = function() {
 			fontSize: 20,
 			width: 100
 		});
-		label23.x = 150;
+		label23.x = 100;
 		label23.y = y2 + 50;;
 		scene.append(label23);
 		label23.update.add(function(){
@@ -227,6 +230,20 @@ export = function() {
 			}
 		}, label24);
 		scene.append(label24);
+
+		// grapheme clusterの利用
+		var counter25 = 0;
+		var label25 = new Label({
+			scene: scene,
+			text: "unicode😭\r👨🏿‍👩‍👧‍👦",
+			font: mplusfont,
+			fontSize: 20,
+			width: 100,
+			textSplitter: splitter.splitGraphemes.bind(splitter)
+		});
+		label25.x = 210;
+		label25.y = y2 + 50;;
+		scene.append(label25);
 
 		var nlabel = new Label({
 			scene: scene,

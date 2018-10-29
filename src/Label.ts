@@ -810,7 +810,7 @@ class Label extends g.CacheableE {
 	}
 }
 
-function defaultTextSplitter(text: string) {
+function defaultTextSplitter(text: string): string[] {
 	return text.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
 }
 
