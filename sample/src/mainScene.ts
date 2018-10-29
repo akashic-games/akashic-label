@@ -1,7 +1,7 @@
 import {Label} from "@akashic-extension/akashic-label";
 import graphemeSplitter = require("grapheme-splitter");
-var splitter = new graphemeSplitter();
 
+var splitter = new graphemeSplitter();
 var game = g.game;
 
 export = function() {

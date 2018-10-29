@@ -33,8 +33,7 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@akashic/akashic-engine": "~2.1.2",
-    "grapheme-splitter": "^1.0.4"
+    "@akashic/akashic-engine": "~2.1.2"
   },
   "files": [
     "lib",
