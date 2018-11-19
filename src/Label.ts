@@ -414,6 +414,12 @@ class Label extends g.CacheableE {
 			var glyph = glyphs[i];
 			var glyphScale = fontSize / font.size;
 			var glyphWidth = glyph.advanceWidth * glyphScale;
+
+			if (! glyph.isSurfaceValid) {
+				glyph = this._createGlyph(glyph.code, font);
+				if (! glyph) continue;
+			}
+
 			renderer.save();
 			renderer.transform([glyphScale, 0, 0, glyphScale, 0, 0]);
 			if (glyph.width > 0 && glyph.height > 0) {
