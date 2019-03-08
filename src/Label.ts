@@ -342,7 +342,7 @@ class Label extends g.CacheableE {
 			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => {
 				if (typeof f !== "string") return f;
 				// サロゲートペア文字を正しく分割する
-				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g);
+				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g) || [];
 			});
 
 		var undrawnLineInfos = this._divideToLines(fragments);

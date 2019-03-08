@@ -119,6 +119,19 @@ describe("test Label", function() {
 		}).toThrowError("AssertionError");
 	});
 
+	it("初期化 - ルビ無効かつ空テキスト", function() {
+		expect( function() {
+			new Label({
+				scene: runtime.scene,
+				text: "",
+				font: bmpfont,
+				fontSize: 20,
+				width: 300,
+				rubyEnabled: false
+			});
+		}).not.toThrowError("TypeError");
+	});
+
 	it("render", function(){
 		var mlabel = new Label({
 			scene: runtime.scene,
