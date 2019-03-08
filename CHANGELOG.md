@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.6
+
+* `rubyEnabled` が偽のとき、 `text` に空文字列を渡すとエラーになる問題の解消。(thanks [@kudohamu](https://github.com/kudohamu))
+
 ## 2.0.5
 
 * 描画タイミングで、`glyph.surface` が存在しない場合の対応。

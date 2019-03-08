@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-label",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "text library for akashic",
   "main": "lib/index.js",
   "scripts": {
