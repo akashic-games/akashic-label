@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 2.0.7
+
+* 描画内容の行数を返す `lineCount` を追加。
+
 ## 2.0.6
 
 * `rubyEnabled` が偽のとき、 `text` に空文字列を渡すとエラーになる問題の解消。(thanks [@kudohamu](https://github.com/kudohamu))
