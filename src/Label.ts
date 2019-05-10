@@ -260,6 +260,13 @@ class Label extends g.CacheableE {
 		};
 	}
 
+	/**
+	 * 描画内容の行数を返す
+	 */
+	get lineCount(): number {
+		return this._lines.length;
+	}
+
 	_offsetX(width: number): number {
 		switch (this.textAlign) {
 			case g.TextAlign.Left:
