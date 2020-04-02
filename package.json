@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-label",
-  "version": "2.0.7",
+  "version": "3.0.0-beta.0",
   "description": "text library for akashic",
   "main": "lib/index.js",
   "scripts": {
@@ -28,12 +28,12 @@
     "remark-lint": "~5.0.1",
     "rimraf": "^2.6.1",
     "tslint": "~5.4.3",
-    "typedoc": "^0.8.0",
-    "typescript": "^2.1.6"
+    "typedoc": "^0.16.11",
+    "typescript": "^3.8.3"
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@akashic/akashic-engine": "~2.1.2"
+    "@akashic/akashic-engine": "~3.0.0-beta.17"
   },
   "files": [
     "lib",

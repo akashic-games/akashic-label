@@ -1,7 +1,8 @@
-import {Label} from "@akashic-extension/akashic-label";
-var game = g.game;
+import { Label } from "@akashic-extension/akashic-label";
+import { mainScene2 } from "./mainScene2";
 
-export = function() {
+export function mainScene() {
+	var game = g.game;
 	var scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
@@ -9,18 +10,12 @@ export = function() {
 	var rate = game.fps / 3;
 	scene.loaded.add(function() {
 
-		var labels: Label[] = [];
-
 		// グリフデータの生成
-		var glyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
-
+		var mPlusGlyphInfo = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
 		var mplusfont = new g.BitmapFont({
-			src: scene.assets["mplus"],
-			map: glyph.map,
-			defaultGlyphWidth: glyph.width,
-			defaultGlyphHeight: glyph.height,
-			missingGlyph: glyph.missingGlyph
+			src: scene.assets["mplus"] as g.ImageAssetLike,
+			glyphInfo: mPlusGlyphInfo
 		});
 
 		var dhint: g.DynamicFontHint = {
@@ -239,7 +234,7 @@ export = function() {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.pointDown.add(function(){
-			var scene2 = require("mainScene2")();
+			var scene2 = mainScene2();
 			game.replaceScene(scene2);
 		}, nlabel);
 		scene.append(nlabel);

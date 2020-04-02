@@ -1,7 +1,9 @@
-import {Label, RubyAlign, Fragment} from "@akashic-extension/akashic-label";
+import { Label, Fragment } from "@akashic-extension/akashic-label";
+import { mainScene } from "./mainScene";
+
 var game = g.game;
 
-module.exports = function() {
+export function mainScene6() {
 	var scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
@@ -10,27 +12,11 @@ module.exports = function() {
 	scene.loaded.add(function() {
 
 		// グリフデータの生成
-		var mplusGlyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
-
+		var mPlusGlyphInfo = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
 		var mplusfont = new g.BitmapFont({
-			src: scene.assets["mplus"],
-			map: mplusGlyph.map,
-			defaultGlyphWidth: mplusGlyph.width,
-			defaultGlyphHeight: mplusGlyph.height,
-			missingGlyph: mplusGlyph.missingGlyph
-		});
-
-		// グリフデータの生成
-		var glyph = JSON.parse((<g.TextAsset>scene.assets["bmpfont-glyph"]).data);
-
-		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var bmpfont = new g.BitmapFont({
-			src: scene.assets["bmpfont"],
-			map: glyph.map,
-			defaultGlyphWidth: glyph.width,
-			defaultGlyphHeight: glyph.height,
-			missingGlyph: glyph.missingGlyph
+			src: scene.assets["mplus"] as g.ImageAssetLike,
+			glyphInfo: mPlusGlyphInfo
 		});
 
 		var dhint: g.DynamicFontHint = {
@@ -150,7 +136,7 @@ module.exports = function() {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.pointDown.add(function() {
-			var scene3 = require("mainScene")();
+			var scene3 = mainScene();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
