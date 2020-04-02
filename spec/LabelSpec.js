@@ -8,7 +8,7 @@ describe("test Label", function() {
 	var runtime;
 	var bmpfont;
 	var dfont;
-	var g = require('../node_modules/@akashic/akashic-engine/lib/main.node.js');
+	var g = require('../node_modules/@akashic/akashic-engine');
 	var mock = require("./helpers/mock");
 	var skeletonRuntime = require("./helpers/skeleton");
 

@@ -1,4 +1,4 @@
-import g = require("../../node_modules/@akashic/akashic-engine/lib/main.node");
+import g = require("../../node_modules/@akashic/akashic-engine");
 export class Renderer extends g.Renderer {
 	constructor() {
 		super();
@@ -168,6 +168,14 @@ export class Renderer extends g.Renderer {
 			methodName: "setOpacity",
 			params: { opacity }
 		});
+	}
+
+	isSupportedShaderProgram(): boolean {
+		return false;
+	}
+
+	setShaderProgram(shaderProgram: g.ShaderProgram | null): void {
+		throw g.ExceptionFactory.createAssertionError("mock Renderer#setShaderProgram() is not implemented");
 	}
 
 	_getImageData(sx: number, sy: number, sw: number, sh: number): g.ImageData {
@@ -373,7 +381,7 @@ class ScriptAsset extends g.ScriptAsset {
 		}
 	}
 
-	execute(env: g.ScriptAssetExecuteEnvironment): any {
+	execute(env: g.ScriptAssetRuntimeValue): any {
 		if (!(<ResourceFactory>this.game.resourceFactory).scriptContents.hasOwnProperty(env.module.filename)) {
 			// 特にスクリプトの内容指定がないケース:
 			// ScriptAssetは任意の値を返してよいが、シーンを記述したスクリプトは
@@ -484,9 +492,9 @@ export class Game extends g.Game {
 	terminatedGame: boolean;
 	raisedEvents: g.Event[];
 
-	constructor(gameConfiguration: g.GameConfiguration, assetBase?: string, selfId?: string) {
-		const resourceFactory = new ResourceFactory();
-		super(gameConfiguration, resourceFactory, assetBase, selfId);
+	constructor(param: g.GameParameterObject) {
+		const resourceFactory = param.resourceFactory as ResourceFactory;
+		super(param);
 		resourceFactory.init(this);
 		this.leftGame = false;
 		this.terminatedGame = false;
