@@ -1,8 +1,5 @@
 # CHANGELOG
 
-## Unreleased changes
-* TypeDocで出力されるリファレンスにGAのトラッキングIDが付与されるように改修
-
 ## 2.0.7
 
 * 描画内容の行数を返す `lineCount` を追加。
