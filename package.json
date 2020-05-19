@@ -8,7 +8,7 @@
     "prepare": "npm run prepublish",
     "clean": "rimraf tmp && rimraf lib",
     "build": "npm run clean && tsc",
-    "doc": "typedoc --out ./doc",
+    "doc": "typedoc --out ./doc --gaID UA-162208211-1",
     "lint": "npm run lint:ts && npm run lint:md",
     "lint:ts": "tslint --type-check -c tslint.json --project ./tsconfig.json",
     "lint:md": "remark ./*.md --frail --no-stdout --quiet --rc-path ./.remarkrc",
