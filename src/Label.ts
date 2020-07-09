@@ -231,7 +231,7 @@ class Label extends g.CacheableE {
 			currentLineHeight += this._lines[i].height + this.lineGap;
 		}
 		if (this.textColor) {
-			renderer.setCompositeOperation(g.CompositeOperation.SourceAtop);
+			renderer.setCompositeOperation("source-atop");
 			renderer.fillRect(0, 0, this._lineBreakWidth, this.height, this.textColor);
 		}
 		renderer.restore();
@@ -413,7 +413,7 @@ class Label extends g.CacheableE {
 	}
 
 	// 文字列の等幅描画
-	private _drawStringGlyphs(renderer: g.Renderer, font: g.Font, glyphs: g.GlyphLike[], fontSize: number,
+	private _drawStringGlyphs(renderer: g.Renderer, font: g.Font, glyphs: g.Glyph[], fontSize: number,
 	                          offsetX: number, offsetY: number, margin: number = 0): void {
 		renderer.save();
 		renderer.translate(offsetX, offsetY);
@@ -497,10 +497,10 @@ class Label extends g.CacheableE {
 					(f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize) / (f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size);
 
 				var currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
-					(glyph: g.GlyphLike) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
+					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
 				);
 				var currentMinRubyOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
-					(glyph: g.GlyphLike) => (glyph.offsetY > 0) ? glyph.offsetY : 0)
+					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.offsetY : 0)
 				);
 
 				if (maxRubyGlyphHeightWithOffsetY < currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale) {
@@ -612,8 +612,8 @@ class Label extends g.CacheableE {
 		}
 	}
 
-	private _createStringGlyph(text: string, font: g.Font): g.GlyphLike[] {
-		var glyphs: g.GlyphLike[] = [];
+	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
+		var glyphs: g.Glyph[] = [];
 		for (var i = 0; i < text.length; i++) {
 			var code = g.Util.charCodeAt(text, i);
 			if (! code) continue;
@@ -625,8 +625,8 @@ class Label extends g.CacheableE {
 		return glyphs;
 	}
 
-	private _createGlyph(code: number, font: g.Font): g.GlyphLike | null {
-		var glyph = font.glyphForCharacter(code);
+	private _createGlyph(code: number, font: g.Font): g.Glyph | null {
+		var glyph = font.glyphForCharacter(code) as g.Glyph;
 		if (! glyph) {
 			var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
 			console.warn(
@@ -645,10 +645,10 @@ class Label extends g.CacheableE {
 		var glyphScale = this.fontSize / this.font.size;
 		var rubyGlyphScale = rubyFontSize / rubyFont.size;
 		var rbWidth = glyphs.length > 0 ?
-			glyphs.map((glyph: g.GlyphLike) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * glyphScale :
+			glyphs.map((glyph: g.Glyph) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * glyphScale :
 			0;
 		var rtWidth = rubyGlyphs.length > 0 ?
-			rubyGlyphs.map((glyph: g.GlyphLike) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * rubyGlyphScale :
+			rubyGlyphs.map((glyph: g.Glyph) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * rubyGlyphScale :
 			0;
 		var width = rbWidth > rtWidth ? rbWidth : rtWidth;
 		return new fr.RubyFragmentDrawInfo(
@@ -679,7 +679,7 @@ class Label extends g.CacheableE {
 		state.currentLineInfo.fragmentDrawInfoArray.forEach(
 			(fragmentDrawInfo: fr.FragmentDrawInfo) => {
 				fragmentDrawInfo.glyphs.forEach(
-					(glyph: g.GlyphLike) => {
+					(glyph: g.Glyph) => {
 						if (minMinusOffsetY > glyph.offsetY) {
 							minMinusOffsetY = glyph.offsetY;
 						}

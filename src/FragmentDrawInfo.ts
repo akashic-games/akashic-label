@@ -11,8 +11,8 @@ export type FragmentDrawInfo = StringDrawInfo | RubyFragmentDrawInfo;
 export class StringDrawInfo {
 	text: string;
 	width: number;
-	glyphs: g.GlyphLike[];
-	constructor (text: string, width: number, glyphs: g.GlyphLike[]) {
+	glyphs: g.Glyph[];
+	constructor (text: string, width: number, glyphs: g.Glyph[]) {
 		this.text = text;
 		this.width = width;
 		this.glyphs = glyphs;
@@ -28,10 +28,10 @@ export class RubyFragmentDrawInfo {
 	width: number;
 	rbWidth: number;
 	rtWidth: number;
-	glyphs: g.GlyphLike[];
-	rubyGlyphs: g.GlyphLike[];
+	glyphs: g.Glyph[];
+	rubyGlyphs: g.Glyph[];
 	constructor (fragment: rp.RubyFragment, width: number, rbWidth: number, rtWidth: number,
-	             glyphs: g.GlyphLike[], rubyGlyphs: g.GlyphLike[]) {
+	             glyphs: g.Glyph[], rubyGlyphs: g.Glyph[]) {
 		this.text = fragment.text;
 		this.fragment = fragment;
 		this.width = width;
@@ -50,6 +50,6 @@ export interface LineInfo {
 	width: number;
 	height: number;
 	minMinusOffsetY: number;
-	surface: g.SurfaceLike;
+	surface: g.Surface;
 	fragmentDrawInfoArray: FragmentDrawInfo[];
 }

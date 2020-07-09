@@ -1,6 +1,6 @@
 {
   "name": "@akashic-extension/akashic-label",
-  "version": "3.0.0-beta.0",
+  "version": "3.0.0-beta.1",
   "description": "text library for akashic",
   "main": "lib/index.js",
   "scripts": {
@@ -33,7 +33,7 @@
   },
   "typings": "lib/index.d.ts",
   "dependencies": {
-    "@akashic/akashic-engine": "~3.0.0-beta.17"
+    "@akashic/akashic-engine": "~3.0.0-beta.28"
   },
   "files": [
     "lib",
