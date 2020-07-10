@@ -1,5 +1,5 @@
 import { mainScene } from "./mainScene";
 
-module.exports = function () {
+module.exports = () => {
     g.game.pushScene(mainScene());
 };

@@ -3,19 +3,19 @@ import { mainScene } from "./mainScene";
 
 var game = g.game;
 
-export function mainScene6() {
+export function mainScene6(): g.Scene {
 	var scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 2;
-	scene.loaded.add(function() {
+	scene.loaded.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
+		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
 		var mplusfont = new g.BitmapFont({
-			src: scene.assets["mplus"] as g.ImageAssetLike,
+			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
@@ -25,7 +25,7 @@ export function mainScene6() {
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
-		}
+		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: g.FontFamily.Monospace,
@@ -47,16 +47,16 @@ export function mainScene6() {
 		var counter = 0;
 
 		var text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
-		var sampleRule = function (fragments: Fragment[], index: number) {
+		var sampleRule = (fragments: Fragment[], index: number) => {
 			const ignoreHead = ["」", "』", "】"];
-			const ignoreTail = ["「", "『", "【"]
+			const ignoreTail = ["「", "『", "【"];
 			const headChar = fragments[index];
 			const isHeadCharIgnore = ignoreHead.indexOf(headChar as string) !== -1;
 			if (typeof headChar !== "string") return index;
 			if (isHeadCharIgnore) {
 				return index + 1;
 			} else {
-				const before = fragments[index-1];
+				const before = fragments[index - 1];
 				const isBeforeIgnore = ignoreHead.indexOf(before as string) !== -1;
 				if (!!before && isBeforeIgnore) {
 					return index;
@@ -65,7 +65,7 @@ export function mainScene6() {
 				}
 				return index;
 			}
-		}
+		};
 		var lblabel = new Label({
 			scene: scene,
 			text: text,
@@ -78,24 +78,24 @@ export function mainScene6() {
 		});
 		lblabel.y = 40;
 		scene.append(lblabel);
-		lblabel.update.add(function() {
+		lblabel.update.add(() => {
 			if (game.age % rate === 0) {
-				this.width += 5;
-				if (this.width > game.width) this.width = 100;
-				this.invalidate();
+				lblabel.width += 5;
+				if (lblabel.width > game.width) lblabel.width = 100;
+				lblabel.invalidate();
 			}
 		}, lblabel);
 
-		var text = '「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と' +
-			'「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」';
-		var sampleRule = function(fragments: Fragment[], index: number) {
+		var text = `「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
+			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
+			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
+			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」`;
+		var sampleRule = (fragments: Fragment[], index: number) => {
 			const target = fragments[index];
 			if (target === "」") {
 				return index + 1;
 			} else {
-				var before = fragments[index-1];
+				var before = fragments[index - 1];
 				if (!!before && before === "」") {
 					return index;
 				} else if (!!before && before === "「") {
@@ -103,7 +103,7 @@ export function mainScene6() {
 				}
 				return index;
 			}
-		}
+		};
 		var lblabel2 = new Label({
 			scene: scene,
 			text: text,
@@ -117,11 +117,11 @@ export function mainScene6() {
 		});
 		lblabel2.y = 190;
 		scene.append(lblabel2);
-		lblabel2.update.add(function() {
+		lblabel2.update.add(() => {
 			if (game.age % rate === 0) {
-				this.width = counter % 20 * 5 + 120;
+				lblabel2.width = counter % 20 * 5 + 120;
 				counter++;
-				this.invalidate();
+				lblabel2.invalidate();
 			}
 		}, lblabel2);
 
@@ -135,7 +135,7 @@ export function mainScene6() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(function() {
+		nlabel.pointDown.add(() => {
 			var scene3 = mainScene();
 			game.replaceScene(scene3);
 		}, nlabel);
@@ -152,7 +152,7 @@ export function mainScene6() {
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(function(){
+		dlabel.pointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -165,4 +165,4 @@ export function mainScene6() {
 
 	});
 	return scene;
-};
+}

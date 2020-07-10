@@ -1,14 +1,20 @@
 import g = require("../../node_modules/@akashic/akashic-engine");
-export class Renderer extends g.Renderer {
-	constructor() {
-		super();
-		this.methodCallHistoryWithParams = [];
-	}
-
+import { AudioSystem } from "@akashic/pdi-types";
+export class Renderer implements g.Renderer {
 	methodCallHistoryWithParams: {
 		methodName: string;
 		params?: {}
 	}[];
+
+	constructor() {
+		this.methodCallHistoryWithParams = [];
+	}
+	begin(): void {
+		// do nothing
+	}
+	end(): void {
+		// do nothing
+	}
 
 	clearMethodCallHistory(): void {
 		this.methodCallHistoryWithParams = [];
@@ -20,7 +26,7 @@ export class Renderer extends g.Renderer {
 		});
 	}
 
-	get methodCallHistory() {
+	get methodCallHistory(): string[] {
 		var ret: string[] = [];
 		for (var i = 0; i < this.methodCallHistoryWithParams.length; ++i)
 			ret.push(this.methodCallHistoryWithParams[i].methodName);
@@ -36,8 +42,15 @@ export class Renderer extends g.Renderer {
 		return params;
 	}
 
-	drawImage(surface: Surface, offsetX: number, offsetY: number, width: number, height: number,
-			canvasOffsetX: number, canvasOffsetY: number): void {
+	drawImage(
+		surface: g.Surface,
+		offsetX: number,
+		offsetY: number,
+		width: number,
+		height: number,
+		canvasOffsetX: number,
+		canvasOffsetY: number
+	): void {
 		this.methodCallHistoryWithParams.push({
 			methodName: "drawImage",
 			params: {
@@ -80,7 +93,7 @@ export class Renderer extends g.Renderer {
 		});
 	}
 
-	setCompositeOperation(operation: g.CompositeOperation): void {
+	setCompositeOperation(operation: g.CompositeOperationString): void {
 		this.methodCallHistoryWithParams.push({
 			methodName: "setCompositeOperation",
 			params: {
@@ -114,11 +127,16 @@ export class Renderer extends g.Renderer {
 		});
 	}
 
-	drawSprites(surface: g.Surface,
-			offsetX: number[], offsetY: number[],
-			width: number[], height: number[],
-			canvasOffsetX: number[], canvasOffsetY: number[],
-			count: number): void {
+	drawSprites(
+		surface: g.Surface,
+		offsetX: number[],
+		offsetY: number[],
+		width: number[],
+		height: number[],
+		canvasOffsetX: number[],
+		canvasOffsetY: number[],
+		count: number
+	): void {
 		this.methodCallHistoryWithParams.push({
 			methodName: "drawSprites",
 			params: {
@@ -130,28 +148,6 @@ export class Renderer extends g.Renderer {
 				canvasOffsetX: canvasOffsetX,
 				canvasOffsetY: canvasOffsetY,
 				count: count
-			}
-		});
-	}
-
-	drawSystemText(text: string, x: number, y: number, maxWidth: number, fontSize: number,
-			textAlign: g.TextAlign, textBaseline: g.TextBaseline, textColor: string, fontFamily: g.FontFamily,
-			strokeWidth: number, strokeColor: string, strokeOnly: boolean): void {
-		this.methodCallHistoryWithParams.push({
-			methodName: "drawSystemText",
-			params: {
-				text: text,
-				x: x,
-				y: y,
-				maxWidth: maxWidth,
-				fontSize: fontSize,
-				textAlign: textAlign,
-				textBaseline: textBaseline,
-				textColor: textColor,
-				fontFamily: fontFamily,
-				strokeWidth: strokeWidth,
-				strokeColor: strokeColor,
-				strokeOnly: strokeOnly
 			}
 		});
 	}
@@ -185,18 +181,38 @@ export class Renderer extends g.Renderer {
 		return null;
 	}
 
-	_putImageData(imageData: ImageData, dx: number, dy: number, dirtyX?: number, dirtyY?: number, dirtyWidth?: number, dirtyHeight?: number): void {
+	_putImageData(
+		_imageData: ImageData,
+		_dx: number,
+		_dy: number,
+		_dirtyX?: number,
+		_dirtyY?: number,
+		_dirtyWidth?: number,
+		_dirtyHeight?: number
+	): void {
 		this.methodCallHistoryWithParams.push({
 			methodName: "_putImageData"
-		});	
-	};
+		});
+	}
 }
 
-class Surface extends g.Surface {
-	constructor(width: number, height: number, drawable?: any) {
-		super(width, height, drawable);
-	}
+class Surface implements g.Surface {
+	width: number;
+	height: number;
+	_drawable: any;
 	createdRenderer: g.Renderer;
+
+	constructor(width: number, height: number, drawable?: any) {
+		this.width = width;
+		this.height = height;
+		this._drawable = drawable;
+	}
+	destroy(): void {
+		// do nothing
+	}
+	destroyed(): boolean {
+		return false;
+	}
 
 	renderer(): g.Renderer {
 		var r = new Renderer();
@@ -237,12 +253,40 @@ class LoadFailureController {
 	}
 }
 
-export class ImageAsset extends g.ImageAsset {
+export class ImageAsset implements g.ImageAsset {
+	type: "image" = "image";
+	width: number;
+	height: number;
+	hint: g.ImageAssetHint;
+	id: string;
+	path: string;
+	originalPath: string;
+	onDestroyed: g.Trigger<g.Asset>;
 	_failureController: LoadFailureController;
 
 	constructor(necessaryRetryCount: number, id: string, assetPath: string, width: number, height: number) {
-		super(id, assetPath, width, height);
+		this.width = width;
+		this.height = height;
+		this.id = id;
+		this.originalPath = assetPath;
+		this.path = this._assetPathFilter(assetPath);
+		this.onDestroyed = new g.Trigger<g.Asset>();
 		this._failureController = new LoadFailureController(necessaryRetryCount);
+	}
+	initialize(hint: g.ImageAssetHint): void {
+		// do nothing
+	}
+	inUse(): boolean {
+		return false;
+	}
+	destroy(): void {
+		// do nothing
+	}
+	destroyed(): boolean {
+		return false;
+	}
+	_assetPathFilter(path: string): string {
+		return path;
 	}
 
 	_load(loader: g.AssetLoadHandler): void {
@@ -318,13 +362,46 @@ export class DelayedImageAsset extends ImageAsset implements DelayedAsset {
 	}
 }
 
-class AudioAsset extends g.AudioAsset {
+class AudioAsset implements g.AudioAsset {
+	type: "audio" = "audio";
+	data: any;
+	duration: number;
+	loop: boolean;
+	hint: g.AudioAssetHint;
+	_system: AudioSystem;
+	id: string;
+	path: string;
+	originalPath: string;
+	onDestroyed: g.Trigger<g.Asset>;
 	_failureController: LoadFailureController;
 
 	constructor(necessaryRetryCount: number, id: string, assetPath: string, duration: number,
 	            system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint) {
-		super(id, assetPath, duration, system, loop, hint);
+		this.duration = duration;
+		this.loop = loop;
+		this.hint = hint;
+		this._system = system;
+		this.data = undefined;
 		this._failureController = new LoadFailureController(necessaryRetryCount);
+	}
+	play(): g.AudioPlayer {
+		return null;
+	}
+	stop(): void {
+		// do nothing
+	}
+	inUse(): boolean {
+		return false;
+	}
+
+	destroy(): void {
+		// do nothing
+	}
+	destroyed(): boolean {
+		return false;
+	}
+	_assetPathFilter(path: string): string {
+		return path;
 	}
 
 	_load(loader: g.AssetLoadHandler): void {
@@ -337,19 +414,43 @@ class AudioAsset extends g.AudioAsset {
 	}
 }
 
-class TextAsset extends g.TextAsset {
+class TextAsset implements g.TextAsset {
 	game: g.Game;
+	type: "text" = "text";
+	data: string;
+	id: string;
+	path: string;
+	originalPath: string;
+	onDestroyed: g.Trigger<g.Asset>;
 	_failureController: LoadFailureController;
 
 	constructor(game: g.Game, necessaryRetryCount: number, id: string, assetPath: string) {
-		super(id, assetPath);
+		this.data = undefined!;
+		this.id = id;
+		this.originalPath = assetPath;
+		this.path = this._assetPathFilter(assetPath);
+		this.onDestroyed = new g.Trigger<g.Asset>();
 		this.game = game;
 		this._failureController = new LoadFailureController(necessaryRetryCount);
+	}
+
+	inUse(): boolean {
+		return false;
+	}
+	destroy(): void {
+		// do nothing
+	}
+	destroyed(): boolean {
+		return false;
+	}
+	_assetPathFilter(path: string): string {
+		return path;
 	}
 
 	_load(loader: g.AssetLoadHandler): void {
 		if (this._failureController.tryLoad(this, loader)) {
 			setTimeout(() => {
+				// if ((<ResourceFactory>this.game.resourceFactory).scriptContents.hasOwnProperty(this.path)) {
 				if ((<ResourceFactory>this.game.resourceFactory).scriptContents.hasOwnProperty(this.path)) {
 					this.data = (<ResourceFactory>this.game.resourceFactory).scriptContents[this.path];
 				} else {
@@ -362,14 +463,36 @@ class TextAsset extends g.TextAsset {
 	}
 }
 
-class ScriptAsset extends g.ScriptAsset {
+class ScriptAsset implements g.ScriptAsset {
 	game: g.Game;
+	type: "script" = "script";
+	script: string;
+	id: string;
+	path: string;
+	originalPath: string;
+	onDestroyed: g.Trigger<g.Asset>;
 	_failureController: LoadFailureController;
 
 	constructor(game: g.Game, necessaryRetryCount: number, id: string, assetPath: string) {
-		super(id, assetPath);
 		this.game = game;
+		this.id = id;
+		this.originalPath = assetPath;
+		this.path = this._assetPathFilter(assetPath);
+		this.onDestroyed = new g.Trigger<g.Asset>();
+
 		this._failureController = new LoadFailureController(necessaryRetryCount);
+	}
+	inUse(): boolean {
+		return false;
+	}
+	destroy(): void {
+		// do nothing
+	}
+	destroyed(): boolean {
+		return false;
+	}
+	_assetPathFilter(path: string): string {
+		return path;
 	}
 
 	_load(loader: g.AssetLoadHandler): void {
@@ -386,7 +509,7 @@ class ScriptAsset extends g.ScriptAsset {
 			// 特にスクリプトの内容指定がないケース:
 			// ScriptAssetは任意の値を返してよいが、シーンを記述したスクリプトは
 			// シーンを返す関数を返すことを期待するのでここでは関数を返しておく
-			return env.module.exports = function () { return new g.Scene({ game: env.game }); };
+			return env.module.exports =  () => { return new g.Scene({ game: env.game }); };
 
 		} else {
 			var prefix = "(function(exports, require, module, __filename, __dirname) {";
@@ -399,7 +522,7 @@ class ScriptAsset extends g.ScriptAsset {
 	}
 }
 
-export class ResourceFactory extends g.ResourceFactory {
+export class ResourceFactory implements g.ResourceFactory {
 	game: g.Game;
 	scriptContents: {[key: string]: string};
 
@@ -412,21 +535,20 @@ export class ResourceFactory extends g.ResourceFactory {
 	_delayedAssets: DelayedAsset[];
 
 	constructor() {
-		super();
 		this.scriptContents = {};
 		this.createsDelayedAsset = false;
 		this._necessaryRetryCount = 0;
 		this._delayedAssets = [];
 	}
 
-	init(game: g.Game) {
+	init(game: g.Game): void {
 		this.game = game;
 	}
 
 	// func が呼び出されている間だけ this._necessaryRetryCount を変更する。
 	// func() とその呼び出し先で生成されたアセットは、指定回数だけロードに失敗したのち成功する。
 	// -1を指定した場合、ロードは retriable が偽に設定された AssetLoadFatalError で失敗する。
-	withNecessaryRetryCount(necessaryRetryCount: number, func: () => void) {
+	withNecessaryRetryCount(necessaryRetryCount: number, func: () => void): void {
 		var originalValue = this._necessaryRetryCount;
 		try {
 			this._necessaryRetryCount = necessaryRetryCount;
@@ -460,11 +582,18 @@ export class ResourceFactory extends g.ResourceFactory {
 		throw new Error("not implemented");
 	}
 
-	createAudioAsset(id: string, assetPath: string, duration: number, system: g.AudioSystem, loop: boolean, hint: g.AudioAssetHint): g.AudioAsset {
+	createAudioAsset(
+		id: string,
+		assetPath: string,
+		duration: number,
+		system: g.AudioSystem,
+		loop: boolean,
+		hint: g.AudioAssetHint
+	): g.AudioAsset {
 		return new AudioAsset(this._necessaryRetryCount, id, assetPath, duration, system, loop, hint);
 	}
 
-	createAudioPlayer(system: g.AudioSystem): g.AudioPlayer {
+	createAudioPlayer(_system: g.AudioSystem): g.AudioPlayer {
 		throw new Error("not implemented");
 	}
 
@@ -480,9 +609,16 @@ export class ResourceFactory extends g.ResourceFactory {
 		return new Surface(width, height);
 	}
 
-	createGlyphFactory(fontFamily: g.FontFamily | string | (g.FontFamily | string)[],
-	                   fontSize: number, baselineHeight?: number, fontColor?: string,
-	                   strokeWidth?: number, strokeColor?: string, strokeOnly?: boolean, fontWeight?: g.FontWeight): g.GlyphFactory {
+	createGlyphFactory(
+		_fontFamily: string | string[],
+		_fontSize: number,
+		_baselineHeight?: number,
+		_fontColor?: string,
+		_strokeWidth?: number,
+		_strokeColor?: string,
+		_strokeOnly?: boolean,
+		_fontWeight?: g.FontWeightString
+	): g.GlyphFactory {
 		throw new Error("not implemented");
 	}
 }
@@ -492,13 +628,27 @@ export class Game extends g.Game {
 	terminatedGame: boolean;
 	raisedEvents: g.Event[];
 
-	constructor(param: g.GameParameterObject) {
-		const resourceFactory = param.resourceFactory as ResourceFactory;
-		super(param);
+	// constructor(param: g.GameConfiguration) {
+	// 	const resourceFactory = param.resourceFactory as ResourceFactory;
+	// 	super(param);
+	// 	resourceFactory.init(this);
+	// 	this.leftGame = false;
+	// 	this.terminatedGame = false;
+	// 	this.raisedEvents = [];
+	// }
+	constructor(
+		configuration: g.GameConfiguration,
+		assetBase?: string,
+		selfId?: string,
+		operationPluginViewInfo?: g.OperationPluginViewInfo,
+		mainFunc?: g.GameMainFunction
+	) {
+		const resourceFactory = new ResourceFactory();
+		const handlerSet = new GameHandlerSet();
+		super({ engineModule: g, configuration, resourceFactory, handlerSet, assetBase, selfId, operationPluginViewInfo, mainFunc });
 		resourceFactory.init(this);
-		this.leftGame = false;
 		this.terminatedGame = false;
-		this.raisedEvents = [];
+		// this.autoTickForInternalEvents = true;
 	}
 
 	_leaveGame(): void {
@@ -533,6 +683,40 @@ export class Game extends g.Game {
 		throw new Error("not implemented");
 	}
 }
+
+export class GameHandlerSet implements g.GameHandlerSet {
+	raiseTick(_events?: any[]): void {
+		// do nothing
+	}
+	raiseEvent(_event: any): void {
+		// do nothing
+	}
+	addEventFilter(func: (pevs: any[]) => any[], _handleEmpty?: boolean): void {
+		// do nothing
+	}
+	removeEventFilter(func: (pevs: any[]) => any[]): void {
+		// do nothing
+	}
+	removeAllEventFilters(): void {
+		// do nothing
+	}
+	changeSceneMode(mode: g.SceneMode): void {
+		// do nothing
+	}
+	shouldSaveSnapshot(): boolean {
+		return false;
+	}
+	saveSnapshot(_frame: number, _snapshot: any, _randGenSer: any, _timestamp?: number): void {
+		// do nothing
+	}
+	getInstanceType(): "active" | "passive" {
+		return "passive";
+	}
+	getCurrentTime(): number {
+		return 0;
+	}
+}
+
 
 export enum EntityStateFlags {
 	/**
