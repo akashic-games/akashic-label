@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 3.0.0-beta.1
+
+* akashic-engine@3.0.0-beta.28 に追従
+
+## 3.0.0-beta.0
+
+* akashic-engine@3.0.0-beta.17 に追従
+
 ## 2.0.7
 
 * 描画内容の行数を返す `lineCount` を追加。

@@ -202,7 +202,7 @@ describe("test Label", function() {
 		var cr = mlabel._cache.createdRenderer;
 		expect(cr.methodCallParamsHistory("setCompositeOperation").length).toBe(1);
 		expect(cr.methodCallParamsHistory("setCompositeOperation")[0])
-			.toEqual({operation: g.CompositeOperation.SourceAtop});
+			.toEqual({operation: "source-atop"});
 
 		expect(cr.methodCallParamsHistory("fillRect").length).toBe(1);
 		expect(cr.methodCallParamsHistory("fillRect")[0])
@@ -793,7 +793,7 @@ describe("test Label", function() {
 		}).not.toThrowError("AssertionError");
 	});
 
-	it("line break rules - before text", function() {		
+	it("line break rules - before text", function() {
 		var label = new Label({
 			scene: runtime.scene,
 			text: "0123456",
@@ -816,7 +816,7 @@ describe("test Label", function() {
 		expect(label._lines[1].sourceText).toBe("234");
 	});
 
-	it("line break rules - after text", function() {		
+	it("line break rules - after text", function() {
 		var label = new Label({
 			scene: runtime.scene,
 			text: "0123456",
