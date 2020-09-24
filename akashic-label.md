@@ -209,7 +209,7 @@ var label = new Label({
     text: text,
     font: font,
     fontSize: 15,
-    textAlign: g.TextAlign.Left,
+    textAlign: "left",
     width: game.width,
     lineBreak: true,
     lineBreakRule: sampleRule

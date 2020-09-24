@@ -8,7 +8,7 @@ export function mainScene5(): g.Scene {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 2;
-	scene.loaded.add(() => {
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
 		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
@@ -33,7 +33,7 @@ export function mainScene5(): g.Scene {
 		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -45,7 +45,7 @@ export function mainScene5(): g.Scene {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -65,7 +65,7 @@ export function mainScene5(): g.Scene {
 		});
 		label01.y = y0;
 		label01.touchable = true;
-		label01.update.add(() => {
+		label01.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				label01.fixLineGap = !label01.fixLineGap;
 				label01.invalidate();
@@ -122,9 +122,9 @@ export function mainScene5(): g.Scene {
 		});
 		mlabel.y = 130;
 		counter = 0;
-		mlabel.textAlign = g.TextAlign.Left;
+		mlabel.textAlign = "left";
 		scene.append(mlabel);
-		mlabel.update.add(() => {
+		mlabel.onUpdate.add(() => {
 			// 初期化と待機
 			if (counter === textArray.length) {
 				mlabel.text = "";
@@ -153,13 +153,13 @@ export function mainScene5(): g.Scene {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(() => {
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -181,7 +181,7 @@ export function mainScene5(): g.Scene {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(() => {
+		nlabel.onPointDown.add(() => {
 			var scene3 = mainScene6();
 			game.replaceScene(scene3);
 		}, nlabel);
@@ -192,13 +192,13 @@ export function mainScene5(): g.Scene {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(() => {
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((child: g.E) => {
 				if (child instanceof Label) {
 					child.font = dfont;

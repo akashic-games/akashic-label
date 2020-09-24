@@ -8,7 +8,7 @@ export function mainScene2(): g.Scene {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 6;
-	scene.loaded.add(() => {
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
 		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
@@ -33,7 +33,7 @@ export function mainScene2(): g.Scene {
 		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -45,7 +45,7 @@ export function mainScene2(): g.Scene {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -88,7 +88,7 @@ export function mainScene2(): g.Scene {
 		label03.x = 0;
 		label03.y = y0 + 90;
 		label03.touchable = true;
-		label03.update.add(() => {
+		label03.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				label03.rubyOptions.rubyGap = counter03 % 4 - 5;
 				counter03++;
@@ -111,7 +111,7 @@ export function mainScene2(): g.Scene {
 		label04.y = y0 + 90;
 		label04.touchable = true;
 		scene.append(label04);
-		label04.update.add(() => {
+		label04.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				label04.rubyOptions.rubyFontSize = counter04 % 5 + 15;
 				counter04++;
@@ -132,7 +132,7 @@ export function mainScene2(): g.Scene {
 		label05.y = y0 + 90;
 		label05.touchable = true;
 		scene.append(label05);
-		label05.update.add(() => {
+		label05.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				if (label05.rubyOptions.rubyFont === bmpfont) {
 					label05.rubyOptions.rubyFont = mplusfont;
@@ -178,7 +178,7 @@ export function mainScene2(): g.Scene {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(() => {
+		nlabel.onPointDown.add(() => {
 			var scene3 = mainScene3();
 			game.replaceScene(scene3);
 		}, nlabel);
@@ -188,13 +188,13 @@ export function mainScene2(): g.Scene {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(() => {
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;

@@ -66,7 +66,7 @@ describe("test Label", function() {
 		expect(mlabel.text).toBe("foo");
 		expect(mlabel.font).toBe(bmpfont);
 		expect(mlabel.width).toBe(300);
-		expect(mlabel.textAlign).toBe(g.TextAlign.Left);
+		expect(mlabel.textAlign).toBe("left");
 		expect(mlabel.fontSize).toBe(20);
 		expect(mlabel.lineGap).toBe(0);
 		expect(mlabel.lineBreak).toBe(true);
@@ -85,7 +85,7 @@ describe("test Label", function() {
 				width: 200,
 				lineBreak: false,
 				lineGap: 2,
-				textAlign: g.TextAlign.Center
+				textAlign: "center"
 			});
 		}).toThrowError("AssertionError");
 	});
@@ -100,7 +100,7 @@ describe("test Label", function() {
 				width: 200,
 				lineBreak: false,
 				lineGap: -11,
-				textAlign: g.TextAlign.Right
+				textAlign: "right"
 			});
 		}).toThrowError("AssertionError");
 	});
@@ -114,7 +114,7 @@ describe("test Label", function() {
 				width: 200,
 				lineBreak: false,
 				lineGap: -11,
-				textAlign: g.TextAlign.Right
+				textAlign: "right"
 			});
 		}).toThrowError("AssertionError");
 	});
@@ -222,9 +222,9 @@ describe("test Label", function() {
 		});
 
 		expect(mlabel._offsetX(fontSize)).toBe(0);
-		mlabel.textAlign = g.TextAlign.Center;
+		mlabel.textAlign = "center";
 		expect(mlabel._offsetX(fontSize)).toBe(45); // (100 - 10) / 2
-		mlabel.textAlign = g.TextAlign.Right;
+		mlabel.textAlign = "right";
 		expect(mlabel._offsetX(fontSize)).toBe(90); // 100 - 10
 	});
 
@@ -235,7 +235,7 @@ describe("test Label", function() {
 			font: bmpfont,
 			textColor: "black",
 			fontSize: 10,
-			textAlign: g.TextAlign.Center,
+			textAlign: "center",
 			width: 100,
 			lineBreak: true,
 			lineGap: 2
@@ -243,7 +243,7 @@ describe("test Label", function() {
 		mlabel.text = "b";
 		mlabel.textColor = "red";
 		mlabel.fontSize = 15;
-		mlabel.textAlign = g.TextAlign.Right;
+		mlabel.textAlign = "right";
 		mlabel.width = 200;
 		mlabel.lineBreak = false;
 		mlabel.lineGap = 3;
@@ -260,7 +260,7 @@ describe("test Label", function() {
 			textColor: "red",
 			font: bmpfont,
 			fontSize: 15,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 200,
 			lineBreak: false,
 			lineGap: 3,
@@ -606,7 +606,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign:  g.TextAlign.Left,
+				textAlign:  "left",
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -676,7 +676,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign: g.TextAlign.Left,
+				textAlign: "left",
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -714,7 +714,7 @@ describe("test Label", function() {
 			var mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
-				textAlign: g.TextAlign.Left,
+				textAlign: "left",
 				font: bmpfont,
 				fontSize: 10,
 				width: 105,
@@ -786,7 +786,7 @@ describe("test Label", function() {
 				width: 100,
 				lineBreak: false,
 				lineGap: 2,
-				textAlign: g.TextAlign.Left,
+				textAlign: "left",
 				lineBreakRule: (fragments, index) => index
 			});
 			expect(mlabel.lineBreakRule).toEqual((fragments, index) => index);
@@ -802,7 +802,7 @@ describe("test Label", function() {
 			width: 30,
 			lineBreak: true,
 			lineGap: 2,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			lineBreakRule: (fragments, index) => {
 				if (fragments[index] === "3") {
 					return index - 1;
@@ -825,7 +825,7 @@ describe("test Label", function() {
 			width: 30,
 			lineBreak: true,
 			lineGap: 2,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			lineBreakRule: (fragments, index) => {
 				if (fragments[index] === "3") {
 					return index + 1;
@@ -849,7 +849,7 @@ describe("test Label", function() {
 			width: 80,
 			lineBreak: true,
 			lineGap: 2,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			lineBreakRule: (fragments, index) => {
 				if (fragments[index] === "]") {
 					return index + 1; // 先送り改行
