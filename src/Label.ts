@@ -270,13 +270,13 @@ class Label extends g.CacheableE {
 	_offsetX(width: number): number {
 		switch (this.textAlign) {
 			case "left":
-			case "left":
+			case g.TextAlign.Left:
 				return 0;
 			case "right":
-			case "right":
+			case g.TextAlign.Right:
 				return (this._lineBreakWidth - width);
 			case "center":
-			case "center":
+			case g.TextAlign.Center:
 				return ((this._lineBreakWidth - width) / 2);
 			default:
 				return 0;
