@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 3.0.0-beta.2
+
+* textAlign 指定時に `g.TextAlignString` 型を指定できるようにした
+* akashic-engine@3.0.0-beta.33 に追従
+
 ## 3.0.0-beta.1
 
 * akashic-engine@3.0.0-beta.28 に追従

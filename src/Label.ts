@@ -43,10 +43,10 @@ class Label extends g.CacheableE {
 
 	/**
 	 * 文字列の描画位置。
-	 * 初期値は `g.TextAlign.Left` である。
+	 * 初期値は `"left"` である。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
-	textAlign: g.TextAlign;
+	textAlign: g.TextAlign | g.TextAlignString;
 
 	/**
 	 * フォントサイズ。
@@ -102,8 +102,8 @@ class Label extends g.CacheableE {
 	/**
 	 * `width` プロパティを `this.text` の描画に必要な幅の値に自動的に更新するかを表す。
 	 * `width` プロパティの更新は `this.invalidate()` を呼び出した後のタイミングで行われる。
-	 * `textAlign` を `TextAlign.Left` 以外にする場合、この値は `false` にすべきである。
-	 * `textAlign` が `TextAlign.Left` 以外かつ、 この値が `true` の場合、描画内容は不定である。
+	 * `textAlign` を `"left"` 以外にする場合、この値は `false` にすべきである。
+	 * `textAlign` が `"left"` 以外かつ、 この値が `true` の場合、描画内容は不定である。
 	 * 初期値は偽である。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
@@ -139,7 +139,7 @@ class Label extends g.CacheableE {
 	_beforeFont: g.Font;
 	_beforeLineBreak: boolean;
 	_beforeFontSize: number;
-	_beforeTextAlign: g.TextAlign;
+	_beforeTextAlign: g.TextAlign | g.TextAlignString;
 	_beforeWidth: number;
 	_beforeRubyEnabled: boolean;
 	_beforeFixLineGap: boolean;
@@ -169,7 +169,7 @@ class Label extends g.CacheableE {
 		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;
-		this.textAlign = "textAlign" in param ? param.textAlign : g.TextAlign.Left;
+		this.textAlign = "textAlign" in param ? param.textAlign : "left";
 		this.textColor = param.textColor;
 		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
 		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
@@ -250,7 +250,7 @@ class Label extends g.CacheableE {
 	 * 禁則処理によって行幅が this.width を超える場合があるため、 `g.CacheableE` のメソッドをオーバーライドする
 	 */
 	calculateCacheSize(): g.CommonSize {
-		// TODO: 最大値の候補に this.width を使用するのは textAlign が g.Center か g.Right の場合に描画に必要なキャッシュサイズを確保するためであり、
+		// TODO: 最大値の候補に this.width を使用するのは textAlign が "center" か "right" の場合に描画に必要なキャッシュサイズを確保するためであり、
 		// 最大行幅に対して this.width が大きい場合、余分なキャッシュ領域を確保することになる。
 		// これは g.CacheableE にキャッシュ描画位置を調整する cacheOffsetX を導入することで解決される。
 		const maxWidth = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), this.width));
@@ -269,10 +269,13 @@ class Label extends g.CacheableE {
 
 	_offsetX(width: number): number {
 		switch (this.textAlign) {
+			case "left":
 			case g.TextAlign.Left:
 				return 0;
+			case "right":
 			case g.TextAlign.Right:
 				return (this._lineBreakWidth - width);
+			case "center":
 			case g.TextAlign.Center:
 				return ((this._lineBreakWidth - width) / 2);
 			default:

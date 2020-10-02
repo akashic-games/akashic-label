@@ -8,7 +8,7 @@ export function mainScene4(): g.Scene {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 3;
-	scene.loaded.add(() => {
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
 		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
@@ -33,7 +33,7 @@ export function mainScene4(): g.Scene {
 		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -45,7 +45,7 @@ export function mainScene4(): g.Scene {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -98,7 +98,7 @@ export function mainScene4(): g.Scene {
 		label00.x = 0;
 		label00.y = y0;
 		scene.append(label00);
-		label00.update.add(() => {
+		label00.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				label00.width = counter00 % 20 * 10 + 120;
 				counter00++;
@@ -140,7 +140,7 @@ export function mainScene4(): g.Scene {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(() => {
+		nlabel.onPointDown.add(() => {
 			var scene3 = mainScene5();
 			game.replaceScene(scene3);
 		}, nlabel);
@@ -151,13 +151,13 @@ export function mainScene4(): g.Scene {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(() => {
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;

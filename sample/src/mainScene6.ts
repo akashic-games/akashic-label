@@ -9,7 +9,7 @@ export function mainScene6(): g.Scene {
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 2;
-	scene.loaded.add(() => {
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
 		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
@@ -28,7 +28,7 @@ export function mainScene6(): g.Scene {
 		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -39,7 +39,7 @@ export function mainScene6(): g.Scene {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -71,14 +71,14 @@ export function mainScene6(): g.Scene {
 			text: text,
 			font: mplusfont,
 			fontSize: 15,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			width: game.width / 4,
 			lineBreak: true,
 			lineBreakRule: sampleRule
 		});
 		lblabel.y = 40;
 		scene.append(lblabel);
-		lblabel.update.add(() => {
+		lblabel.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				lblabel.width += 5;
 				if (lblabel.width > game.width) lblabel.width = 100;
@@ -109,7 +109,7 @@ export function mainScene6(): g.Scene {
 			text: text,
 			font: mplusfont,
 			fontSize: 15,
-			textAlign: g.TextAlign.Left,
+			textAlign: "left",
 			width: game.width / 4,
 			lineBreak: true,
 			widthAutoAdjust: true,
@@ -117,7 +117,7 @@ export function mainScene6(): g.Scene {
 		});
 		lblabel2.y = 190;
 		scene.append(lblabel2);
-		lblabel2.update.add(() => {
+		lblabel2.onUpdate.add(() => {
 			if (game.age % rate === 0) {
 				lblabel2.width = counter % 20 * 5 + 120;
 				counter++;
@@ -135,7 +135,7 @@ export function mainScene6(): g.Scene {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(() => {
+		nlabel.onPointDown.add(() => {
 			var scene3 = mainScene();
 			game.replaceScene(scene3);
 		}, nlabel);
@@ -146,13 +146,13 @@ export function mainScene6(): g.Scene {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(() => {
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
