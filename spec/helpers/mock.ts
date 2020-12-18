@@ -691,10 +691,10 @@ export class GameHandlerSet implements g.GameHandlerSet {
 	raiseEvent(_event: any): void {
 		// do nothing
 	}
-	addEventFilter(func: (pevs: any[]) => any[], _handleEmpty?: boolean): void {
+	addEventFilter(func: g.EventFilter, _handleEmpty?: boolean): void {
 		// do nothing
 	}
-	removeEventFilter(func: (pevs: any[]) => any[]): void {
+	removeEventFilter(func: g.EventFilter): void {
 		// do nothing
 	}
 	removeAllEventFilters(): void {
