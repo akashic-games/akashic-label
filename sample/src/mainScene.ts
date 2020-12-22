@@ -1,26 +1,21 @@
-import {Label} from "@akashic-extension/akashic-label";
-var game = g.game;
+import { Label } from "@akashic-extension/akashic-label";
+import { mainScene2 } from "./mainScene2";
 
-export = function() {
+export function mainScene(): g.Scene {
+	var game = g.game;
 	var scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 3;
-	scene.loaded.add(function() {
-
-		var labels: Label[] = [];
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var glyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
-
+		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
 		var mplusfont = new g.BitmapFont({
-			src: scene.assets["mplus"],
-			map: glyph.map,
-			defaultGlyphWidth: glyph.width,
-			defaultGlyphHeight: glyph.height,
-			missingGlyph: glyph.missingGlyph
+			src: scene.asset.getImageById("mplus"),
+			glyphInfo: mPlusGlyphInfo
 		});
 
 		var dhint: g.DynamicFontHint = {
@@ -29,10 +24,10 @@ export = function() {
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
-		}
+		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -44,7 +39,7 @@ export = function() {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -76,11 +71,11 @@ export = function() {
 		label02.x = game.width / 4;
 		label02.y = y0;
 		label02.touchable = true;
-		label02.update.add(function(){
+		label02.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.textColor = colors[counter02 % colors.length];
+				label02.textColor = colors[counter02 % colors.length];
 				counter02++;
-				this.invalidate();
+				label02.invalidate();
 			}
 		}, label02);
 		scene.append(label02);
@@ -97,11 +92,11 @@ export = function() {
 		label03.x = game.width / 4 * 2;
 		label03.y = y0;
 		label03.touchable = true;
-		label03.update.add(function(){
+		label03.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.fontSize = (counter03 % 6) * 3 + 5;
+				label03.fontSize = (counter03 % 6) * 3 + 5;
 				counter03++;
-				this.invalidate();
+				label03.invalidate();
 			}
 		}, label03);
 		scene.append(label03);
@@ -116,7 +111,7 @@ export = function() {
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width,
-			textAlign: g.TextAlign.Left
+			textAlign: "left"
 		});
 		label11.y = y1;
 		scene.append(label11);
@@ -128,7 +123,7 @@ export = function() {
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		label12.y = y1;
 		scene.append(label12);
@@ -140,7 +135,7 @@ export = function() {
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width,
-			textAlign: g.TextAlign.Right
+			textAlign: "right"
 		});
 		label12.y = y1;
 		scene.append(label12);
@@ -150,7 +145,7 @@ export = function() {
 
 		// 複数行のラベル
 		var counter21 = 0;
-		var aligns21 =  [g.TextAlign.Left, g.TextAlign.Center, g.TextAlign.Right];
+		var aligns21: g.TextAlignString[] =  ["left", "center", "right"];
 		var label21 = new Label({
 			scene: scene,
 			text: "改行記号（￥ｒ・￥ｎ・￥ｒ￥ｎ）\rで改行できます",
@@ -160,11 +155,11 @@ export = function() {
 		});
 		label21.y = y2;
 		scene.append(label21);
-		label21.update.add(function(){
+		label21.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.textAlign = aligns21[counter21 % 3];
+				label21.textAlign = aligns21[counter21 % 3];
 				counter21++;
-				this.invalidate();
+				label21.invalidate();
 			}
 		}, label21);
 
@@ -180,11 +175,11 @@ export = function() {
 		});
 		label22.y = y2 + 50;
 		label22.touchable = true;
-		label22.update.add(function(){
+		label22.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.lineGap = Math.round(counter22 % 10) - 5;
+				label22.lineGap = Math.round(counter22 % 10) - 5;
 				counter22++;
-				this.invalidate();
+				label22.invalidate();
 			}
 		}, label22);
 		scene.append(label22);
@@ -199,13 +194,13 @@ export = function() {
 			width: 100
 		});
 		label23.x = 150;
-		label23.y = y2 + 50;;
+		label23.y = y2 + 50;
 		scene.append(label23);
-		label23.update.add(function(){
+		label23.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.width = counter23 % 10 * 10 + 100;
-				counter23;
-				this.invalidate();
+				label23.width = counter23 % 10 * 10 + 100;
+				counter23++;
+				label23.invalidate();
 			}
 		}, label23);
 
@@ -220,10 +215,10 @@ export = function() {
 		});
 		label24.y = y2 + 150;
 		label24.touchable = true;
-		label24.update.add(function(){
+		label24.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.lineBreak = !this.lineBreak;
-				this.invalidate();
+				label24.lineBreak = !label24.lineBreak;
+				label24.invalidate();
 			}
 		}, label24);
 		scene.append(label24);
@@ -238,8 +233,8 @@ export = function() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(function(){
-			var scene2 = require("mainScene2")();
+		nlabel.onPointDown.add(() => {
+			var scene2 = mainScene2();
 			game.replaceScene(scene2);
 		}, nlabel);
 		scene.append(nlabel);
@@ -249,19 +244,19 @@ export = function() {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(function(){
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
 					label.rubyOptions.rubyFont = new g.DynamicFont({
 						game: scene.game,
-						fontFamily: g.FontFamily.Monospace,
+						fontFamily: "monospace",
 						size: 40
 					});
 					label.invalidate();
@@ -273,4 +268,4 @@ export = function() {
 	});
 
 	return scene;
-};
+}

@@ -1,36 +1,27 @@
-import {Label, RubyAlign, Fragment} from "@akashic-extension/akashic-label";
-var game = g.game;
+import { Label, Fragment } from "@akashic-extension/akashic-label";
+import { mainScene5 } from "./mainScene5";
 
-module.exports = function() {
+export function mainScene4(): g.Scene {
+	var game = g.game;
 	var scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
 	var rate = game.fps / 3;
-	scene.loaded.add(function() {
+	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mplusGlyph = JSON.parse((<g.TextAsset>scene.assets["mplus-glyph"]).data);
-
+		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
 		var mplusfont = new g.BitmapFont({
-			src: scene.assets["mplus"],
-			map: mplusGlyph.map,
-			defaultGlyphWidth: mplusGlyph.width,
-			defaultGlyphHeight: mplusGlyph.height,
-			missingGlyph: mplusGlyph.missingGlyph
+			src: scene.asset.getImageById("mplus"),
+			glyphInfo: mPlusGlyphInfo
 		});
 
-		// グリフデータの生成
-		var glyph = JSON.parse((<g.TextAsset>scene.assets["bmpfont-glyph"]).data);
-
-		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
+		var bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
 		var bmpfont = new g.BitmapFont({
-			src: scene.assets["bmpfont"],
-			map: glyph.map,
-			defaultGlyphWidth: glyph.width,
-			defaultGlyphHeight: glyph.height,
-			missingGlyph: glyph.missingGlyph
+			src: scene.asset.getImageById("bmpfont"),
+			glyphInfo: bmpGlyphInfo
 		});
 
 		var dhint: g.DynamicFontHint = {
@@ -39,10 +30,10 @@ module.exports = function() {
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
-		}
+		};
 		var dfont = new g.DynamicFont({
 			game: scene.game,
-			fontFamily: g.FontFamily.Monospace,
+			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
@@ -54,7 +45,7 @@ module.exports = function() {
 			font: mplusfont,
 			fontSize: 30,
 			width: game.width,
-			textAlign: g.TextAlign.Center
+			textAlign: "center"
 		});
 		tlabel0.x = 0;
 		scene.append(tlabel0);
@@ -95,7 +86,7 @@ module.exports = function() {
 		};
 		var counter00 = 0;
 		// HTMLライクなルビの記法
-		var text00 = '「よろしゅうございます。<ruby>南十字<rt>サウザンクロス</rt></ruby>へ着きますのは、次の第三時ころになります。」<ruby>車<rt>しゃ</rt></ruby><ruby>掌<rt>しょう</rt></ruby>は紙をジョバンニに渡して向うへ行きました。';
+		var text00 = `「よろしゅうございます。<ruby>南十字<rt>サウザンクロス</rt></ruby>へ着きますのは、次の第三時ころになります。」<ruby>車<rt>しゃ</rt></ruby><ruby>掌<rt>しょう</rt></ruby>は紙をジョバンニに渡して向うへ行きました。`;
 		var label00 = new Label({
 			scene: scene,
 			text: text00,
@@ -107,18 +98,18 @@ module.exports = function() {
 		label00.x = 0;
 		label00.y = y0;
 		scene.append(label00);
-		label00.update.add(function() {
+		label00.onUpdate.add(() => {
 			if (game.age % rate === 0) {
-				this.width = counter00 % 20 * 10 + 120;
+				label00.width = counter00 % 20 * 10 + 120;
 				counter00++;
-				this.invalidate();
+				label00.invalidate();
 			}
 		}, label00);
 
 		// エスケープ文字の利用方法
 		var label01 = new Label({
 			scene: scene,
-			text: '\\{"rb": "base", "rt": "text"\\} \r back slash \\ \r  slash \/',
+			text: `\\{"rb": "base", "rt": "text"\\} \r back slash \\ \r  slash \/`,
 			font: bmpfont,
 			fontSize: 15,
 			width: 200
@@ -130,7 +121,7 @@ module.exports = function() {
 		// サロゲート文字
 		var label01 = new Label({
 			scene: scene,
-			text: 'サロゲート文字\r𩸽{"rb": "𩸽𩸽𩸽", "rt": "𩸽𩸽𩸽"}',
+			text: `サロゲート文字\r𩸽{"rb": "𩸽𩸽𩸽", "rt": "𩸽𩸽𩸽"}`,
 			font: mplusfont,
 			fontSize: 15,
 			width: 200
@@ -149,8 +140,8 @@ module.exports = function() {
 		nlabel.x = 230;
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
-		nlabel.pointDown.add(function() {
-			var scene3 = require("mainScene5")();
+		nlabel.onPointDown.add(() => {
+			var scene3 = mainScene5();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
@@ -160,13 +151,13 @@ module.exports = function() {
 			text: "［フォント切替］",
 			font: mplusfont,
 			fontSize: 20,
-			textAlign: g.TextAlign.Right,
+			textAlign: "right",
 			width: 130
 		});
 		dlabel.x = 100;
 		dlabel.y = game.height - 20;
 		dlabel.touchable = true;
-		dlabel.pointDown.add(function(){
+		dlabel.onPointDown.add(() => {
 			scene.children.forEach((label) => {
 				if (label instanceof Label) {
 					label.font = dfont;
@@ -179,4 +170,4 @@ module.exports = function() {
 
 	});
 	return scene;
-};
+}
