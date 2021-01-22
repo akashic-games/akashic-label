@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## unreleased changes
+* `LabelParameterObject#fontSize` を optional なプロパティに変更
+  * デフォルト値は `LabelParameterObject#font.size` と同じ値になります
+
 ## 3.0.0
 * akashic-engine@3.0.0 に追従
 

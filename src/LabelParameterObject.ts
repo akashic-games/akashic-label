@@ -15,19 +15,20 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	font: g.Font;
 
 	/**
+	 * 横幅。
+	 * `lineBreak` が真の場合、描画する文字列はこの幅に収まるよう改行される。
+	 */
+	width: number;
+
+	/**
 	 * フォントサイズ。
 	 * 0 以上の数値でなければならない。
 	 * これは `LabelParameterObject#font` に与えられたフォントを
 	 * `fontSize` フォントサイズ相当で描画するよう指示する値である。
 	 * 歴史的経緯によりフォントサイズと説明されているが、実際には拡大縮小率を求めるために用いられている。
+	 * 初期値は `LabelParameterObject#font.size` である。
 	 */
-	fontSize: number;
-
-	/**
-	 * 横幅。
-	 * `lineBreak` が真の場合、描画する文字列はこの幅に収まるよう改行される。
-	 */
-	width: number;
+	fontSize?: number;
 
 	/**
 	 * 自動改行を行うかどうか。

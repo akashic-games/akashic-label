@@ -51,6 +51,7 @@ class Label extends g.CacheableE {
 	/**
 	 * フォントサイズ。
 	 * 0 以上の数値でなければならない。
+	 * 初期値は `this.font.size` である。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
 	 */
 	fontSize: number;
@@ -165,7 +166,7 @@ class Label extends g.CacheableE {
 		super(param);
 		this.text = param.text;
 		this.font = param.font;
-		this.fontSize = param.fontSize;
+		this.fontSize = param.fontSize || this.font.size;
 		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;
