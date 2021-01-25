@@ -166,7 +166,7 @@ class Label extends g.CacheableE {
 		super(param);
 		this.text = param.text;
 		this.font = param.font;
-		this.fontSize = param.fontSize || this.font.size;
+		this.fontSize = param.fontSize || param.font.size;
 		this._lineBreakWidth = param.width;
 		this.lineBreak = "lineBreak" in param ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;

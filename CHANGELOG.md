@@ -1,8 +1,8 @@
 # CHANGELOG
 
 ## unreleased changes
-* `LabelParameterObject#fontSize` を optional なプロパティに変更
-  * デフォルト値は `LabelParameterObject#font.size` と同じ値になります
+* `Label` の生成時、 fontSize (`LabelParameterObject#fontSize`) プロパティを省略可能に
+  * デフォルト値は `Label` の生成時に指定された font (`LabelParameterObject#font`) プロパティの font.size と同じ値になります
 
 ## 3.0.0
 * akashic-engine@3.0.0 に追従
