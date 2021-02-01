@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## unreleased changes
+## 3.0.1
 * `Label` の生成時、 fontSize (`LabelParameterObject#fontSize`) プロパティを省略可能に
   * デフォルト値は `Label` の生成時に指定された font (`LabelParameterObject#font`) プロパティの font.size と同じ値になります
 
