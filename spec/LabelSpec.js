@@ -75,6 +75,16 @@ describe("test Label", function() {
 		expect(mlabel._lineBreakWidth).toBe(300);
 	});
 
+	it("初期化 - default fontSize = font.size", function() {
+		var mlabel = new Label({
+			scene: runtime.scene,
+			text: "foo",
+			font: bmpfont,
+			width: 300
+		});
+		expect(mlabel.fontSize).toBe(bmpfont.size);
+	});
+
 	it("初期化 - fontSize < 0", function() {
 		expect( function() {
 			new Label({
