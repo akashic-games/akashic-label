@@ -1,7 +1,7 @@
 global.g = require("@akashic/akashic-engine");
 var rt = require("../lib/RubyParser");
 var parse = require("../lib/DefaultRubyParser").parse;
-var Label = require("../lib/Label");
+var Label = require("../lib/Label").Label;
 var fr = require("../lib/FragmentDrawInfo");
 
 describe("test Label", function() {

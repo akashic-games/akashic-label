@@ -1,13 +1,6 @@
-export import Label = require("./Label");
-export import LabelParameterObject = require("./LabelParameterObject");
-export import FragmentDrawInfo = require("./FragmentDrawInfo");
-export import RubyParser = require("./RubyParser");
-export import Fragment = RubyParser.Fragment;
-export import RubyFragment = RubyParser.RubyFragment;
-export import RubyAlign = RubyParser.RubyAlign;
-export import RubyOptions = RubyParser.RubyOptions;
-// tslintが誤動作するので一時的に無効化する
-/* tslint:disable: no-unused-variable */
-import DRP = require("./DefaultRubyParser");
-export import defaultRubyParser = DRP.parse;
-/* tslint:enable: no-unused-variable */
+export { parse as defaultRubyParser } from "./DefaultRubyParser";
+export * as FragmentDrawInfo from "./FragmentDrawInfo";
+export {Label} from "./Label";
+export { LabelParameterObject} from "./LabelParameterObject";
+export * as RubyParser  from "./RubyParser";
+export { Fragment, RubyFragment, RubyAlign, RubyOptions} from "./RubyParser";

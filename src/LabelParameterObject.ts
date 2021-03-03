@@ -1,9 +1,9 @@
-import rt = require("./RubyParser");
+import * as rt from "./RubyParser";
 
 /**
  * `Label` のコンストラクタに渡すことができるパラメータ。
  */
-interface LabelParameterObject extends g.CacheableEParameterObject {
+export interface LabelParameterObject extends g.CacheableEParameterObject {
 	/**
 	 * 描画する文字列。
 	 */
@@ -99,5 +99,3 @@ interface LabelParameterObject extends g.CacheableEParameterObject {
 	 */
 	lineBreakRule?: rt.LineBreakRule;
 }
-
-export = LabelParameterObject;
