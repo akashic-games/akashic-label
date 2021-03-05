@@ -1,7 +1,7 @@
-import LabelParameterObject = require("./LabelParameterObject");
-import rp = require("./RubyParser");
-import fr = require("./FragmentDrawInfo");
-import dr = require("./DefaultRubyParser");
+import * as dr from "./DefaultRubyParser";
+import * as fr  from "./FragmentDrawInfo";
+import { LabelParameterObject } from "./LabelParameterObject";
+import * as rp from "./RubyParser";
 
 interface RubyHeightInfo {
 	maxRubyFontSize: number;
@@ -28,7 +28,7 @@ interface LineDividingState {
  * また、自動改行が有効な場合はエンティティの幅に合わせて改行を行う。
  * 本クラスの利用にはg.Fontが必要となる。
  */
-class Label extends g.CacheableE {
+export class Label extends g.CacheableE {
 	/**
 	 * 描画する文字列。
 	 * この値を変更した場合、 `this.invalidate()` を呼び出す必要がある。
@@ -369,14 +369,14 @@ class Label extends g.CacheableE {
 				&& undrawnLineInfo.sourceText === line.sourceText
 				&& undrawnLineInfo.width === line.width
 				&& undrawnLineInfo.height === line.height) {
-					lines.push(line);
-				} else {
-					if (line && line.surface && !line.surface.destroyed()) {
-						line.surface.destroy();
-					}
-					this._drawLineInfoSurface(undrawnLineInfo);
-					lines.push(undrawnLineInfo);
+				lines.push(line);
+			} else {
+				if (line && line.surface && !line.surface.destroyed()) {
+					line.surface.destroy();
 				}
+				this._drawLineInfoSurface(undrawnLineInfo);
+				lines.push(undrawnLineInfo);
+			}
 		}
 
 		// 行数が減った場合、使われない行のSurfaceをdestroyする。
@@ -459,20 +459,20 @@ class Label extends g.CacheableE {
 		var rbUnitMargin: number;
 
 		switch (rubyAlign) {
-		case rp.RubyAlign.Center:
-			rtUnitMargin = 0;
-			rbUnitMargin = 0;
-			rtStartPositionX = isRtWideThanRb ? 0 : (width - rtWidth) / 2;
-			rbStartPositionX = isRtWideThanRb ? (width - rbWidth) / 2 : 0;
-			break;
-		case rp.RubyAlign.SpaceAround:
-			rtUnitMargin = (rubyDrawInfo.rubyGlyphs.length > 0) ? (width - rtWidth) / rubyDrawInfo.rubyGlyphs.length : 0;
-			rbUnitMargin = 0;
-			rtStartPositionX = isRtWideThanRb ? 0 : rtUnitMargin / 2;
-			rbStartPositionX = isRtWideThanRb ? (width - rbWidth) / 2 : 0;
-			break;
-		default:
-			throw g.ExceptionFactory.createAssertionError("Label#_drawRubyFragmentDrawInfo: unknown rubyAlign.");
+			case rp.RubyAlign.Center:
+				rtUnitMargin = 0;
+				rbUnitMargin = 0;
+				rtStartPositionX = isRtWideThanRb ? 0 : (width - rtWidth) / 2;
+				rbStartPositionX = isRtWideThanRb ? (width - rbWidth) / 2 : 0;
+				break;
+			case rp.RubyAlign.SpaceAround:
+				rtUnitMargin = (rubyDrawInfo.rubyGlyphs.length > 0) ? (width - rtWidth) / rubyDrawInfo.rubyGlyphs.length : 0;
+				rbUnitMargin = 0;
+				rtStartPositionX = isRtWideThanRb ? 0 : rtUnitMargin / 2;
+				rbStartPositionX = isRtWideThanRb ? (width - rbWidth) / 2 : 0;
+				break;
+			default:
+				throw g.ExceptionFactory.createAssertionError("Label#_drawRubyFragmentDrawInfo: unknown rubyAlign.");
 		}
 
 		this._drawStringGlyphs(renderer, this.font, rubyDrawInfo.glyphs, this.fontSize, rbStartPositionX, rbOffsetY, rbUnitMargin);
@@ -497,8 +497,9 @@ class Label extends g.CacheableE {
 					maxRubyGap = f.rubyGap;
 				}
 
-				var rubyGlyphScale =
-					(f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize) / (f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size);
+				const fontSize = f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
+				const size = f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size;
+				var rubyGlyphScale = fontSize / size;
 
 				var currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
@@ -820,5 +821,3 @@ class Label extends g.CacheableE {
 		}
 	}
 }
-
-export = Label;

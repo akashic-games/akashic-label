@@ -1,4 +1,4 @@
-import rp = require("./RubyParser");
+import * as rp from "./RubyParser";
 
 /**
  * 行に含まれる描画要素のうち、1つを表すインターフェース定義。

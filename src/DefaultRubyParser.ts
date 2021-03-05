@@ -1,5 +1,4 @@
-import rp = require("./RubyParser");
-
+import * as rp from "./RubyParser";
 /**
  * 文字列からルビをパースする。
  * このパーサは、akashic-labelのデフォルトルビ記法のためのパーサである。
@@ -19,22 +18,22 @@ import rp = require("./RubyParser");
  * 注意すべき点として、オブジェクトのプロパティ名はダブルクォートでくくられている必要がある。
  */
 export function parse(text: string): rp.Fragment[] {
-	var pattern = /^((?:[^\\{]|\\+.)*?)({(?:[^\\}]|\\+.)*?})([\s\S]*)/;
+	const pattern = /^((?:[^\\{]|\\+.)*?)({(?:[^\\}]|\\+.)*?})([\s\S]*)/;
 	// ((?:[^\\{]|\\+.)*?) -> オブジェクトリテラルの直前まで
 	// ({(?:[^\\}]|\\+.)*?}) -> 最前のオブジェクトリテラル
 	// ([\s\S]*) -> オブジェクトリテラル以降の、改行を含む文字列
 
-	var result: rp.Fragment[] = [];
+	const result: rp.Fragment[] = [];
 	while (text.length > 0) {
-		var parsedText = text.match(pattern);
+		const parsedText = text.match(pattern);
 		if (parsedText !== null) {
-			var headStr = parsedText[1];
-			var rubyStr = parsedText[2];
+			const headStr = parsedText[1];
+			const rubyStr = parsedText[2];
 			text = parsedText[3];
 			if (headStr.length > 0) {
 				result.push(headStr.replace(/\\{/g, "{").replace(/\\}/g, "}"));
 			}
-			var parseResult = JSON.parse(rubyStr.replace(/\\/g, "\\\\"));
+			const parseResult = JSON.parse(rubyStr.replace(/\\/g, "\\\\"));
 			if (parseResult.hasOwnProperty("rt") && parseResult.hasOwnProperty("rb")) {
 				parseResult.rt = parseResult.rt.replace(/\\{/g, "{").replace(/\\}/g, "}");
 				parseResult.rb = parseResult.rb.replace(/\\{/g, "{").replace(/\\}/g, "}");
