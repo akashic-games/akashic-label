@@ -25,7 +25,7 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.5.3",
     "fs-extra": "^0.23.1",
-    "istanbul": "^0.3.2",
+    "istanbul": "^0.4.5",
     "jasmine": "~4.2.1",
     "remark-cli": "~11.0.0",
     "remark-lint": "~9.1.1",
