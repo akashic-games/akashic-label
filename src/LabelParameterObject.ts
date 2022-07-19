@@ -1,4 +1,4 @@
-import * as rt from "./RubyParser";
+import type * as rt from "./RubyParser";
 
 /**
  * `Label` のコンストラクタに渡すことができるパラメータ。

@@ -1,6 +1,6 @@
 import * as dr from "./DefaultRubyParser";
 import * as fr  from "./FragmentDrawInfo";
-import { LabelParameterObject } from "./LabelParameterObject";
+import type { LabelParameterObject } from "./LabelParameterObject";
 import * as rp from "./RubyParser";
 
 interface RubyHeightInfo {
@@ -216,8 +216,8 @@ export class Label extends g.CacheableE {
 	renderCache(renderer: g.Renderer): void {
 		if (!this.rubyEnabled && this.fontSize === 0) return;
 		renderer.save();
-		var currentLineHeight = 0;
-		for (var i = 0; i < this._lines.length; ++i) {
+		let currentLineHeight = 0;
+		for (let i = 0; i < this._lines.length; ++i) {
 			if (this._lines[i].width > 0 && this._lines[i].height > 0) {
 				renderer.drawImage(
 					this._lines[i].surface,
@@ -285,7 +285,7 @@ export class Label extends g.CacheableE {
 	}
 
 	private _destroyLines(): void {
-		for (var i = 0; i < this._lines.length; i++) {
+		for (let i = 0; i < this._lines.length; i++) {
 			if (this._lines[i].surface && !this._lines[i].surface.destroyed()) {
 				this._lines[i].surface.destroy();
 			}
@@ -323,8 +323,8 @@ export class Label extends g.CacheableE {
 			this.width = Math.ceil(this._lines.reduce((width: number, line: fr.LineInfo) => Math.max(width, line.width), 0));
 		}
 
-		var height = this.lineGap * (this._lines.length - 1);
-		for (var i = 0; i < this._lines.length; i++) {
+		let height = this.lineGap * (this._lines.length - 1);
+		for (let i = 0; i < this._lines.length; i++) {
 			height += this._lines[i].height;
 		}
 		this.height = height;
@@ -347,7 +347,7 @@ export class Label extends g.CacheableE {
 
 	private _updateLines(): void {
 		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
-		var fragments = this.rubyEnabled ? this.rubyParser(this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
+		let fragments = this.rubyEnabled ? this.rubyParser(this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
 		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
 			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => {
@@ -356,15 +356,15 @@ export class Label extends g.CacheableE {
 				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g) || [];
 			});
 
-		var undrawnLineInfos = this._divideToLines(fragments);
-		var lines: fr.LineInfo[] = [];
-		var hasNotChanged = this._beforeFontSize === this.fontSize
+		const undrawnLineInfos = this._divideToLines(fragments);
+		const lines: fr.LineInfo[] = [];
+		const hasNotChanged = this._beforeFontSize === this.fontSize
 			&& this._beforeFont === this.font
 			&& !this._isDifferentRubyOptions(this._beforeRubyOptions, this.rubyOptions);
 
-		for (var i = 0; i < undrawnLineInfos.length; i++) {
-			var undrawnLineInfo = undrawnLineInfos[i];
-			var line = this._lines[i];
+		for (let i = 0; i < undrawnLineInfos.length; i++) {
+			const undrawnLineInfo = undrawnLineInfos[i];
+			const line = this._lines[i];
 			if (hasNotChanged && line !== undefined
 				&& undrawnLineInfo.sourceText === line.sourceText
 				&& undrawnLineInfo.width === line.width
@@ -380,8 +380,8 @@ export class Label extends g.CacheableE {
 		}
 
 		// 行数が減った場合、使われない行のSurfaceをdestroyする。
-		for (var i = lines.length; i < this._lines.length; i++) {
-			var line = this._lines[i];
+		for (let i = lines.length; i < this._lines.length; i++) {
+			const line = this._lines[i];
 			if (line.surface && !line.surface.destroyed()) {
 				line.surface.destroy();
 			}
@@ -391,17 +391,18 @@ export class Label extends g.CacheableE {
 
 
 	private _drawLineInfoSurface(lineInfo: fr.LineInfo): void {
-		var lineDrawInfo = lineInfo.fragmentDrawInfoArray;
-		var rhi = this._calcRubyHeightInfo(lineDrawInfo);
-		var lineSurface = this.scene.game.resourceFactory.createSurface(Math.ceil(lineInfo.width), Math.ceil(lineInfo.height));
-		var lineRenderer = lineSurface.renderer();
+		const lineDrawInfo = lineInfo.fragmentDrawInfoArray;
+		const rhi = this._calcRubyHeightInfo(lineDrawInfo);
+		const lineSurface = this.scene.game.resourceFactory.createSurface(Math.ceil(lineInfo.width), Math.ceil(lineInfo.height));
+		const lineRenderer = lineSurface.renderer();
 		lineRenderer.begin();
 		lineRenderer.save();
 
-		var rbOffsetY = (rhi.hasRubyFragmentDrawInfo || this.fixLineGap) ? this.rubyOptions.rubyGap + rhi.maxRubyGlyphHeightWithOffsetY : 0;
-		var minMinusOffsetY = lineInfo.minMinusOffsetY;
-		for (var i = 0; i < lineDrawInfo.length; i++) {
-			var drawInfo = lineDrawInfo[i];
+		const rbOffsetY = (rhi.hasRubyFragmentDrawInfo || this.fixLineGap)
+			? this.rubyOptions.rubyGap + rhi.maxRubyGlyphHeightWithOffsetY : 0;
+		const minMinusOffsetY = lineInfo.minMinusOffsetY;
+		for (let i = 0; i < lineDrawInfo.length; i++) {
+			const drawInfo = lineDrawInfo[i];
 
 			if (drawInfo instanceof fr.RubyFragmentDrawInfo) {
 				this._drawRubyFragmentDrawInfo(lineRenderer, drawInfo, rbOffsetY - minMinusOffsetY, -rhi.minRubyMinusOffsetY);
@@ -421,10 +422,10 @@ export class Label extends g.CacheableE {
 	                          offsetX: number, offsetY: number, margin: number = 0): void {
 		renderer.save();
 		renderer.translate(offsetX, offsetY);
-		for (var i = 0; i < glyphs.length; i++) {
-			var glyph = glyphs[i];
-			var glyphScale = fontSize / font.size;
-			var glyphWidth = glyph.advanceWidth * glyphScale;
+		for (let i = 0; i < glyphs.length; i++) {
+			let glyph = glyphs[i];
+			const glyphScale = fontSize / font.size;
+			const glyphWidth = glyph.advanceWidth * glyphScale;
 
 			if (! glyph.isSurfaceValid) {
 				glyph = this._createGlyph(glyph.code, font);
@@ -445,18 +446,18 @@ export class Label extends g.CacheableE {
 	// ルビベースとルビテキストの描画
 	private _drawRubyFragmentDrawInfo(renderer: g.Renderer, rubyDrawInfo: fr.RubyFragmentDrawInfo,
 	                                  rbOffsetY: number, rtOffsetY: number): void {
-		var f = rubyDrawInfo.fragment;
-		var rubyFontSize = "rubyFontSize" in f ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
-		var rubyAlign = "rubyAlign" in f ? f.rubyAlign : this.rubyOptions.rubyAlign;
-		var rubyFont = "rubyFont" in f ? f.rubyFont : this.rubyOptions.rubyFont;
-		var isRtWideThanRb = rubyDrawInfo.rtWidth > rubyDrawInfo.rbWidth;
-		var width = rubyDrawInfo.width;
-		var rtWidth = rubyDrawInfo.rtWidth;
-		var rbWidth = rubyDrawInfo.rbWidth;
-		var rtStartPositionX: number;
-		var rbStartPositionX: number;
-		var rtUnitMargin: number;
-		var rbUnitMargin: number;
+		const f = rubyDrawInfo.fragment;
+		const rubyFontSize = "rubyFontSize" in f ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
+		const rubyAlign = "rubyAlign" in f ? f.rubyAlign : this.rubyOptions.rubyAlign;
+		const rubyFont = "rubyFont" in f ? f.rubyFont : this.rubyOptions.rubyFont;
+		const isRtWideThanRb = rubyDrawInfo.rtWidth > rubyDrawInfo.rbWidth;
+		const width = rubyDrawInfo.width;
+		const rtWidth = rubyDrawInfo.rtWidth;
+		const rbWidth = rubyDrawInfo.rbWidth;
+		let rtStartPositionX: number;
+		let rbStartPositionX: number;
+		let rtUnitMargin: number;
+		let rbUnitMargin: number;
 
 		switch (rubyAlign) {
 			case rp.RubyAlign.Center:
@@ -480,16 +481,16 @@ export class Label extends g.CacheableE {
 	}
 
 	private _calcRubyHeightInfo(drawInfoArray: fr.FragmentDrawInfo[]): RubyHeightInfo {
-		var maxRubyFontSize = this.rubyOptions.rubyFontSize;
-		var maxRubyGlyphHeightWithOffsetY = 0;
-		var maxRubyGap = this.rubyOptions.rubyGap;
-		var hasRubyFragmentDrawInfo = false;
-		var maxRealDrawHeight = 0;
-		var realOffsetY: number;
-		for (var i = 0; i < drawInfoArray.length; i++) {
-			var ri = drawInfoArray[i];
+		let maxRubyFontSize = this.rubyOptions.rubyFontSize;
+		let maxRubyGlyphHeightWithOffsetY = 0;
+		let maxRubyGap = this.rubyOptions.rubyGap;
+		let hasRubyFragmentDrawInfo = false;
+		let maxRealDrawHeight = 0;
+		let realOffsetY: number;
+		for (let i = 0; i < drawInfoArray.length; i++) {
+			const ri = drawInfoArray[i];
 			if (ri instanceof fr.RubyFragmentDrawInfo) {
-				var f = ri.fragment;
+				const f = ri.fragment;
 				if (f.rubyFontSize > maxRubyFontSize) {
 					maxRubyFontSize = f.rubyFontSize;
 				}
@@ -499,12 +500,12 @@ export class Label extends g.CacheableE {
 
 				const fontSize = f.rubyFontSize ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
 				const size = f.rubyFont ? f.rubyFont.size : this.rubyOptions.rubyFont.size;
-				var rubyGlyphScale = fontSize / size;
+				const rubyGlyphScale = fontSize / size;
 
-				var currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
+				const currentMaxRubyGlyphHeightWithOffsetY = Math.max.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height)
 				);
-				var currentMinRubyOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
+				const currentMinRubyOffsetY = Math.min.apply(Math, ri.rubyGlyphs.map(
 					(glyph: g.Glyph) => (glyph.offsetY > 0) ? glyph.offsetY : 0)
 				);
 
@@ -512,9 +513,9 @@ export class Label extends g.CacheableE {
 					maxRubyGlyphHeightWithOffsetY = currentMaxRubyGlyphHeightWithOffsetY * rubyGlyphScale;
 				}
 
-				var rubyFont = (f.rubyFont ? f.rubyFont : this.rubyOptions.rubyFont);
-				var currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
-				var currentFragmentRealDrawHeight =
+				const rubyFont = (f.rubyFont ? f.rubyFont : this.rubyOptions.rubyFont);
+				const currentRubyStandardOffsetY = this._calcStandardOffsetY(rubyFont);
+				const currentFragmentRealDrawHeight =
 					( currentMaxRubyGlyphHeightWithOffsetY - Math.min(currentMinRubyOffsetY, currentRubyStandardOffsetY) ) * rubyGlyphScale;
 				if (maxRealDrawHeight < currentFragmentRealDrawHeight) {
 					maxRealDrawHeight = currentFragmentRealDrawHeight;
@@ -530,7 +531,7 @@ export class Label extends g.CacheableE {
 			maxRubyGlyphHeightWithOffsetY = this.rubyOptions.rubyFontSize;
 		}
 
-		var minRubyMinusOffsetY = this.trimMarginTop ? realOffsetY : 0;
+		const minRubyMinusOffsetY = this.trimMarginTop ? realOffsetY : 0;
 
 		return {
 			maxRubyFontSize: maxRubyFontSize,
@@ -542,7 +543,7 @@ export class Label extends g.CacheableE {
 	}
 
 	private _divideToLines(fragmentArray: rp.Fragment[]): fr.LineInfo[] {
-		var state: LineDividingState = {
+		const state: LineDividingState = {
 			resultLines : [],
 			currentStringDrawInfo: new fr.StringDrawInfo("", 0, []),
 			currentLineInfo: {
@@ -556,7 +557,7 @@ export class Label extends g.CacheableE {
 			reservedLineBreakPosition: null
 		};
 
-		for (var i = 0; i < fragmentArray.length; i++) {
+		for (let i = 0; i < fragmentArray.length; i++) {
 			this._addFragmentToState(state, fragmentArray, i);
 		}
 		this._flushCurrentStringDrawInfo(state);
@@ -565,7 +566,7 @@ export class Label extends g.CacheableE {
 	}
 
 	private _addFragmentToState(state: LineDividingState, fragments: rp.Fragment[], index: number): void {
-		var fragment = fragments[index];
+		const fragment = fragments[index];
 
 		if (state.reservedLineBreakPosition !== null) {
 			state.reservedLineBreakPosition--;
@@ -588,13 +589,13 @@ export class Label extends g.CacheableE {
 			this._feedLine(state);
 
 		} else if (typeof fragment === "string") {
-			var code = g.Util.charCodeAt(fragment, 0);
+			const code = g.Util.charCodeAt(fragment, 0);
 			if (! code) return;
-			var glyph = this._createGlyph(code, this.font);
+			const glyph = this._createGlyph(code, this.font);
 			if (! glyph) return;
 
-			var glyphScale = this.fontSize / this.font.size;
-			var glyphWidth = glyph.advanceWidth * glyphScale;
+			const glyphScale = this.fontSize / this.font.size;
+			const glyphWidth = glyph.advanceWidth * glyphScale;
 
 			if (this._needBreakLine(state, glyphWidth)) {
 				this._breakLine(state, fragments, index);
@@ -603,7 +604,7 @@ export class Label extends g.CacheableE {
 			state.currentStringDrawInfo.glyphs.push(glyph);
 			state.currentStringDrawInfo.text += fragment;
 		} else {
-			var ri = this._createRubyFragmentDrawInfo(fragment);
+			const ri = this._createRubyFragmentDrawInfo(fragment);
 			if (ri.width <= 0) return;
 
 			this._flushCurrentStringDrawInfo(state);
@@ -618,11 +619,11 @@ export class Label extends g.CacheableE {
 	}
 
 	private _createStringGlyph(text: string, font: g.Font): g.Glyph[] {
-		var glyphs: g.Glyph[] = [];
-		for (var i = 0; i < text.length; i++) {
-			var code = g.Util.charCodeAt(text, i);
+		const glyphs: g.Glyph[] = [];
+		for (let i = 0; i < text.length; i++) {
+			const code = g.Util.charCodeAt(text, i);
 			if (! code) continue;
-			var glyph = this._createGlyph(code, font);
+			const glyph = this._createGlyph(code, font);
 			if (! glyph) continue;
 
 			glyphs.push(glyph);
@@ -631,9 +632,9 @@ export class Label extends g.CacheableE {
 	}
 
 	private _createGlyph(code: number, font: g.Font): g.Glyph | null {
-		var glyph = font.glyphForCharacter(code) as g.Glyph;
+		const glyph = font.glyphForCharacter(code) as g.Glyph;
 		if (! glyph) {
-			var str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
+			const str = (code & 0xFFFF0000) ? String.fromCharCode((code & 0xFFFF0000) >>> 16, code & 0xFFFF) : String.fromCharCode(code);
 			console.warn(
 				"Label#_invalidateSelf(): failed to get a glyph for '" + str + "' " +
 				"(BitmapFont might not have the glyph or DynamicFont might create a glyph larger than its atlas)."
@@ -643,19 +644,19 @@ export class Label extends g.CacheableE {
 	}
 
 	private _createRubyFragmentDrawInfo(fragment: rp.RubyFragment): fr.RubyFragmentDrawInfo {
-		var glyphs = this._createStringGlyph(fragment.rb, this.font);
-		var rubyGlyphs = this._createStringGlyph(fragment.rt, this.rubyOptions.rubyFont);
-		var rubyFont = "rubyFont" in fragment ? fragment.rubyFont : this.rubyOptions.rubyFont;
-		var rubyFontSize = "rubyFontSize" in fragment ? fragment.rubyFontSize : this.rubyOptions.rubyFontSize;
-		var glyphScale = this.fontSize / this.font.size;
-		var rubyGlyphScale = rubyFontSize / rubyFont.size;
-		var rbWidth = glyphs.length > 0 ?
+		const glyphs = this._createStringGlyph(fragment.rb, this.font);
+		const rubyGlyphs = this._createStringGlyph(fragment.rt, this.rubyOptions.rubyFont);
+		const rubyFont = "rubyFont" in fragment ? fragment.rubyFont : this.rubyOptions.rubyFont;
+		const rubyFontSize = "rubyFontSize" in fragment ? fragment.rubyFontSize : this.rubyOptions.rubyFontSize;
+		const glyphScale = this.fontSize / this.font.size;
+		const rubyGlyphScale = rubyFontSize / rubyFont.size;
+		const rbWidth = glyphs.length > 0 ?
 			glyphs.map((glyph: g.Glyph) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * glyphScale :
 			0;
-		var rtWidth = rubyGlyphs.length > 0 ?
+		const rtWidth = rubyGlyphs.length > 0 ?
 			rubyGlyphs.map((glyph: g.Glyph) => glyph.advanceWidth).reduce((pre: number, cu: number) => pre + cu) * rubyGlyphScale :
 			0;
-		var width = rbWidth > rtWidth ? rbWidth : rtWidth;
+		const width = rbWidth > rtWidth ? rbWidth : rtWidth;
 		return new fr.RubyFragmentDrawInfo(
 			 fragment,
 			 width,
@@ -676,11 +677,11 @@ export class Label extends g.CacheableE {
 	}
 
 	private _feedLine(state: LineDividingState): void {
-		var glyphScale = this.fontSize / this.font.size;
+		const glyphScale = this.fontSize / this.font.size;
 
-		var minOffsetY = Infinity;
-		var minMinusOffsetY = 0;
-		var maxGlyphHeightWithOffsetY = 0;
+		let minOffsetY = Infinity;
+		let minMinusOffsetY = 0;
+		let maxGlyphHeightWithOffsetY = 0;
 		state.currentLineInfo.fragmentDrawInfoArray.forEach(
 			(fragmentDrawInfo: fr.FragmentDrawInfo) => {
 				fragmentDrawInfo.glyphs.forEach(
@@ -691,7 +692,7 @@ export class Label extends g.CacheableE {
 						// offsetYの一番小さな値を探す
 						if (minOffsetY > glyph.offsetY) minOffsetY = glyph.offsetY;
 
-						var heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
+						const heightWithOffsetY = (glyph.offsetY > 0) ? glyph.height + glyph.offsetY : glyph.height;
 						if (maxGlyphHeightWithOffsetY < heightWithOffsetY) {
 							maxGlyphHeightWithOffsetY = heightWithOffsetY;
 						}
@@ -706,14 +707,14 @@ export class Label extends g.CacheableE {
 			this.fontSize;
 		maxGlyphHeightWithOffsetY = Math.ceil(maxGlyphHeightWithOffsetY);
 
-		var rhi = this._calcRubyHeightInfo(state.currentLineInfo.fragmentDrawInfoArray);
+		const rhi = this._calcRubyHeightInfo(state.currentLineInfo.fragmentDrawInfoArray);
 		state.currentLineInfo.height =
 			rhi.hasRubyFragmentDrawInfo || this.fixLineGap ?
 			maxGlyphHeightWithOffsetY + rhi.maxRubyGlyphHeightWithOffsetY + rhi.maxRubyGap :
 			maxGlyphHeightWithOffsetY;
 		state.currentLineInfo.minMinusOffsetY = minMinusOffsetY;
 		if (this.trimMarginTop) {
-			var minOffsetYInRange = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
+			const minOffsetYInRange = Math.min(minOffsetY, this._calcStandardOffsetY(this.font)) * glyphScale;
 			state.currentLineInfo.height -= minOffsetYInRange;
 			state.currentLineInfo.minMinusOffsetY += minOffsetYInRange;
 		}
@@ -744,8 +745,8 @@ export class Label extends g.CacheableE {
 
 	private _calcStandardOffsetY(font: g.Font): number {
 		// 標準的な高さを持つグリフとして `M` を利用するが明確な根拠は無い
-		var text = "M";
-		var glyphM = font.glyphForCharacter(text.charCodeAt(0));
+		const text = "M";
+		const glyphM = font.glyphForCharacter(text.charCodeAt(0));
 		return glyphM.offsetY;
 	}
 
@@ -757,8 +758,8 @@ export class Label extends g.CacheableE {
 			return;
 		}
 
-		var correctLineBreakPosition = this.lineBreakRule(fragments, index); // 外部ルールが期待する改行位置
-		var diff = correctLineBreakPosition - index;
+		const correctLineBreakPosition = this.lineBreakRule(fragments, index); // 外部ルールが期待する改行位置
+		let diff = correctLineBreakPosition - index;
 		if (diff === 0) {
 			this._flushCurrentStringDrawInfo(state);
 			this._feedLine(state);
@@ -769,12 +770,12 @@ export class Label extends g.CacheableE {
 			// 巻き戻し改行
 			this._flushCurrentStringDrawInfo(state);
 
-			var droppedFragmentDrawInfoArray: fr.FragmentDrawInfo[] = [];
+			const droppedFragmentDrawInfoArray: fr.FragmentDrawInfo[] = [];
 
 			// currentLineInfoのfragmentDrawInfoArrayを巻き戻す
 			while (diff < 0) {
-				var fragmentDrawInfoArray = state.currentLineInfo.fragmentDrawInfoArray;
-				var lastDrawInfo = fragmentDrawInfoArray[fragmentDrawInfoArray.length - 1];
+				const fragmentDrawInfoArray = state.currentLineInfo.fragmentDrawInfoArray;
+				const lastDrawInfo = fragmentDrawInfoArray[fragmentDrawInfoArray.length - 1];
 				if (lastDrawInfo instanceof fr.RubyFragmentDrawInfo) {
 					diff++;
 					droppedFragmentDrawInfoArray.push(lastDrawInfo);
@@ -785,11 +786,11 @@ export class Label extends g.CacheableE {
 						droppedFragmentDrawInfoArray.push(lastDrawInfo);
 						fragmentDrawInfoArray.pop();
 					} else {
-						var droppedGlyphs = lastDrawInfo.glyphs.splice(diff);
-						var glyphScale = this.fontSize / this.font.size;
-						var droppedDrawInfoWidth = droppedGlyphs.reduce((acc, glyph) => (glyph.advanceWidth * glyphScale + acc), 0);
+						const droppedGlyphs = lastDrawInfo.glyphs.splice(diff);
+						const glyphScale = this.fontSize / this.font.size;
+						const droppedDrawInfoWidth = droppedGlyphs.reduce((acc, glyph) => (glyph.advanceWidth * glyphScale + acc), 0);
 						lastDrawInfo.width -= droppedDrawInfoWidth;
-						var droppedDrawInfoText = lastDrawInfo.text.substring(lastDrawInfo.text.length + diff);
+						const droppedDrawInfoText = lastDrawInfo.text.substring(lastDrawInfo.text.length + diff);
 						lastDrawInfo.text = lastDrawInfo.text.substring(0, lastDrawInfo.text.length + diff);
 
 						droppedFragmentDrawInfoArray.push(new fr.StringDrawInfo(
@@ -801,8 +802,8 @@ export class Label extends g.CacheableE {
 			}
 
 			// currentLineInfoのその他を更新する
-			var droppedWidth = 0;
-			var droppedSourceText = "";
+			let droppedWidth = 0;
+			let droppedSourceText = "";
 
 			droppedFragmentDrawInfoArray.forEach((fragment) => {
 				droppedWidth += fragment.width;
@@ -810,7 +811,7 @@ export class Label extends g.CacheableE {
 			});
 			state.currentLineInfo.width -= droppedWidth;
 
-			var sourceText = state.currentLineInfo.sourceText;
+			const sourceText = state.currentLineInfo.sourceText;
 			state.currentLineInfo.sourceText = sourceText.substr(0, sourceText.length - droppedSourceText.length);
 
 			this._feedLine(state);

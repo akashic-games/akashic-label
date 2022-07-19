@@ -1,4 +1,4 @@
-import * as rp from "./RubyParser";
+import type * as rp from "./RubyParser";
 /**
  * 文字列からルビをパースする。
  * このパーサは、akashic-labelのデフォルトルビ記法のためのパーサである。
