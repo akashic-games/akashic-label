@@ -1,39 +1,39 @@
 import { Label, Fragment } from "@akashic-extension/akashic-label";
 import { mainScene } from "./mainScene";
 
-var game = g.game;
+const game = g.game;
 
 export function mainScene6(): g.Scene {
-	var scene = new g.Scene({
+	const scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 2;
+	const rate = game.fps / 2;
 	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
+		const mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont({
+		const mplusfont = new g.BitmapFont({
 			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
-		var dhint: g.DynamicFontHint = {
+		const dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
 			initialAtlasHeight: 256,
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		};
-		var dfont = new g.DynamicFont({
+		const dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: "monospace",
 			size: 40,
 			hint: dhint
 		});
 
-		var tlabel0 = new Label({
+		const tlabel0 = new Label({
 			scene: scene,
 			text: "行末の禁則処理",
 			font: mplusfont,
@@ -44,10 +44,10 @@ export function mainScene6(): g.Scene {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-		var counter = 0;
+		let counter = 0;
 
-		var text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
-		var sampleRule = (fragments: Fragment[], index: number) => {
+		let text = "「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」と「これ」と「それ」と「あれ」と「●●」";
+		let sampleRule = (fragments: Fragment[], index: number) => {
 			const ignoreHead = ["」", "』", "】"];
 			const ignoreTail = ["「", "『", "【"];
 			const headChar = fragments[index];
@@ -66,7 +66,7 @@ export function mainScene6(): g.Scene {
 				return index;
 			}
 		};
-		var lblabel = new Label({
+		const lblabel = new Label({
 			scene: scene,
 			text: text,
 			font: mplusfont,
@@ -86,16 +86,16 @@ export function mainScene6(): g.Scene {
 			}
 		}, lblabel);
 
-		var text = `「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
+		text = `「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
 			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
 			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」と` +
 			`「{"rt":"これ","rb":"これ"}」と「{"rt":"それ","rb":"それ"}」と「{"rt":"あれ","rb":"あれ"}」と「{"rt":"●●","rb":"●●"}」`;
-		var sampleRule = (fragments: Fragment[], index: number) => {
+		sampleRule = (fragments: Fragment[], index: number) => {
 			const target = fragments[index];
 			if (target === "」") {
 				return index + 1;
 			} else {
-				var before = fragments[index - 1];
+				const before = fragments[index - 1];
 				if (!!before && before === "」") {
 					return index;
 				} else if (!!before && before === "「") {
@@ -104,7 +104,7 @@ export function mainScene6(): g.Scene {
 				return index;
 			}
 		};
-		var lblabel2 = new Label({
+		const lblabel2 = new Label({
 			scene: scene,
 			text: text,
 			font: mplusfont,
@@ -125,7 +125,7 @@ export function mainScene6(): g.Scene {
 			}
 		}, lblabel2);
 
-		var nlabel = new Label({
+		const nlabel = new Label({
 			scene: scene,
 			text: "［最初＞＞］",
 			font: mplusfont,
@@ -136,12 +136,12 @@ export function mainScene6(): g.Scene {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.onPointDown.add(() => {
-			var scene3 = mainScene();
+			const scene3 = mainScene();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
 
-		var dlabel = new Label({
+		const dlabel = new Label({
 			scene: scene,
 			text: "［フォント切替］",
 			font: mplusfont,

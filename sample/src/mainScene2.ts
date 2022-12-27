@@ -2,36 +2,36 @@ import { Label, RubyAlign } from "@akashic-extension/akashic-label";
 import { mainScene3 } from "./mainScene3";
 
 export function mainScene2(): g.Scene {
-	var game = g.game;
-	var scene = new g.Scene({
+	const game = g.game;
+	const scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 6;
+	const rate = game.fps / 6;
 	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
+		const mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont({
+		const mplusfont = new g.BitmapFont({
 			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
-		var bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
-		var bmpfont = new g.BitmapFont({
+		const bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
+		const bmpfont = new g.BitmapFont({
 			src: scene.asset.getImageById("bmpfont"),
 			glyphInfo: bmpGlyphInfo
 		});
 
-		var dhint: g.DynamicFontHint = {
+		const dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
 			initialAtlasHeight: 256,
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		};
-		var dfont = new g.DynamicFont({
+		const dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: "monospace",
 			size: 40,
@@ -39,7 +39,7 @@ export function mainScene2(): g.Scene {
 		});
 
 		// ラベルのルビ基本機能
-		var tlabel0 = new Label({
+		const tlabel0 = new Label({
 			scene: scene,
 			text: "ルビ機能",
 			font: mplusfont,
@@ -50,10 +50,10 @@ export function mainScene2(): g.Scene {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-		var y0 = 40;
+		const y0 = 40;
 
 		// ルビの利用
-		var label01 = new Label({
+		const label01 = new Label({
 			scene: scene,
 			text: `use {"rt":"ruby","rb":"ruby"}.`,
 			font: bmpfont,
@@ -64,7 +64,7 @@ export function mainScene2(): g.Scene {
 		scene.append(label01);
 
 		// ルビを使わない
-		var label02 = new Label({
+		const label02 = new Label({
 			scene: scene,
 			text: `unuse {"rt":"ruby","rb":"ruby"}.`,
 			font: bmpfont,
@@ -76,8 +76,8 @@ export function mainScene2(): g.Scene {
 		scene.append(label02);
 
 		// ルビと本文の行間
-		var counter03 = 0;
-		var label03 = new Label({
+		let counter03 = 0;
+		const label03 = new Label({
 			scene: scene,
 			text: `{"rt":"るび","rb":"ルビ"}の行間`,
 			font: mplusfont,
@@ -98,8 +98,8 @@ export function mainScene2(): g.Scene {
 		scene.append(label03);
 
 		// ルビのフォントサイズ
-		var counter04 = 0;
-		var label04 = new Label({
+		let counter04 = 0;
+		const label04 = new Label({
 			scene: scene,
 			text: `{"rt":"るび","rb":"ルビ"}サイズ`,
 			font: mplusfont,
@@ -120,7 +120,7 @@ export function mainScene2(): g.Scene {
 		}, label04);
 
 		// ルビフォントの指定
-		var label05 = new Label({
+		const label05 = new Label({
 			scene: scene,
 			text: `{"rt":"rubyfont","rb":"ルビフォント"}`,
 			font: mplusfont,
@@ -144,8 +144,8 @@ export function mainScene2(): g.Scene {
 		}, label05);
 
 		// ルビ位置の調整 SpaceAround
-		var y1 = 170;
-		var label11 = new Label({
+		const y1 = 170;
+		const label11 = new Label({
 			scene: scene,
 			text: `{"rt":"ルビアライン","rb":"ＲｕｂｙＡｌｉｇｎ＝ＳｐａｃｅＡｒｏｕｎｄ"}`,
 			font: mplusfont,
@@ -156,7 +156,7 @@ export function mainScene2(): g.Scene {
 		scene.append(label11);
 
 		// ルビ位置の調整 Center
-		var label12 = new Label({
+		const label12 = new Label({
 			scene: scene,
 			text: `{"rt":"ルビアライン","rb":"ＲｕｂｙＡｌｉｇｎ＝Ｃｅｎｔｅｒ"}`,
 			font: mplusfont,
@@ -168,7 +168,7 @@ export function mainScene2(): g.Scene {
 		label12.y = y1 + 50;
 		scene.append(label12);
 
-		var nlabel = new Label({
+		const nlabel = new Label({
 			scene: scene,
 			text: "［次＞＞］",
 			font: mplusfont,
@@ -179,11 +179,11 @@ export function mainScene2(): g.Scene {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.onPointDown.add(() => {
-			var scene3 = mainScene3();
+			const scene3 = mainScene3();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
-		var dlabel = new Label({
+		const dlabel = new Label({
 			scene: scene,
 			text: "［フォント切替］",
 			font: mplusfont,

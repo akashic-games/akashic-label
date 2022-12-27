@@ -2,36 +2,36 @@ import { Label, Fragment } from "@akashic-extension/akashic-label";
 import { mainScene5 } from "./mainScene5";
 
 export function mainScene4(): g.Scene {
-	var game = g.game;
-	var scene = new g.Scene({
+	const game = g.game;
+	const scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 3;
+	const rate = game.fps / 3;
 	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
+		const mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont({
+		const mplusfont = new g.BitmapFont({
 			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
-		var bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
-		var bmpfont = new g.BitmapFont({
+		const bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
+		const bmpfont = new g.BitmapFont({
 			src: scene.asset.getImageById("bmpfont"),
 			glyphInfo: bmpGlyphInfo
 		});
 
-		var dhint: g.DynamicFontHint = {
+		const dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
 			initialAtlasHeight: 256,
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		};
-		var dfont = new g.DynamicFont({
+		const dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: "monospace",
 			size: 40,
@@ -39,7 +39,7 @@ export function mainScene4(): g.Scene {
 		});
 
 		// パーサ切替とエスケープ文字
-		var tlabel0 = new Label({
+		const tlabel0 = new Label({
 			scene: scene,
 			text: "既定外のパーサ利用と\rＥＳＣ文字",
 			font: mplusfont,
@@ -50,25 +50,25 @@ export function mainScene4(): g.Scene {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-		var y0 = 60;
+		const y0 = 60;
 
 		// 異なる記法に対応したパーサ関数の導入
-		var parser = function(text: string): Fragment[] {
-			var pattern = /([^(?:<ruby>)]*?)(<ruby>(?:([^(?:<rt>)]*)<rt>(.*?)<\/rt>(?:[^(?:<\\rt>)]*))<\/ruby>)([\s\S]*)/;
-			var result: Fragment[] = [];
+		const parser = function(text: string): Fragment[] {
+			const pattern = /([^(?:<ruby>)]*?)(<ruby>(?:([^(?:<rt>)]*)<rt>(.*?)<\/rt>(?:[^(?:<\\rt>)]*))<\/ruby>)([\s\S]*)/;
+			const result: Fragment[] = [];
 			while (text.length > 0) {
-				var parsedText = text.match(pattern);
+				const parsedText = text.match(pattern);
 				if (parsedText !== null) {
-					var headStr = parsedText[1];
-					var rubyStr = parsedText[2];
-					var rubyStrRb = parsedText[3];
-					var rubyStrRt = parsedText[4];
+					const headStr = parsedText[1];
+					const rubyStr = parsedText[2];
+					const rubyStrRb = parsedText[3];
+					const rubyStrRt = parsedText[4];
 					text = parsedText[5];
 					if (headStr.length > 0) {
 						result.push(headStr);
 					}
 					if (rubyStrRb !== "" && rubyStrRt !== "") {
-						var rubyObj = {
+						const rubyObj = {
 							rb: rubyStrRb,
 							rt: rubyStrRt,
 							text: rubyStr
@@ -84,10 +84,10 @@ export function mainScene4(): g.Scene {
 			}
 			return result;
 		};
-		var counter00 = 0;
+		let counter00 = 0;
 		// HTMLライクなルビの記法
-		var text00 = `「よろしゅうございます。<ruby>南十字<rt>サウザンクロス</rt></ruby>へ着きますのは、次の第三時ころになります。」<ruby>車<rt>しゃ</rt></ruby><ruby>掌<rt>しょう</rt></ruby>は紙をジョバンニに渡して向うへ行きました。`;
-		var label00 = new Label({
+		const text00 = `「よろしゅうございます。<ruby>南十字<rt>サウザンクロス</rt></ruby>へ着きますのは、次の第三時ころになります。」<ruby>車<rt>しゃ</rt></ruby><ruby>掌<rt>しょう</rt></ruby>は紙をジョバンニに渡して向うへ行きました。`;
+		const label00 = new Label({
 			scene: scene,
 			text: text00,
 			font: mplusfont,
@@ -107,7 +107,7 @@ export function mainScene4(): g.Scene {
 		}, label00);
 
 		// エスケープ文字の利用方法
-		var label01 = new Label({
+		const label01 = new Label({
 			scene: scene,
 			text: `\\{"rb": "base", "rt": "text"\\} \r back slash \\ \r  slash \/`,
 			font: bmpfont,
@@ -119,18 +119,18 @@ export function mainScene4(): g.Scene {
 		scene.append(label01);
 
 		// サロゲート文字
-		var label01 = new Label({
+		const label02 = new Label({
 			scene: scene,
 			text: `サロゲート文字\r𩸽{"rb": "𩸽𩸽𩸽", "rt": "𩸽𩸽𩸽"}`,
 			font: mplusfont,
 			fontSize: 15,
 			width: 200
 		});
-		label01.x = 10;
-		label01.y = y0 + 210;
-		scene.append(label01);
+		label02.x = 10;
+		label02.y = y0 + 210;
+		scene.append(label02);
 
-		var nlabel = new Label({
+		const nlabel = new Label({
 			scene: scene,
 			text: "［次＞＞］",
 			font: mplusfont,
@@ -141,12 +141,12 @@ export function mainScene4(): g.Scene {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.onPointDown.add(() => {
-			var scene3 = mainScene5();
+			const scene3 = mainScene5();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
 
-		var dlabel = new Label({
+		const dlabel = new Label({
 			scene: scene,
 			text: "［フォント切替］",
 			font: mplusfont,

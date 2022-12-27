@@ -2,30 +2,30 @@ import { Label } from "@akashic-extension/akashic-label";
 import { mainScene2 } from "./mainScene2";
 
 export function mainScene(): g.Scene {
-	var game = g.game;
-	var scene = new g.Scene({
+	const game = g.game;
+	const scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 3;
+	const rate = game.fps / 3;
 	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
+		const mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont({
+		const mplusfont = new g.BitmapFont({
 			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
-		var dhint: g.DynamicFontHint = {
+		const dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
 			initialAtlasHeight: 256,
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		};
-		var dfont = new g.DynamicFont({
+		const dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: "monospace",
 			size: 40,
@@ -33,7 +33,7 @@ export function mainScene(): g.Scene {
 		});
 
 		// ラベル基本機能
-		var tlabel0 = new Label({
+		const tlabel0 = new Label({
 			scene: scene,
 			text: "ラベル基本機能",
 			font: mplusfont,
@@ -44,10 +44,10 @@ export function mainScene(): g.Scene {
 		tlabel0.x = 0;
 		scene.append(tlabel0);
 
-		var y0 = 40;
+		const y0 = 40;
 
 		// ラベルの最小機能の利用
-		var label01 = new Label({
+		const label01 = new Label({
 			scene: scene,
 			text: "最小構成",
 			font: mplusfont,
@@ -58,9 +58,9 @@ export function mainScene(): g.Scene {
 		scene.append(label01);
 
 		// 色つきラベル
-		var counter02 = 0;
-		var colors = ["red", "black", "green", "blue"];
-		var label02 = new Label({
+		let counter02 = 0;
+		const colors = ["red", "black", "green", "blue"];
+		const label02 = new Label({
 			scene: scene,
 			text: "ラベル色",
 			font: mplusfont,
@@ -81,8 +81,8 @@ export function mainScene(): g.Scene {
 		scene.append(label02);
 
 		// フォントサイズの変更
-		var counter03 = 2;
-		var label03 = new Label({
+		let counter03 = 2;
+		const label03 = new Label({
 			scene: scene,
 			text: "フォントサイズ",
 			font: mplusfont,
@@ -102,10 +102,10 @@ export function mainScene(): g.Scene {
 		scene.append(label03);
 
 		// テキスト位置の調整
-		var y1 = 90;
+		const y1 = 90;
 
 		// 左揃え
-		var label11 = new Label({
+		const label11 = new Label({
 			scene: scene,
 			text: "左寄せ",
 			font: mplusfont,
@@ -117,7 +117,7 @@ export function mainScene(): g.Scene {
 		scene.append(label11);
 
 		// 中央揃え
-		var label12 = new Label({
+		const label12 = new Label({
 			scene: scene,
 			text: "中央寄せ",
 			font: mplusfont,
@@ -128,8 +128,8 @@ export function mainScene(): g.Scene {
 		label12.y = y1;
 		scene.append(label12);
 
-		// 中央揃え
-		var label12 = new Label({
+		// 右揃え
+		const label13 = new Label({
 			scene: scene,
 			text: "右寄せ",
 			font: mplusfont,
@@ -137,16 +137,16 @@ export function mainScene(): g.Scene {
 			width: game.width,
 			textAlign: "right"
 		});
-		label12.y = y1;
-		scene.append(label12);
+		label13.y = y1;
+		scene.append(label13);
 
 		// 改行
-		var y2 = 130;
+		const y2 = 130;
 
 		// 複数行のラベル
-		var counter21 = 0;
-		var aligns21: g.TextAlignString[] =  ["left", "center", "right"];
-		var label21 = new Label({
+		let counter21 = 0;
+		const aligns21: g.TextAlignString[] =  ["left", "center", "right"];
+		const label21 = new Label({
 			scene: scene,
 			text: "改行記号（￥ｒ・￥ｎ・￥ｒ￥ｎ）\rで改行できます",
 			font: mplusfont,
@@ -164,8 +164,8 @@ export function mainScene(): g.Scene {
 		}, label21);
 
 		// lineGapを使った行間調整
-		var counter22 = 0;
-		var label22 = new Label({
+		let counter22 = 0;
+		const label22 = new Label({
 			scene: scene,
 			text: "行間幅は\r指定\rできます",
 			font: mplusfont,
@@ -185,8 +185,8 @@ export function mainScene(): g.Scene {
 		scene.append(label22);
 
 		// width基準による自動改行
-		var counter23 = 0;
-		var label23 = new Label({
+		let counter23 = 0;
+		const label23 = new Label({
 			scene: scene,
 			text: "改行記号を使わなくてもｗｉｄｔｈを超えると自動で折り返します",
 			font: mplusfont,
@@ -205,7 +205,7 @@ export function mainScene(): g.Scene {
 		}, label23);
 
 		// 自動改行オフ
-		var label24 = new Label({
+		const label24 = new Label({
 			scene: scene,
 			text: "自動折り返し機能は有効・無効を切り替えることができます",
 			font: mplusfont,
@@ -223,7 +223,7 @@ export function mainScene(): g.Scene {
 		}, label24);
 		scene.append(label24);
 
-		var nlabel = new Label({
+		const nlabel = new Label({
 			scene: scene,
 			text: "［次＞＞］",
 			font: mplusfont,
@@ -234,12 +234,12 @@ export function mainScene(): g.Scene {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.onPointDown.add(() => {
-			var scene2 = mainScene2();
+			const scene2 = mainScene2();
 			game.replaceScene(scene2);
 		}, nlabel);
 		scene.append(nlabel);
 
-		var dlabel = new Label({
+		const dlabel = new Label({
 			scene: scene,
 			text: "［フォント切替］",
 			font: mplusfont,
