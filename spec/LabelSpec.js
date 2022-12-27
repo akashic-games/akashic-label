@@ -1,24 +1,24 @@
 global.g = require("@akashic/akashic-engine");
-var rt = require("../lib/RubyParser");
-var parse = require("../lib/DefaultRubyParser").parse;
-var Label = require("../lib/Label").Label;
-var fr = require("../lib/FragmentDrawInfo");
+const rt = require("../lib/RubyParser");
+const parse = require("../lib/DefaultRubyParser").parse;
+const Label = require("../lib/Label").Label;
+const fr = require("../lib/FragmentDrawInfo");
 
 describe("test Label", function() {
-	var runtime;
-	var bmpfont;
-	var dfont;
-	var g = require('../node_modules/@akashic/akashic-engine');
-	var mock = require("./helpers/mock");
-	var skeletonRuntime = require("./helpers/skeleton");
+	let runtime;
+	let bmpfont;
+	let dfont;
+	const g = require('../node_modules/@akashic/akashic-engine');
+	const mock = require("./helpers/mock");
+	const skeletonRuntime = require("./helpers/skeleton");
 
 	beforeEach(function() {
 		jasmine.addMatchers(require("./helpers/customMatchers"));
 		runtime = skeletonRuntime();
-		var width = 512;
-		var height = 350;
-		var map = {"37564": {"x": 0, "y": 1}};
-		var missingGlyph = {"x": 2, "y": 3};
+		const width = 512;
+		const height = 350;
+		const map = {"37564": {"x": 0, "y": 1}};
+		const missingGlyph = {"x": 2, "y": 3};
 		bmpfont = new g.BitmapFont({
 			src: new mock.ResourceFactory().createImageAsset("testId", "testAssetPath", width, height),
 			map: map,
@@ -31,8 +31,8 @@ describe("test Label", function() {
 	afterEach(function() {
 	});
 
-	var sampleRule = function (fragments, index) {
-		var text = fragments.map((e) => {
+	const sampleRule = function (fragments, index) {
+		const text = fragments.map((e) => {
 			if (e instanceof String) {
 				return e;
 			} else {
@@ -45,7 +45,7 @@ describe("test Label", function() {
 		} else if (target === "「") {
 			return index - 1;
 		} else {
-			var before = fragments[index-1];
+			const before = fragments[index-1];
 			if (!!before && before === "」") {
 				return index;
 			} else if (!!before && before === "「") {
@@ -56,7 +56,7 @@ describe("test Label", function() {
 	}
 
 	it("初期化", function() {
-		var mlabel = new Label({
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "foo",
 			font: bmpfont,
@@ -76,7 +76,7 @@ describe("test Label", function() {
 	});
 
 	it("初期化 - default fontSize = font.size", function() {
-		var mlabel = new Label({
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "foo",
 			font: bmpfont,
@@ -143,7 +143,7 @@ describe("test Label", function() {
 	});
 
 	it("render", function(){
-		var mlabel = new Label({
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "hoge\nfoo\rbar\r\n\nhogehogehogehoge", // line:5 will break (lineWidth: 16 * 10 = 160 > 100)
 			font: bmpfont,
@@ -153,9 +153,9 @@ describe("test Label", function() {
 			lineGap: 2
 		});
 
-		var r = new mock.Renderer();
+		const r = new mock.Renderer();
 		mlabel.render(r);
-		var params = mlabel._renderer.methodCallParamsHistory("drawImage");
+		const params = mlabel._renderer.methodCallParamsHistory("drawImage");
 
 		expect(params[0].offsetX).toBe(0);
 		expect(params[0].offsetY).toBe(0);
@@ -195,7 +195,7 @@ describe("test Label", function() {
 	});
 
 	it("render - textColor", function(){
-		var mlabel = new Label({
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "hoge",
 			font: bmpfont,
@@ -206,10 +206,10 @@ describe("test Label", function() {
 			textColor: "blue"
 		});
 
-		var r = new mock.Renderer();
+		const r = new mock.Renderer();
 		mlabel.render(r);
 
-		var cr = mlabel._cache.createdRenderer;
+		const cr = mlabel._cache.createdRenderer;
 		expect(cr.methodCallParamsHistory("setCompositeOperation").length).toBe(1);
 		expect(cr.methodCallParamsHistory("setCompositeOperation")[0])
 			.toEqual({operation: "source-atop"});
@@ -220,8 +220,8 @@ describe("test Label", function() {
 	});
 
 	it("_offsetX", function(){
-		var fontSize = 10;
-		var mlabel = new Label({
+		const fontSize = 10;
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "a", // width: 10px
 			font: bmpfont,
@@ -239,7 +239,7 @@ describe("test Label", function() {
 	});
 
 	it("_invalidateSelf", function(){
-		var mlabel = new Label({
+		const mlabel = new Label({
 			scene: runtime.scene,
 			text: "a",
 			font: bmpfont,
@@ -264,7 +264,7 @@ describe("test Label", function() {
 			rubyAlign: rt.RubyAlign.Center
 		};
 		mlabel.invalidate();
-		var mlabel2 = new Label({
+		const mlabel2 = new Label({
 			scene: runtime.scene,
 			text: "b",
 			textColor: "red",
@@ -294,8 +294,8 @@ describe("test Label", function() {
 
 
 	it("_divideToLines", function(){
-		var createLabel = function(text){
-			var mlabel = new Label({
+		const createLabel = function(text){
+			const mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
 				font: bmpfont,
@@ -306,9 +306,9 @@ describe("test Label", function() {
 			});
 			return mlabel;
 		};
-		var createLineInfo = function(text){
-			var label = createLabel(text);
-			var fragments = parse(label.text);
+		const createLineInfo = function(text){
+			const label = createLabel(text);
+			let fragments = parse(label.text);
 			fragments =
 				rt.flatmap(fragments, function (f) {
 					if (typeof f !== "string")
@@ -319,12 +319,12 @@ describe("test Label", function() {
 
 			return label._divideToLines(fragments);
 		};
-		var label = createLabel("");
+		const label = createLabel("");
 
-		var text =  "1234567890";
-		var lineInfo = createLineInfo(text);
-		var glyphs = label._createStringGlyph(text, bmpfont);
-		var expectLineInfo = [
+		const text =  "1234567890";
+		const lineInfo = createLineInfo(text);
+		const glyphs = label._createStringGlyph(text, bmpfont);
+		const expectLineInfo = [
 			{
 				sourceText: text,
 				width: 10 * text.length,
@@ -336,9 +336,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo).toEqual(expectLineInfo);
 
-		var text2 =  "123456789012345678901234567890";
-		var lineInfo2 = createLineInfo(text2);
-		var expectLineInfo2 = [
+		const text2 =  "123456789012345678901234567890";
+		const lineInfo2 = createLineInfo(text2);
+		const expectLineInfo2 = [
 			{
 				sourceText: text,
 				width: 100,
@@ -366,9 +366,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo2).toEqual(expectLineInfo2);
 
-		var text3 =  '12345{"rb": "1234567890", "rt": "number"}1234567890';
-		var lineInfo3 = createLineInfo(text3);
-		var expectLineInfo3 = [
+		const text3 =  '12345{"rb": "1234567890", "rt": "number"}1234567890';
+		const lineInfo3 = createLineInfo(text3);
+		const expectLineInfo3 = [
 			{
 				sourceText: "12345",
 				width: 50,
@@ -411,9 +411,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo3).toEqual(expectLineInfo3);
 
-		var text4 =  '123{"rb": "45678", "rt": "fiv"}901234567890';
-		var lineInfo4 = createLineInfo(text4);
-		var expectLineInfo4 = [
+		const text4 =  '123{"rb": "45678", "rt": "fiv"}901234567890';
+		const lineInfo4 = createLineInfo(text4);
+		const expectLineInfo4 = [
 			{
 				sourceText: '123{"rb": "45678", "rt": "fiv"}90',
 				width: 100,
@@ -457,9 +457,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo4).toEqual(expectLineInfo4);
 
-		var text5 =  '{"rb": "123", "rt": "ruby one"}{"rb": "45", "rt": "ruby two"}6789012';
-		var lineInfo5 = createLineInfo(text5);
-		var expectLineInfo5 = [
+		const text5 =  '{"rb": "123", "rt": "ruby one"}{"rb": "45", "rt": "ruby two"}6789012';
+		const lineInfo5 = createLineInfo(text5);
+		const expectLineInfo5 = [
 			{
 				sourceText: '{"rb": "123", "rt": "ruby one"}{"rb": "45", "rt": "ruby two"}67',
 				width: 100,
@@ -511,9 +511,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo5).toEqual(expectLineInfo5);
 
-		var text6 = "01234\r56789\n01234\r\n56789";
-		var lineInfo6 = createLineInfo(text6);
-		var expectLineInfo6 = [
+		const text6 = "01234\r56789\n01234\r\n56789";
+		const lineInfo6 = createLineInfo(text6);
+		const expectLineInfo6 = [
 			{
 				sourceText: "01234",
 				width: 50,
@@ -561,10 +561,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo6).toEqual(expectLineInfo6);
 
-		var text7 =  "";
-		var lineInfo = createLineInfo(text7);
-		var glyphs = label._createStringGlyph(text7, bmpfont);
-		var expectLineInfo = [
+		const text7 =  "";
+		const lineInfo7 = createLineInfo(text7);
+		const expectLineInfo7 = [
 			{
 				sourceText: text7,
 				width: 0 * text7.length,
@@ -574,11 +573,11 @@ describe("test Label", function() {
 				fragmentDrawInfoArray: []
 			}
 		];
-		expect(lineInfo).toEqual(expectLineInfo);
+		expect(lineInfo7).toEqual(expectLineInfo7);
 
-		var text8 =  '{"rb": "", "rt": ""}';
-		var lineInfo8 = createLineInfo(text8);
-		var expectLineInfo8 = [
+		const text8 =  '{"rb": "", "rt": ""}';
+		const lineInfo8 = createLineInfo(text8);
+		const expectLineInfo8 = [
 			{
 				sourceText: '',
 				width: 0,
@@ -590,9 +589,9 @@ describe("test Label", function() {
 		];
 		expect(lineInfo8).toEqual(expectLineInfo8);
 
-		var text9 =  '123{"rb": "", "rt": ""}456';
-		var lineInfo9 = createLineInfo(text9);
-		var expectLineInfo9 = [
+		const text9 =  '123{"rb": "", "rt": ""}456';
+		const lineInfo9 = createLineInfo(text9);
+		const expectLineInfo9 = [
 			{
 				sourceText: "123456",
 				width: 60,
@@ -612,8 +611,8 @@ describe("test Label", function() {
 	});
 
 	it("_divideToLines - options", function(){
-		var createLabel = function(text){
-			var mlabel = new Label({
+		const createLabel = function(text){
+			const mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
 				textAlign:  "left",
@@ -634,9 +633,9 @@ describe("test Label", function() {
 			});
 			return mlabel;
 		};
-		var createLineInfo = function(text){
-			var label = createLabel(text);
-			var fragments = parse(label.text);
+		const createLineInfo = function(text){
+			const label = createLabel(text);
+			let fragments = parse(label.text);
 			fragments =
 				rt.flatmap(fragments, function (f) {
 					if (typeof f !== "string")
@@ -646,11 +645,11 @@ describe("test Label", function() {
 				});
 			return label._divideToLines(fragments);
 		};
-		var label = createLabel("");
+		const label = createLabel("");
 
-		var text =  '12345{"rb": "1234567890", "rt": "number", "rubyFontSize": 5}';
-		var lineInfo = createLineInfo(text);
-		var expectLineInfo = [
+		const text =  '12345{"rb": "1234567890", "rt": "number", "rubyFontSize": 5}';
+		const lineInfo = createLineInfo(text);
+		const expectLineInfo = [
 			{
 				sourceText:  '12345{"rb": "1234567890", "rt": "number", "rubyFontSize": 5}',
 				width: 150,
@@ -682,8 +681,8 @@ describe("test Label", function() {
 	});
 
 	it("widthAutoAdjust - options", function(){
-		var createLabel = function(text){
-			var mlabel = new Label({
+		const createLabel = function(text){
+			const mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
 				textAlign: "left",
@@ -695,7 +694,7 @@ describe("test Label", function() {
 			});
 			return mlabel;
 		};
-		var label = createLabel("thefoxisjumpingoverthelazydog");
+		const label = createLabel("thefoxisjumpingoverthelazydog");
 		expect(label.width).toBe(100); // 105以下かつfontSize(10)の倍数の値
 		expect(label._lineBreakWidth).toBe(105);
 		expect(label._lines.length).toBe(3);
@@ -720,8 +719,8 @@ describe("test Label", function() {
 	});
 
 	it("trimMarginTop - options", function(){
-		var createLabel = function(text){
-			var mlabel = new Label({
+		const createLabel = function(text){
+			const mlabel = new Label({
 				scene: runtime.scene,
 				text: text,
 				textAlign: "left",
@@ -736,9 +735,9 @@ describe("test Label", function() {
 			});
 			return mlabel;
 		};
-		var label = createLabel("label");
-		var RubyHeightInfo;
-		var state = {
+		const label = createLabel("label");
+		// const RubyHeightInfo;
+		const state = {
 			resultLines: [],
 			currentStringDrawInfo: {
 				text: "",
@@ -804,7 +803,7 @@ describe("test Label", function() {
 	});
 
 	it("line break rules - before text", function() {
-		var label = new Label({
+		const label = new Label({
 			scene: runtime.scene,
 			text: "0123456",
 			font: bmpfont,
@@ -827,7 +826,7 @@ describe("test Label", function() {
 	});
 
 	it("line break rules - after text", function() {
-		var label = new Label({
+		const label = new Label({
 			scene: runtime.scene,
 			text: "0123456",
 			font: bmpfont,
@@ -851,7 +850,7 @@ describe("test Label", function() {
 
 
 	it("line break rules - ruby", function() {
-		var label = new Label({
+		const label = new Label({
 			scene: runtime.scene,
 			text: 'abcdefg[{"rb": "hij", "rt": "hij"}]klmn',
 			font: bmpfont,
@@ -864,7 +863,7 @@ describe("test Label", function() {
 				if (fragments[index] === "]") {
 					return index + 1; // 先送り改行
 				} else {
-					var before = fragments[index - 1];
+					const before = fragments[index - 1];
 					if (!!before && before === "]") {
 						return index;
 					} else if (!!before && before === "[") { // 巻き戻し改行
