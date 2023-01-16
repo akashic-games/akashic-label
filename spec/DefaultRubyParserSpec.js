@@ -1,57 +1,57 @@
 // NOTE: スクリプトアセットとして実行される環境をエミュレーションするためにglobal.gを生成する
 global.g = require("@akashic/akashic-engine");
-var parse = require("../lib/DefaultRubyParser").parse;
+const parse = require("../lib/DefaultRubyParser").parse;
 
 describe("test Label Parser - 正常系", function() {
 	it("ルビのない文字列", function() {
-		var text = '文字列';
-		var result = parse(text);
-		var obj = ["文字列"];
+		const text = '文字列';
+		const result = parse(text);
+		const obj = ["文字列"];
 		expect(result).toEqual(obj);
-		var text2 = '\\}は閉じ括弧';
-		var result2 = parse(text2);
-		var obj2 = [
+		const text2 = '\\}は閉じ括弧';
+		const result2 = parse(text2);
+		const obj2 = [
 			"}は閉じ括弧",
 		];
 		expect(result2).toEqual(obj2);
-		var text3 = '\\{は開き括弧';
-		var result3 = parse(text3);
-		var obj3 = [
+		const text3 = '\\{は開き括弧';
+		const result3 = parse(text3);
+		const obj3 = [
 			"{は開き括弧"
 		];
 		expect(result3).toEqual(obj3);
 
-		var text4 = '開き括弧\\{';
-		var result4 = parse(text4);
-		var obj4 = [
+		const text4 = '開き括弧\\{';
+		const result4 = parse(text4);
+		const obj4 = [
 			"開き括弧{",
 		];
 		expect(result4).toEqual(obj4);
-		var text5 = '閉じ括弧\\}';
-		var result5 = parse(text5);
-		var obj5 = [
+		const text5 = '閉じ括弧\\}';
+		const result5 = parse(text5);
+		const obj5 = [
 			"閉じ括弧}"
 		];
 		expect(result5).toEqual(obj5);
 	});
 
 	it("ルビ変換", function() {
-		var text = '{"rb": "漢字", "rt": "ルビ"}';
-		var result = parse(text);
-		var obj = [
+		const text = '{"rb": "漢字", "rt": "ルビ"}';
+		const result = parse(text);
+		const obj = [
 			{rb: "漢字", rt: "ルビ", text: text}
 		];
 		expect(result).toEqual(obj);
-		var text2 = 'これは{"rb": "漢字", "rt": "ルビ"}';
-		var result2 = parse(text2);
-		var obj2 = [
+		const text2 = 'これは{"rb": "漢字", "rt": "ルビ"}';
+		const result2 = parse(text2);
+		const obj2 = [
 			"これは",
 			{rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'}
 		];
 		expect(result2).toEqual(obj2);
-		var text3 = '{"rb": "漢字", "rt": "ルビ"}です';
-		var result3 = parse(text3);
-		var obj3 = [
+		const text3 = '{"rb": "漢字", "rt": "ルビ"}です';
+		const result3 = parse(text3);
+		const obj3 = [
 			{rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'},
 			"です"
 		];
@@ -59,9 +59,9 @@ describe("test Label Parser - 正常系", function() {
 	});
 
 	it("連続したルビ変換", function() {
-		var text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}{"rb": "室", "rt": "しつ"}';
-		var result = parse(text);
-		var obj = [
+		const text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}{"rb": "室", "rt": "しつ"}';
+		const result = parse(text);
+		const obj = [
 			{rb: "車", rt: "しゃ", text:'{"rb": "車", "rt": "しゃ"}'},
 			{rb: "掌", rt: "しょう", text: '{"rb": "掌", "rt": "しょう"}'},
 			{rb: "室", rt: "しつ", text: '{"rb": "室", "rt": "しつ"}'}
@@ -70,9 +70,9 @@ describe("test Label Parser - 正常系", function() {
 	});
 
 	it("前後を含むルビ変換", function() {
-		var text = 'これは{"rb": "漢字", "rt": "ルビ"}です。あれも{"rb": "漢字", "rt": "ルビ"}です';
-		var result = parse(text);
-		var obj = [
+		const text = 'これは{"rb": "漢字", "rt": "ルビ"}です。あれも{"rb": "漢字", "rt": "ルビ"}です';
+		const result = parse(text);
+		const obj = [
 			"これは",
 			{rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'},
 			"です。あれも",
@@ -83,39 +83,39 @@ describe("test Label Parser - 正常系", function() {
 	});
 
 	it("エスケープ文字", function() {
-		var text = '1: 括弧は{、または\\{、エスケープ括弧は\\\\{、バックスラッシュは\\、バックスラッシュ2つは\\\\';
-		var result = parse(text);
-		var obj = [
+		const text = '1: 括弧は{、または\\{、エスケープ括弧は\\\\{、バックスラッシュは\\、バックスラッシュ2つは\\\\';
+		const result = parse(text);
+		const obj = [
 			"1: 括弧は{、または{、エスケープ括弧は\\{、バックスラッシュは\\、バックスラッシュ2つは\\\\"
 		];
 		expect(result).toEqual(obj);
 	});
 
 	it("エスケープ文字を含むルビ変換", function() {
-		var text = '\\{エスケープ記号\\}が{"rb": "漢字", "rt": "ルビ"}の前';
-		var result = parse(text);
-		var obj = [
+		const text = '\\{エスケープ記号\\}が{"rb": "漢字", "rt": "ルビ"}の前';
+		const result = parse(text);
+		const obj = [
 			"{エスケープ記号}が",	{rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'}, "の前"
 		];
 		expect(result).toEqual(obj);
-		var text2 = 'これは{"rb": "漢字", "rt": "ルビ"}の後に\\{エスケープ記号\\}';
-		var result2 = parse(text2);
-		var obj2 = [
+		const text2 = 'これは{"rb": "漢字", "rt": "ルビ"}の後に\\{エスケープ記号\\}';
+		const result2 = parse(text2);
+		const obj2 = [
 			"これは", {rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'}, "の後に{エスケープ記号}"
 		];
 		expect(result2).toEqual(obj2);
-		var text3 = '\\\\{エスケープ記号\\}が{"rb": "漢字", "rt": "ルビ"}の前';
-		var result3 = parse(text3);
-		var obj3 = [
+		const text3 = '\\\\{エスケープ記号\\}が{"rb": "漢字", "rt": "ルビ"}の前';
+		const result3 = parse(text3);
+		const obj3 = [
 			"\\{エスケープ記号}が",	{rb: "漢字", rt: "ルビ", text: '{"rb": "漢字", "rt": "ルビ"}'}, "の前"
 		];
 		expect(result3).toEqual(obj3);
 	});
 
 	it("エスケープ文字をルビに含むルビ変換", function() {
-		var text = 'これは{"rb": "ルビベース内\\}esc\\}カッコ\\{", "rt": "ルビ"}です';
-		var result = parse(text);
-		var obj = [
+		const text = 'これは{"rb": "ルビベース内\\}esc\\}カッコ\\{", "rt": "ルビ"}です';
+		const result = parse(text);
+		const obj = [
 			"これは",
 			{
 				rb: "ルビベース内}esc}カッコ{",
@@ -125,9 +125,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result).toEqual(obj);
-		var text2 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\}", "rt": "ルビ"}です';
-		var result2 = parse(text2);
-		var obj2 = [
+		const text2 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\}", "rt": "ルビ"}です';
+		const result2 = parse(text2);
+		const obj2 = [
 			"これは",
 			{
 				rb: "ルビベース内{esc}カッコ}",
@@ -137,9 +137,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result2).toEqual(obj2);
-		var text3 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\{", "rt": "ルビ"}です';
-		var result3 = parse(text3);
-		var obj3 = [
+		const text3 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\{", "rt": "ルビ"}です';
+		const result3 = parse(text3);
+		const obj3 = [
 			"これは",
 			{
 				rb: "ルビベース内{esc}カッコ{",
@@ -149,9 +149,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result3).toEqual(obj3);
-		var text4 = 'これは{"rb": "漢\\字", "rt": "ルビ"}と\\{エスケープ記号\\}です';
-		var result4 = parse(text4);
-		var obj4 = [
+		const text4 = 'これは{"rb": "漢\\字", "rt": "ルビ"}と\\{エスケープ記号\\}です';
+		const result4 = parse(text4);
+		const obj4 = [
 			"これは",
 			{
 				rb: "漢\\字",
@@ -160,9 +160,9 @@ describe("test Label Parser - 正常系", function() {
 			"と{エスケープ記号}です"
 		];
 		expect(result4).toEqual(obj4);
-		var text5 = 'これは{"rb": "ルビベース内\\{esc\\\\}カッコ\\{", "rt": "ルビ"}です';
-		var result5 = parse(text5);
-		var obj5 = [
+		const text5 = 'これは{"rb": "ルビベース内\\{esc\\\\}カッコ\\{", "rt": "ルビ"}です';
+		const result5 = parse(text5);
+		const obj5 = [
 			"これは",
 			{
 				rb: "ルビベース内{esc\\}カッコ{",
@@ -175,9 +175,9 @@ describe("test Label Parser - 正常系", function() {
 	});
 
 	it("エスケープ文字とルビ変換", function() {
-		var text = 'これは{"rb": "ルビベース内\\}esc\\}カッコ\\{", "rt": "ルビ"}です';
-		var result = parse(text);
-		var obj = [
+		const text = 'これは{"rb": "ルビベース内\\}esc\\}カッコ\\{", "rt": "ルビ"}です';
+		const result = parse(text);
+		const obj = [
 			"これは",
 			{
 				rb: "ルビベース内}esc}カッコ{",
@@ -187,9 +187,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result).toEqual(obj);
-		var text2 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\}", "rt": "ルビ"}です';
-		var result2 = parse(text2);
-		var obj2 = [
+		const text2 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\}", "rt": "ルビ"}です';
+		const result2 = parse(text2);
+		const obj2 = [
 			"これは",
 			{
 				rb: "ルビベース内{esc}カッコ}",
@@ -199,9 +199,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result2).toEqual(obj2);
-		var text3 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\{", "rt": "ルビ"}です';
-		var result3 = parse(text3);
-		var obj3 = [
+		const text3 = 'これは{"rb": "ルビベース内\\{esc\\}カッコ\\{", "rt": "ルビ"}です';
+		const result3 = parse(text3);
+		const obj3 = [
 			"これは",
 			{
 				rb: "ルビベース内{esc}カッコ{",
@@ -211,9 +211,9 @@ describe("test Label Parser - 正常系", function() {
 			"です"
 		];
 		expect(result3).toEqual(obj3);
-		var text4 = 'これは{"rb": "漢字", "rt": "ルビ"}と\\{エスケープ記号\\}です';
-		var result4 = parse(text4);
-		var obj4 = [
+		const text4 = 'これは{"rb": "漢字", "rt": "ルビ"}と\\{エスケープ記号\\}です';
+		const result4 = parse(text4);
+		const obj4 = [
 			"これは",
 			{
 				rb: "漢字",
@@ -228,47 +228,47 @@ describe("test Label Parser - 正常系", function() {
 describe("test Label Parser - 異常系", function() {
 
 	it("ルビ構造が不適切", function() {
-		var text = 'これは{"rb": "漢字", rt": "ルビ"}のメンバー前にダブルクォーテーションが無い';
+		const text = 'これは{"rb": "漢字", rt": "ルビ"}のメンバー前にダブルクォーテーションが無い';
 		expect(function(){parse(text);}).toThrow();
 
-		var text2 = 'これは{"rb": "漢字", "rt: "ルビ"}のメンバー後にダブルクォーテーションが無い';
+		const text2 = 'これは{"rb": "漢字", "rt: "ルビ"}のメンバー後にダブルクォーテーションが無い';
 		expect(function(){parse(text2);}).toThrow();
 
-		var text3 = 'これは{"rb": "漢字", "rt": ルビ"}のプロパティ前にダブルクォーテーションが無い';
+		const text3 = 'これは{"rb": "漢字", "rt": ルビ"}のプロパティ前にダブルクォーテーションが無い';
 		expect(function(){parse(text3);}).toThrow();
 
-		var text4 = 'これは{"rb": "漢字", "rt": "ルビ}のプロパティ後にダブルクォーテーションが無い';
+		const text4 = 'これは{"rb": "漢字", "rt": "ルビ}のプロパティ後にダブルクォーテーションが無い';
 		expect(function(){parse(text4);}).toThrow();
 
-		var text5 = 'これは{{"rb": "漢字", "rt": "ルビ}の括弧が間違っている';
+		const text5 = 'これは{{"rb": "漢字", "rt": "ルビ}の括弧が間違っている';
 		expect(function(){parse(text5);}).toThrow();
 
-		var text6 = 'これは}{"rb": "漢字", "rt": "ルビ}の括弧が間違っている';
+		const text6 = 'これは}{"rb": "漢字", "rt": "ルビ}の括弧が間違っている';
 		expect(function(){parse(text6);}).toThrow();
 
-		var text7 = 'これは{"rb": "漢字", "rt": "ルビ}}の括弧が間違っている';
+		const text7 = 'これは{"rb": "漢字", "rt": "ルビ}}の括弧が間違っている';
 		expect(function(){parse(text7);}).toThrow();
 
-		var text8 = 'これは{"rb": "漢字", "rt": "ルビ}{の括弧が間違っている';
+		const text8 = 'これは{"rb": "漢字", "rt": "ルビ}{の括弧が間違っている';
 		expect(function(){parse(text8);}).toThrow();
 	});
 
 	it("ルビ情報が不十分", function() {
-		var text = '';
-		var result = parse(text);
-		var obj = [];
+		const text = '';
+		const result = parse(text);
+		const obj = [];
 		expect(result).toEqual(obj);
 
-		var text2 = '{}{}{}';
+		const text2 = '{}{}{}';
 		expect(function(){parse(text2);}).toThrow(g.ExceptionFactory.createTypeMismatchError("parse", "RubyFragment"));
 
-		var text3 = '{"rt": "ルビ"}のみ';
+		const text3 = '{"rt": "ルビ"}のみ';
 		expect(function(){parse(text3);}).toThrow(g.ExceptionFactory.createTypeMismatchError("parse", "RubyFragment"));
 
-		var text4 = '{"rb": "漢字"}のみ';
+		const text4 = '{"rb": "漢字"}のみ';
 		expect(function(){parse(text4);}).toThrow(g.ExceptionFactory.createTypeMismatchError("parse", "RubyFragment"));
 
-		var text5 = '{"rb": "漢字", "text": "ルビ"}';
+		const text5 = '{"rb": "漢字", "text": "ルビ"}';
 		expect(function(){parse(text5);}).toThrow(g.ExceptionFactory.createTypeMismatchError("parse", "RubyFragment"));
 	});
 

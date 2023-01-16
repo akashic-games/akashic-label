@@ -22,7 +22,7 @@ akashic install @akashic-extension/akashic-label
 インストール後、ゲームスクリプトから `require()` して利用してください。
 
 ```
-var al = require("@akashic-extension/akashic-label")
+const al = require("@akashic-extension/akashic-label")
 ```
 
 使い方は [akashic-labelの利用方法](./akashic-label.md) を参照してください。

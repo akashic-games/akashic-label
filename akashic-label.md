@@ -27,7 +27,7 @@ akashic install @akashic-extension/akashic-label
 akashic-label を利用したいシーンで以下の様に `require` を行います。
 
 ```javascript
-var al = require("@akashic-extension/akashic-label");
+const al = require("@akashic-extension/akashic-label");
 ```
 
 本ドキュメントのサンプルコードでは、 akashic-label の機能は `al` 変数を経由して呼び出すことになります。
@@ -38,7 +38,7 @@ akashic-label は Akashic Engine の `g.Label` と同じインターフェイス
 よって、既に Akashic Engine の `g.Label` を利用している箇所では、これを akashic-label に置き換えることができます。
 
 ```javascript
-var label = new al.Label({
+const label = new al.Label({
     scene: scene,
     text: "Hello!",
     font: bmpfont,
@@ -55,8 +55,8 @@ akashic-label ではルビをサポートしています。ラベルは、 `text
 ルビの指定方法は、通常は以下のように指定します。
 
 ```javascript
-var text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
-var label = new al.Label({
+const text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
+const label = new al.Label({
     scene: scene,
     text: text,
     font: bmpfont,
@@ -72,7 +72,7 @@ var label = new al.Label({
 `rt` 、 `rb` 内に改行記号を含めることはできません。ルビの途中で改行したい場合は、複数に分割したルビを記述します。
 
 ```javascript
-var text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}';
+const text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}';
 ```
 
 ### ルビ設定
@@ -82,8 +82,8 @@ var text = '{"rb": "車", "rt": "しゃ"}{"rb": "掌", "rt": "しょう"}';
 それぞれ「ルビのフォントサイズ」「ルビのフォント」「ルビと本文の間隔」「ルビのアライン」を表します。
 
 ```javascript
-var text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
-var label = new al.Label({
+const text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
+const label = new al.Label({
     scene: scene,
     text: text,
     font: bmpfont,
@@ -104,7 +104,7 @@ var label = new al.Label({
 
 また、１つのラベル内に複数のルビが含まれる場合、ルビ毎に別の設定を適用することができます。
 ```javascript
-var text = '{"rb": "珈琲", "rt": "コーヒー", "rubyAlign":' + al.RubyAlign.Center + '}' +
+const text = '{"rb": "珈琲", "rt": "コーヒー", "rubyAlign":' + al.RubyAlign.Center + '}' +
              '{"rb": "紅茶", "rt": "こうちゃ", "rubyAlign":' + al.RubyAlign.SpaceAround + ', rubyFontSize: ' + 5 + '}';
 ```
 
@@ -133,7 +133,7 @@ akashic-label は自動改行と任意改行をサポートしています。
 この機能はコンストラクタ、またはインスタンスの `lineBreak` プロパティに偽を設定することで無効にすることができます。
 
 ```javascript
-var label = new al.Label({
+const label = new al.Label({
     scene: scene,
     text: "1行目\r2行目",
     font: bmpfont,
@@ -184,7 +184,7 @@ akashic-label は自動改行の振る舞いをカスタマイズすることが
 例として、この関数は以下のように指定します。
 
 ```
-var sampleRule = function (fragments, index) {
+const sampleRule = function (fragments, index) {
     const ngHead = ["」", "』", "】"];
     const ngTail = ["「", "『", "【"];
     const next = fragments[index];
@@ -204,7 +204,7 @@ var sampleRule = function (fragments, index) {
         return index;
     }
 }
-var label = new Label({
+const label = new Label({
     scene: scene,
     text: text,
     font: font,

@@ -2,36 +2,36 @@ import { Label } from "@akashic-extension/akashic-label";
 import { mainScene6 } from "./mainScene6";
 
 export function mainScene5(): g.Scene {
-	var game = g.game;
-	var scene = new g.Scene({
+	const game = g.game;
+	const scene = new g.Scene({
 		game: game,
 		assetIds: ["bmpfont", "bmpfont-glyph", "mplus", "mplus-glyph"]
 	});
-	var rate = game.fps / 2;
+	const rate = game.fps / 2;
 	scene.onLoad.add(() => {
 
 		// グリフデータの生成
-		var mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
+		const mPlusGlyphInfo = JSON.parse(scene.asset.getTextById("mplus-glyph").data);
 		// ビットマップフォント画像とグリフ情報からBitmapFontのインスタンスを生成
-		var mplusfont = new g.BitmapFont({
+		const mplusfont = new g.BitmapFont({
 			src: scene.asset.getImageById("mplus"),
 			glyphInfo: mPlusGlyphInfo
 		});
 
-		var bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
-		var bmpfont = new g.BitmapFont({
+		const bmpGlyphInfo = JSON.parse(scene.asset.getTextById("bmpfont-glyph").data);
+		const bmpfont = new g.BitmapFont({
 			src: scene.asset.getImageById("bmpfont"),
 			glyphInfo: bmpGlyphInfo
 		});
 
-		var dhint: g.DynamicFontHint = {
+		const dhint: g.DynamicFontHint = {
 			initialAtlasWidth: 256,
 			initialAtlasHeight: 256,
 			maxAtlasWidth: 256,
 			maxAtlasHeight: 256,
 			maxAtlasNum: 8
 		};
-		var dfont = new g.DynamicFont({
+		const dfont = new g.DynamicFont({
 			game: scene.game,
 			fontFamily: "monospace",
 			size: 40,
@@ -39,7 +39,7 @@ export function mainScene5(): g.Scene {
 		});
 
 		// 複数行のルビ機能
-		var tlabel0 = new Label({
+		const tlabel0 = new Label({
 			scene: scene,
 			text: "複数行のルビ機能",
 			font: mplusfont,
@@ -51,10 +51,10 @@ export function mainScene5(): g.Scene {
 		scene.append(tlabel0);
 
 		// ルビと改行
-		var y0 = 40;
+		const y0 = 40;
 
 		// ルビの行幅切替
-		var label01 = new Label({
+		const label01 = new Label({
 			scene: scene,
 			text: `ルビのある行と無い行で\rルビによる{"rb": "行間幅設定", "rt": "fixLineGap"}を\r切り替えることができます`,
 			font: mplusfont,
@@ -74,7 +74,7 @@ export function mainScene5(): g.Scene {
 		scene.append(label01);
 
 		// ルビ応用
-		var textArray = [].concat(`「よろしゅうございます。`.split(/.*?/),
+		const textArray = [].concat(`「よろしゅうございます。`.split(/.*?/),
 			`{"rb": "南　　", "rt": "　　　　　　　"}`,
 			30,
 			`{"rb": "南十　", "rt": "　　　　　　　"}`,
@@ -109,8 +109,8 @@ export function mainScene5(): g.Scene {
 			`{"rb": "掌", "rt": "しょう"}`,
 			`は紙をジョバンニに渡して向うへ行きました。`.split(/.*?/)
 		);
-		var counter = 0;
-		var mlabel = new Label({
+		let counter = 0;
+		const mlabel = new Label({
 			scene: scene,
 			text: "",
 			font: mplusfont,
@@ -134,7 +134,7 @@ export function mainScene5(): g.Scene {
 			if ( counter < textArray.length && game.age % 2 === 0) {
 				if (counter >= 0) {
 					if (typeof textArray[counter] === "number") {
-						var n = textArray[counter];
+						const n = textArray[counter];
 						mlabel.text = mlabel.text.substring(0, mlabel.text.length - n);
 						counter += 1;
 						mlabel.text += textArray[counter];
@@ -148,7 +148,7 @@ export function mainScene5(): g.Scene {
 			}
 		}, mlabel);
 
-		var dlabel = new Label({
+		const dlabel = new Label({
 			scene: scene,
 			text: "［フォント切替］",
 			font: mplusfont,
@@ -171,7 +171,7 @@ export function mainScene5(): g.Scene {
 		scene.append(dlabel);
 
 
-		var nlabel = new Label({
+		const nlabel = new Label({
 			scene: scene,
 			text: "［次＞＞］",
 			font: mplusfont,
@@ -182,32 +182,10 @@ export function mainScene5(): g.Scene {
 		nlabel.y = game.height - 20;
 		nlabel.touchable = true;
 		nlabel.onPointDown.add(() => {
-			var scene3 = mainScene6();
+			const scene3 = mainScene6();
 			game.replaceScene(scene3);
 		}, nlabel);
 		scene.append(nlabel);
-
-		var dlabel = new Label({
-			scene: scene,
-			text: "［フォント切替］",
-			font: mplusfont,
-			fontSize: 20,
-			textAlign: "right",
-			width: 130
-		});
-		dlabel.x = 100;
-		dlabel.y = game.height - 20;
-		dlabel.touchable = true;
-		dlabel.onPointDown.add(() => {
-			scene.children.forEach((child: g.E) => {
-				if (child instanceof Label) {
-					child.font = dfont;
-					child.rubyOptions.rubyFont = dfont;
-					child.invalidate();
-				}
-			});
-		}, dlabel);
-		scene.append(dlabel);
 	});
 	return scene;
 }

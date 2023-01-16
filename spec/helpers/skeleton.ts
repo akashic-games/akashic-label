@@ -10,7 +10,7 @@ function skeletonRuntime(gameConfiguration?: g.GameConfiguration): Runtime  {
 	if (!gameConfiguration)
 		gameConfiguration = { width: 320, height: 320, main: "", assets: {} };
 	const game = new mock.Game(gameConfiguration);
-	var scene = new g.Scene({ game });
+	const scene = new g.Scene({ game });
 	game.pushScene(scene);
 	game._flushPostTickTasks();
 	return {

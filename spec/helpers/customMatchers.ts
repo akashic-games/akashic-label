@@ -1,5 +1,5 @@
-declare var j$: any;
-var customMatchers = {
+declare let j$: any;
+const customMatchers = {
 	toHaveProperty: function(util: any, customEqualityTesters: any): any {
 		return {
 			compare: function(actual: any, expected: any): any {
@@ -10,7 +10,7 @@ var customMatchers = {
 					expected = Array.prototype.slice.call(arguments, 1);
 				}
 				if (Array.isArray(expected)) {
-					var message: string;
+					let message: string;
 					return {
 						pass: expected.filter(function(v: string): boolean {
 							if (! (v in actual))
@@ -43,7 +43,7 @@ var customMatchers = {
 					expected = Array.prototype.slice.call(arguments, 1);
 				}
 				if (Array.isArray(expected)) {
-					var message: string;
+					let message: string;
 					return {
 						pass: expected.filter(function(v: string): boolean {
 							if (! (v in actual))
@@ -73,9 +73,9 @@ var customMatchers = {
 	toThrowError: function(util: any, customEqualityTesters: any): any {
 		return {
 			compare: function(actual: any, expected: any): any {
-				var result = { pass: false, message: "" };
-				var threw = false;
-				var thrown: any;
+				const result = { pass: false, message: "" };
+				let threw = false;
+				let thrown: any;
 
 				if (typeof actual !== "function") {
 					throw new Error("Actual is not a Function");
@@ -124,7 +124,7 @@ var customMatchers = {
 		}
 		return {
 			compare: function(actual: any, expected: any, threshold: number = 10): any {
-				var result = { pass: false, message: "" };
+				const result = { pass: false, message: "" };
 				if (near(threshold, expected, actual))
 					result.pass = true;
 				return result;
