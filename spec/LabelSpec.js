@@ -859,6 +859,7 @@ describe("test Label", function() {
 			lineBreak: true,
 			lineGap: 2,
 			textAlign: "left",
+			rubyEnabled: true,
 			lineBreakRule: (fragments, index) => {
 				if (fragments[index] === "]") {
 					return index + 1; // 先送り改行
