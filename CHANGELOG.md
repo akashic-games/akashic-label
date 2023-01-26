@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 3.1.0
+* `rubyEnabled` のデフォルト値を真に変更
+  * 誤った文法の
+
 ## 3.0.1
 * `Label` の生成時、 fontSize (`LabelParameterObject#fontSize`) プロパティを省略可能に
   * デフォルト値は `Label` の生成時に指定された font (`LabelParameterObject#font`) プロパティの font.size と同じ値になります
