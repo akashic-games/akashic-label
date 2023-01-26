@@ -74,7 +74,8 @@ export function mainScene6(): g.Scene {
 			textAlign: "left",
 			width: game.width / 4,
 			lineBreak: true,
-			lineBreakRule: sampleRule
+			lineBreakRule: sampleRule,
+			rubyEnabled: true
 		});
 		lblabel.y = 40;
 		scene.append(lblabel);

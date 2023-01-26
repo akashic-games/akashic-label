@@ -93,7 +93,8 @@ export function mainScene4(): g.Scene {
 			font: mplusfont,
 			fontSize: 20,
 			width: 0,
-			rubyParser: parser
+			rubyParser: parser,
+			rubyEnabled: true
 		});
 		label00.x = 0;
 		label00.y = y0;
@@ -112,7 +113,8 @@ export function mainScene4(): g.Scene {
 			text: `\\{"rb": "base", "rt": "text"\\} \r back slash \\ \r  slash \/`,
 			font: bmpfont,
 			fontSize: 15,
-			width: 200
+			width: 200,
+			rubyEnabled: true
 		});
 		label01.x = 100;
 		label01.y = y0 + 170;
@@ -124,7 +126,8 @@ export function mainScene4(): g.Scene {
 			text: `サロゲート文字\r𩸽{"rb": "𩸽𩸽𩸽", "rt": "𩸽𩸽𩸽"}`,
 			font: mplusfont,
 			fontSize: 15,
-			width: 200
+			width: 200,
+			rubyEnabled: true
 		});
 		label02.x = 10;
 		label02.y = y0 + 210;

@@ -50,7 +50,8 @@ export function mainScene3(): g.Scene {
 			text: `ルビの途中でｗｉｄｔｈを超える場合、{"rb": "ｗｉｄｔｈ", "rt": "横幅"}、ルビ内の手前で改行されます`,
 			font: mplusfont,
 			fontSize: 20,
-			width: game.width
+			width: game.width,
+			rubyEnabled: true
 		});
 		label01.y = y0;
 		scene.append(label01);
@@ -61,7 +62,8 @@ export function mainScene3(): g.Scene {
 			text: `本文より{"rb": "ルビ", "rt": "とてもながいルビ"}の幅が広い場合、ルビの幅に合わせて余白が設けられます`,
 			font: mplusfont,
 			fontSize: 20,
-			width: game.width
+			width: game.width,
+			rubyEnabled: true
 		});
 		label02.y = y0 + 70;
 		scene.append(label02);
@@ -73,7 +75,15 @@ export function mainScene3(): g.Scene {
 					 `{"rb": "Ａｌｉｇｎ．", "rt": "ルビ", "rubyAlign":${RubyAlign.Center}}` +
 					 `{"rb": "Ａｒｏｕｎｄ．", "rt": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}` +
 					 `{"rb": "Ａｒｏｕｎｄ．", "rt": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}`;
-		const label11 = new Label({scene: scene, text: text11, font: mplusfont, fontSize: 15, width: game.width, rubyOptions: {rubyFontSize: 10}});
+		const label11 = new Label({
+			scene: scene,
+			text: text11,
+			font: mplusfont,
+			fontSize: 15,
+			width: game.width,
+			rubyOptions: {rubyFontSize: 10},
+			rubyEnabled: true
+		});
 		label11.y = y1;
 		scene.append(label11);
 
@@ -81,7 +91,15 @@ export function mainScene3(): g.Scene {
 					 `{"rt": "Ａｌｉｇｎ．", "rb": "ルビ", "rubyAlign":${RubyAlign.Center}}` +
 					 `{"rt": "Ａｒｏｕｎｄ．", "rb": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}` +
 					 `{"rt": "Ａｒｏｕｎｄ．", "rb": "ルビ", "rubyAlign":${RubyAlign.SpaceAround }}`;
-		const label12 = new Label({scene: scene, text: text12, font: mplusfont, fontSize: 15, width: game.width, rubyOptions: {rubyFontSize: 10}});
+		const label12 = new Label({
+			scene: scene,
+			text: text12,
+			font: mplusfont,
+			fontSize: 15,
+			width: game.width,
+			rubyOptions: {rubyFontSize: 10},
+			rubyEnabled: true
+		});
 		label12.y = y1 + 40;
 		scene.append(label12);
 
@@ -89,7 +107,15 @@ export function mainScene3(): g.Scene {
 					 `{"rb": "Ａｒｏｕｎｄ．", "rt": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}` +
 					 `{"rb": "Ａｌｉｇｎ．", "rt": "ルビ", "rubyAlign":${RubyAlign.Center}}` +
 					 `{"rb": "Ａｒｏｕｎｄ．", "rt": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}`;
-		const label13 = new Label({scene: scene, text: text13, font: mplusfont, fontSize: 15, width: game.width, rubyOptions: {rubyFontSize: 10}});
+		const label13 = new Label({
+			scene: scene,
+			text: text13,
+			font: mplusfont,
+			fontSize: 15,
+			width: game.width,
+			rubyOptions: {rubyFontSize: 10},
+			rubyEnabled: true
+		});
 		label13.y = y1 + 70;
 		scene.append(label13);
 
@@ -97,7 +123,15 @@ export function mainScene3(): g.Scene {
 					 `{"rt": "Ａｒｏｕｎｄ．", "rb": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}` +
 					 `{"rt": "Ａｌｉｇｎ．", "rb": "ルビ", "rubyAlign":${RubyAlign.Center}}` +
 					 `{"rt": "Ａｒｏｕｎｄ．", "rb": "ルビ", "rubyAlign":${RubyAlign.SpaceAround}}`;
-		const label14 = new Label({scene: scene, text: text14, font: mplusfont, fontSize: 15, width: game.width, rubyOptions: {rubyFontSize: 10}});
+		const label14 = new Label({
+			scene: scene,
+			text: text14,
+			font: mplusfont,
+			fontSize: 15,
+			width: game.width,
+			rubyOptions: {rubyFontSize: 10},
+			rubyEnabled: true
+		});
 		label14.y = y1 + 100;
 		scene.append(label14);
 

@@ -61,7 +61,8 @@ export function mainScene5(): g.Scene {
 			fontSize: 20,
 			width: game.width,
 			fixLineGap: false,
-			rubyOptions: {rubyFont: bmpfont}
+			rubyOptions: {rubyFont: bmpfont},
+			rubyEnabled: true
 		});
 		label01.y = y0;
 		label01.touchable = true;
@@ -118,7 +119,8 @@ export function mainScene5(): g.Scene {
 			lineGap: 0,
 			width: 240,
 			fixLineGap: true,
-			rubyOptions: {rubyGap: 0}
+			rubyOptions: {rubyGap: 0},
+			rubyEnabled: true
 		});
 		mlabel.y = 130;
 		counter = 0;

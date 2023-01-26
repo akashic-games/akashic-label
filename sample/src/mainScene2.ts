@@ -58,7 +58,8 @@ export function mainScene2(): g.Scene {
 			text: `use {"rt":"ruby","rb":"ruby"}.`,
 			font: bmpfont,
 			fontSize: 20,
-			width: 180
+			width: 180,
+			rubyEnabled: true
 		});
 		label01.y = y0;
 		scene.append(label01);
@@ -83,7 +84,8 @@ export function mainScene2(): g.Scene {
 			font: mplusfont,
 			fontSize: 20,
 			width: 100,
-			rubyOptions: {rubyGap: -5}
+			rubyOptions: {rubyGap: -5},
+			rubyEnabled: true
 		});
 		label03.x = 0;
 		label03.y = y0 + 90;
@@ -105,7 +107,8 @@ export function mainScene2(): g.Scene {
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width,
-			rubyOptions: {rubyFontSize: 15, rubyGap: -5}
+			rubyOptions: {rubyFontSize: 15, rubyGap: -5},
+			rubyEnabled: true
 		});
 		label04.x = 100;
 		label04.y = y0 + 90;
@@ -126,7 +129,8 @@ export function mainScene2(): g.Scene {
 			font: mplusfont,
 			fontSize: 20,
 			width: game.width,
-			rubyOptions: {rubyFont: bmpfont}
+			rubyOptions: {rubyFont: bmpfont},
+			rubyEnabled: true
 		});
 		label05.x = 200;
 		label05.y = y0 + 90;
@@ -150,7 +154,8 @@ export function mainScene2(): g.Scene {
 			text: `{"rt":"ルビアライン","rb":"ＲｕｂｙＡｌｉｇｎ＝ＳｐａｃｅＡｒｏｕｎｄ"}`,
 			font: mplusfont,
 			fontSize: 20,
-			width: game.width
+			width: game.width,
+			rubyEnabled: true
 		});
 		label11.y = y1;
 		scene.append(label11);
@@ -163,7 +168,8 @@ export function mainScene2(): g.Scene {
 			fontSize: 20,
 			width: game.width,
 			rubyOptions:
-			{rubyAlign: RubyAlign.Center}
+			{rubyAlign: RubyAlign.Center},
+			rubyEnabled: true
 		});
 		label12.y = y1 + 50;
 		scene.append(label12);
