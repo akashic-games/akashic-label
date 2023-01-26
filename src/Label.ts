@@ -174,7 +174,7 @@ export class Label extends g.CacheableE {
 		this.textColor = param.textColor;
 		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
 		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
-		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
+		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : false;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
 		this.lineBreakRule = "lineBreakRule" in param ? param.lineBreakRule : undefined;
