@@ -142,6 +142,19 @@ describe("test Label", function() {
 		}).not.toThrowError("TypeError");
 	});
 
+	it("初期化 - ルビ無効かつ誤ったルビ文法", function() {
+		expect( function() {
+			new Label({
+				scene: runtime.scene,
+				text: 'abcdefg[{"rb": "hij", "rt": "hij"}}}}]klmn',
+				font: bmpfont,
+				fontSize: 20,
+				width: 300,
+				rubyEnabled: false
+			});
+		}).not.toThrowError("TypeError");
+	});
+
 	it("render", function(){
 		const mlabel = new Label({
 			scene: runtime.scene,
