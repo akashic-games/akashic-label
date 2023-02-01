@@ -347,13 +347,15 @@ export class Label extends g.CacheableE {
 
 	private _updateLines(): void {
 		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
-		let fragments: rp.Fragment[] = [this.text];
+		let fragments: rp.Fragment[];
 		if (this.rubyEnabled) {
 			try {
 				fragments = this.rubyParser(this.text.replace(/\r\n|\n/g, "\r"));
 			} catch (error) {
-				console.warn(`Label#_updateLines(): failed to parse a text as '${this.text}'`, error);
+				console.warn(`Label#_updateLines(): failed to parse a text '${this.text}'`, error);
 			}
+		} else {
+			fragments = [this.text];
 		}
 		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
