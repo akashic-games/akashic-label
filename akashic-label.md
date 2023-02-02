@@ -52,7 +52,7 @@ scene.append(label);
 ## ルビ
 
 akashic-label ではルビをサポートしています。ラベルは、 `text` プロパティ中の特定の記述をルビの指定として解釈します。
-ルビの指定方法は、通常は以下のように指定します。
+ルビを利用するには、 `rubyEnabled` に 真を代入し、以下のように指定します。
 
 ```javascript
 const text = '{"rt":"コーヒー","rb":"珈琲"}を飲む。';
@@ -62,7 +62,8 @@ const label = new al.Label({
     font: bmpfont,
     fontSize: 30,
     width: 200,
-    lineBreak: false
+    lineBreak: false,
+    rubyEnabled: true
 });
 ```
 
@@ -90,6 +91,7 @@ const label = new al.Label({
     fontSize: 30,
     width: 200,
     lineBreak: false,
+    rubyEnabled: true,
     rubyOptions: {
         rubyFontSize: 10,
         rubyFont: rubyFont,
@@ -164,8 +166,6 @@ lineGap が指定するのは、ある行の下端と、その次の行の上端
 akashic-label は、ルビの指定を解釈するパーサ関数が独立しており、パーサ関数を切り替えて任意の指定方法を使うことができます。
 パーサ関数を変更するには、ラベルのコンストラクタ、またはインスタンスの `rubyParser` プロパティに `function(text: string): Fragment[]` 型の関数を指定します。
 
-また、ラベルのコンストラクタ、またはインスタンスの `rubyEnabled` プロパティに偽を設定することで、ルビを指定する記述をルビとして解釈しないよう変更することができます。
-
 ### 禁則処理
 
 akashic-label は自動改行の振る舞いをカスタマイズすることができます。この機能を利用して、行末・行頭に配置される文字を制御し、禁則処理を実現することができます。
@@ -212,7 +212,8 @@ const label = new Label({
     textAlign: "left",
     width: game.width,
     lineBreak: true,
-    lineBreakRule: sampleRule
+    lineBreakRule: sampleRule,
+    rubyEnabled: true
 });
 ```
 
