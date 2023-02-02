@@ -353,6 +353,7 @@ export class Label extends g.CacheableE {
 				fragments = this.rubyParser(this.text.replace(/\r\n|\n/g, "\r"));
 			} catch (error) {
 				console.warn(`Label#_updateLines(): failed to parse a text '${this.text}'`, error);
+				fragments = [this.text];
 			}
 		} else {
 			fragments = [this.text];
@@ -364,7 +365,6 @@ export class Label extends g.CacheableE {
 				// サロゲートペア文字を正しく分割する
 				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g) || [];
 			});
-
 		const undrawnLineInfos = this._divideToLines(fragments);
 		const lines: fr.LineInfo[] = [];
 		const hasNotChanged = this._beforeFontSize === this.fontSize

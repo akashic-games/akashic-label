@@ -146,11 +146,11 @@ describe("test Label", function() {
 		expect( function() {
 			new Label({
 				scene: runtime.scene,
-				text: 'abcdefg[{"rb": "hij", "rt": "hij"}}}}]klmn',
+				text: 'abcdefg[{"rb": "hij", "rt": "hij"]klmn',
 				font: bmpfont,
 				fontSize: 20,
 				width: 300,
-				rubyEnabled: false
+				rubyEnabled: true
 			});
 		}).not.toThrowError("TypeError");
 	});
