@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 3.1.0
+* `rubyEnabled` のデフォルト値を偽に変更
+* `rubyParser ` が例外を起こした時にエラーを出力せず、 `console.warn` を出力するように変更
+
+### ゲーム開発者への影響
+* `text` にはゲーム開発者が内容を完全に把握していない文字列が渡されることがあり、誤ってルビとしてパースできる文字列を与えた場合、意図しない表示になります (e.g. ニコ生ゲームでプレイヤーの名前を動的に取得した場合)。これを防ぐため、デフォルトではルビ機能を無効にします。ルビ機能を利用する際は `rubyEnabled: true` を指定する必要があります。
+
 ## 3.0.1
 * `Label` の生成時、 fontSize (`LabelParameterObject#fontSize`) プロパティを省略可能に
   * デフォルト値は `Label` の生成時に指定された font (`LabelParameterObject#font`) プロパティの font.size と同じ値になります

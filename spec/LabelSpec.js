@@ -142,6 +142,19 @@ describe("test Label", function() {
 		}).not.toThrowError("TypeError");
 	});
 
+	it("初期化 - ルビ無効かつ誤ったルビ文法", function() {
+		expect( function() {
+			new Label({
+				scene: runtime.scene,
+				text: 'abcdefg[{"rb": "hij", "rt": "hij"]klmn',
+				font: bmpfont,
+				fontSize: 20,
+				width: 300,
+				rubyEnabled: true
+			});
+		}).not.toThrowError("TypeError");
+	});
+
 	it("render", function(){
 		const mlabel = new Label({
 			scene: runtime.scene,
@@ -859,6 +872,7 @@ describe("test Label", function() {
 			lineBreak: true,
 			lineGap: 2,
 			textAlign: "left",
+			rubyEnabled: true,
 			lineBreakRule: (fragments, index) => {
 				if (fragments[index] === "]") {
 					return index + 1; // 先送り改行

@@ -174,7 +174,7 @@ export class Label extends g.CacheableE {
 		this.textColor = param.textColor;
 		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop : false;
 		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust : false;
-		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : true;
+		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled : false;
 		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap : false;
 		this.rubyParser = "rubyParser" in param ? param.rubyParser : dr.parse;
 		this.lineBreakRule = "lineBreakRule" in param ? param.lineBreakRule : undefined;
@@ -347,7 +347,17 @@ export class Label extends g.CacheableE {
 
 	private _updateLines(): void {
 		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
-		let fragments = this.rubyEnabled ? this.rubyParser(this.text.replace(/\r\n|\n/g, "\r")) : [this.text];
+		let fragments: rp.Fragment[];
+		if (this.rubyEnabled) {
+			try {
+				fragments = this.rubyParser(this.text.replace(/\r\n|\n/g, "\r"));
+			} catch (error) {
+				console.warn(`Label#_updateLines(): failed to parse a text '${this.text}'`, error);
+				fragments = [this.text];
+			}
+		} else {
+			fragments = [this.text];
+		}
 		// Fragment のうち文字列のものを一文字ずつに分解する
 		fragments =
 			rp.flatmap<rp.Fragment, rp.Fragment>(fragments, (f) => {
@@ -355,7 +365,6 @@ export class Label extends g.CacheableE {
 				// サロゲートペア文字を正しく分割する
 				return f.replace(/\r\n|\n/g, "\r").match(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\uD800-\uDFFF]/g) || [];
 			});
-
 		const undrawnLineInfos = this._divideToLines(fragments);
 		const lines: fr.LineInfo[] = [];
 		const hasNotChanged = this._beforeFontSize === this.fontSize
