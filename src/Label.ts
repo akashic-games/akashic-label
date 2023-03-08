@@ -136,16 +136,16 @@ export class Label extends g.CacheableE {
 	 */
 	lineBreakRule: rp.LineBreakRule | undefined;
 
-	_beforeText: string;
-	_beforeFont: g.Font;
-	_beforeLineBreak: boolean;
-	_beforeFontSize: number;
-	_beforeTextAlign: g.TextAlign | g.TextAlignString;
-	_beforeWidth: number;
-	_beforeRubyEnabled: boolean;
-	_beforeFixLineGap: boolean;
-	_beforeTrimMarginTop: boolean;
-	_beforeWidthAutoAdjust: boolean;
+	_beforeText: string | undefined;
+	_beforeFont: g.Font | undefined;
+	_beforeLineBreak: boolean | undefined;
+	_beforeFontSize: number | undefined;
+	_beforeTextAlign: g.TextAlign | g.TextAlignString | undefined;
+	_beforeWidth: number | undefined;
+	_beforeRubyEnabled: boolean | undefined;
+	_beforeFixLineGap: boolean | undefined;
+	_beforeTrimMarginTop: boolean | undefined;
+	_beforeWidthAutoAdjust: boolean | undefined;
 	_beforeRubyOptions: rp.RubyOptions;
 
 	private _lines: fr.LineInfo[];
@@ -168,14 +168,14 @@ export class Label extends g.CacheableE {
 		this.font = param.font;
 		this.fontSize = param.fontSize || param.font.size;
 		this._lineBreakWidth = param.width;
-		this.lineBreak = "lineBreak" in param ? param.lineBreak! : true;
+		this.lineBreak = param.lineBreak != null ? param.lineBreak : true;
 		this.lineGap = param.lineGap || 0;
-		this.textAlign = "textAlign" in param ? param.textAlign! : "left";
+		this.textAlign = param.textAlign != null ? param.textAlign : "left";
 		this.textColor = param.textColor;
-		this.trimMarginTop = "trimMarginTop" in param ? param.trimMarginTop! : false;
-		this.widthAutoAdjust = "widthAutoAdjust" in param ? param.widthAutoAdjust! : false;
-		this.rubyEnabled = "rubyEnabled" in param ? param.rubyEnabled! : false;
-		this.fixLineGap = "fixLineGap" in param ? param.fixLineGap! : false;
+		this.trimMarginTop = param.trimMarginTop != null ? param.trimMarginTop : false;
+		this.widthAutoAdjust = param.widthAutoAdjust != null  ? param.widthAutoAdjust : false;
+		this.rubyEnabled = param.rubyEnabled != null ? param.rubyEnabled : false;
+		this.fixLineGap = param.fixLineGap ? param.fixLineGap : false;
 		this.rubyParser = param.rubyParser || dr.parse;
 		this.lineBreakRule = param.lineBreakRule || undefined;
 
@@ -189,16 +189,16 @@ export class Label extends g.CacheableE {
 		this.rubyOptions.rubyAlign = "rubyAlign" in param.rubyOptions ? param.rubyOptions.rubyAlign : rp.RubyAlign.SpaceAround;
 
 		this._lines = [];
-		this._beforeText = undefined!;
-		this._beforeTextAlign = undefined!;
-		this._beforeFontSize = undefined!;
-		this._beforeLineBreak = undefined!;
-		this._beforeFont = undefined!;
-		this._beforeWidth = undefined!;
-		this._beforeRubyEnabled = undefined!;
-		this._beforeFixLineGap = undefined!;
-		this._beforeTrimMarginTop = undefined!;
-		this._beforeWidthAutoAdjust = undefined!;
+		this._beforeText = undefined;
+		this._beforeTextAlign = undefined;
+		this._beforeFontSize = undefined;
+		this._beforeLineBreak = undefined;
+		this._beforeFont = undefined;
+		this._beforeWidth = undefined;
+		this._beforeRubyEnabled = undefined;
+		this._beforeFixLineGap = undefined;
+		this._beforeTrimMarginTop = undefined;
+		this._beforeWidthAutoAdjust = undefined;
 		this._beforeRubyOptions = {};
 
 		this._invalidateSelf();
