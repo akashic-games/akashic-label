@@ -50,6 +50,6 @@ export interface LineInfo {
 	width: number;
 	height: number;
 	minMinusOffsetY: number;
-	surface: g.Surface;
+	surface: g.Surface | undefined;
 	fragmentDrawInfoArray: FragmentDrawInfo[];
 }
