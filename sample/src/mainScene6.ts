@@ -114,7 +114,8 @@ export function mainScene6(): g.Scene {
 			width: game.width / 4,
 			lineBreak: true,
 			widthAutoAdjust: true,
-			lineBreakRule: sampleRule
+			lineBreakRule: sampleRule,
+			rubyEnabled: true
 		});
 		lblabel2.y = 190;
 		scene.append(lblabel2);
