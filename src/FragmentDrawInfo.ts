@@ -30,8 +30,14 @@ export class RubyFragmentDrawInfo {
 	rtWidth: number;
 	glyphs: g.Glyph[];
 	rubyGlyphs: g.Glyph[];
-	constructor (fragment: rp.RubyFragment, width: number, rbWidth: number, rtWidth: number,
-	             glyphs: g.Glyph[], rubyGlyphs: g.Glyph[]) {
+	constructor (
+		fragment: rp.RubyFragment,
+		width: number,
+		rbWidth: number,
+		rtWidth: number,
+		glyphs: g.Glyph[],
+		rubyGlyphs: g.Glyph[]
+	) {
 		this.text = fragment.text;
 		this.fragment = fragment;
 		this.width = width;
