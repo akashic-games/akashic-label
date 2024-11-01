@@ -316,7 +316,7 @@ export class Label extends g.CacheableE {
 		 || this._beforeTrimMarginTop !== this.trimMarginTop
 		 || this._beforeWidthAutoAdjust !== this.widthAutoAdjust
 		 || this._isDifferentRubyOptions(this._beforeRubyOptions, this.rubyOptions)
-		 ) {
+		) {
 			this._updateLines();
 		}
 
@@ -348,7 +348,7 @@ export class Label extends g.CacheableE {
 	}
 
 	private _updateLines(): void {
-		 // ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
+		// ユーザのパーサを適用した後にも揃えるが、渡す前に改行記号を replace して統一する
 		let fragments: rp.Fragment[];
 		if (this.rubyEnabled) {
 			try {
@@ -429,8 +429,9 @@ export class Label extends g.CacheableE {
 	}
 
 	// 文字列の等幅描画
-	private _drawStringGlyphs(renderer: g.Renderer, font: g.Font, glyphs: g.Glyph[], fontSize: number,
-	                          offsetX: number, offsetY: number, margin: number = 0): void {
+	private _drawStringGlyphs(
+		renderer: g.Renderer, font: g.Font, glyphs: g.Glyph[], fontSize: number,
+		offsetX: number, offsetY: number, margin: number = 0): void {
 		renderer.save();
 		renderer.translate(offsetX, offsetY);
 		for (let i = 0; i < glyphs.length; i++) {
@@ -455,8 +456,9 @@ export class Label extends g.CacheableE {
 	}
 
 	// ルビベースとルビテキストの描画
-	private _drawRubyFragmentDrawInfo(renderer: g.Renderer, rubyDrawInfo: fr.RubyFragmentDrawInfo,
-	                                  rbOffsetY: number, rtOffsetY: number): void {
+	private _drawRubyFragmentDrawInfo(
+		renderer: g.Renderer, rubyDrawInfo: fr.RubyFragmentDrawInfo,
+		rbOffsetY: number, rtOffsetY: number): void {
 		const f = rubyDrawInfo.fragment;
 		const rubyFontSize = "rubyFontSize" in f ? f.rubyFontSize : this.rubyOptions.rubyFontSize;
 		const rubyAlign = "rubyAlign" in f ? f.rubyAlign : this.rubyOptions.rubyAlign;
@@ -675,12 +677,12 @@ export class Label extends g.CacheableE {
 			0;
 		const width = rbWidth > rtWidth ? rbWidth : rtWidth;
 		return new fr.RubyFragmentDrawInfo(
-			 fragment,
-			 width,
-			 rbWidth,
-			 rtWidth,
-			 glyphs,
-			 rubyGlyphs
+			fragment,
+			width,
+			rbWidth,
+			rtWidth,
+			glyphs,
+			rubyGlyphs
 		);
 	}
 
