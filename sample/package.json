@@ -24,6 +24,6 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@akashic-extension/akashic-label": "~3.0.0"
+    "@akashic-extension/akashic-label": "~3.1.0"
   }
 }
